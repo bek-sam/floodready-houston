@@ -10,7 +10,7 @@ Not official guidance. In an emergency, call 911.
 Houston floods, and our tools are built around gauges and 2007 maps, not people.
 - Harvey flooded 154,170 Harris County homes; only 36% of the flooded homes were insured, and nearly half were outside the 100- and 500-year floodplains (Community Impact: https://communityimpact.com/news/2018/06/08/hurricane-harvey-damage-report-harris-county).
 - 77% of Texas flood deaths (1959-2008) came from driving into water (https://digitalcommons.library.tmc.edu/dissertations/AAI1470211).
-- FEMA's draft maps use rainfall rates more than 30% higher than the 2007 maps still in effect (https://reduceflooding.com/2026/02/12/fema-releases-new-draft-flood-maps-for-harris-county-and-houston/).
+- Updated rainfall data show rates up more than 30% in Harris County, but the flood maps in force predate them; the new FEMA maps are still drafts (https://reduceflooding.com/2026/02/12/fema-releases-new-draft-flood-maps-for-harris-county-and-houston/).
 
 We catalogued 52 concrete flood problems with sources (`flood-problems.md`) and built one app around them.
 
