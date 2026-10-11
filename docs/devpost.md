@@ -4,6 +4,8 @@
 
 **Code:** https://github.com/bek-sam/floodready-houston
 
+**Demo video:** https://youtu.be/FJ9Uc15GI_A (file: `docs/video/floodready-demo.mp4`)
+
 Not official guidance. In an emergency, call 911.
 
 ## Inspiration

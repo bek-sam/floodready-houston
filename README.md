@@ -2,6 +2,8 @@
 
 An address-first flood safety app for Houston, built for **CodeRED Orion (UH)**. It follows a person through the flood lifecycle: **Know, Prepare, Drive and Alert, Recover, Hold accountable.** It addresses the 52 Houston flood problems catalogued in [`flood-problems.md`](flood-problems.md); the feature-to-problem mapping is in [`app-plan.md`](app-plan.md).
 
+**Demo video (2 min):** https://youtu.be/FJ9Uc15GI_A · file: [`docs/video/floodready-demo.mp4`](docs/video/floodready-demo.mp4) · how it was made: [`scripts/video/`](scripts/video/) (ElevenLabs narration + Playwright recording)
+
 Not official guidance. In an emergency, **call 911**.
 
 ## Features mapped to problems

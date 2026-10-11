@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#0b3d6b,#04111f 70%);color:#fff;font-family:-apple-system,Helvetica,Arial,sans-serif;overflow:hidden}
+.w{text-align:center;max-width:1000px;animation:in .8s ease-out both}
+.n{font-size:150px;font-weight:800;letter-spacing:-4px;background:linear-gradient(90deg,#5ec8ff,#a3f0ff);-webkit-background-clip:text;color:transparent}
+.t{font-size:40px;line-height:1.3;opacity:.92;margin-top:10px}.s{font-size:20px;opacity:.55;margin-top:40px}
+.bar{height:34px;border-radius:17px;background:#ffffff22;margin:40px auto 0;width:800px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#ff5a5a,#ffb15a);width:0;animation:g 2.2s .6s ease-out forwards}
+.logo{font-size:90px;font-weight:800}.logo b{color:#5ec8ff}
+.wave{position:absolute;bottom:-40px;left:-10%;width:120%;height:160px;background:#1e88e555;border-radius:45%;animation:wv 6s ease-in-out infinite}
+@keyframes in{from{opacity:0;transform:translateY(40px)}}@keyframes g{to{width:var(--p)}}@keyframes wv{50%{transform:translateY(-30px) rotate(1deg)}}
+</style></head><body><div class="wave"></div><div id="c"></div><script>
+const S={
+a:`<div class="n" data-to="154170">0</div><div class="t">Harris County homes flooded by Hurricane Harvey</div><div class="s">Source: Community Impact, Harris County Flood Control District report</div>`,
+b:`<div class="n" data-to="36" data-suf="%">0</div><div class="t">of flooded homes had flood insurance.<br>Nearly half were <b>outside</b> the mapped floodplain.</div><div class="bar"><i style="--p:36%"></i></div><div class="s">Source: Community Impact</div>`,
+c:`<div class="n" data-to="77" data-suf="%">0</div><div class="t">of Texas flood deaths came from<br>driving into water</div><div class="bar"><i style="--p:77%"></i></div><div class="s">Source: UTHealth, Texas flood deaths 1959–2008</div>`,
+d:`<div class="logo">Flood<b>Ready</b> Houston</div><div class="t">Your address. Your route. Your language.<br>Know the real flood risk before the water rises.</div>`};
+const k=location.search.slice(3)||'a';document.getElementById('c').innerHTML=`<div class="w">${S[k]}</div>`;
+const e=document.querySelector('[data-to]');if(e){const to=+e.dataset.to,suf=e.dataset.suf||'',t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/1800),v=Math.round(to*(1-Math.pow(1-p,3)));e.textContent=v.toLocaleString()+suf;if(p<1)requestAnimationFrame(f)})(t0)}
+</script></body></html>
