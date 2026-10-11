@@ -3,6 +3,11 @@
 // en is the reference; es keeps parity. vi/zh/ar fall back to en via tr().
 type Dict = Record<string, string>
 export const en: Dict = {
+  'outlook.sub.None': 'No excessive rainfall risk expected',
+  'outlook.sub.Marginal': 'Marginal risk of flooding rain (at least 5%)',
+  'outlook.sub.Slight': 'Slight risk of flooding rain (at least 15%)',
+  'outlook.sub.Moderate': 'Moderate risk of flooding rain (at least 40%)',
+  'outlook.sub.High': 'High risk of flooding rain (at least 70%)',
   // Hero (§4.2)
   'sum.eyebrow': 'FloodReady summary · {place}',
   'sum.regionLabel': 'Flood readiness summary',
@@ -141,6 +146,11 @@ export const en: Dict = {
 }
 
 export const es: Dict = {
+  'outlook.sub.None': 'No se espera riesgo de lluvia excesiva',
+  'outlook.sub.Marginal': 'Riesgo marginal de lluvia que cause inundaciones (al menos 5%)',
+  'outlook.sub.Slight': 'Riesgo leve de lluvia que cause inundaciones (al menos 15%)',
+  'outlook.sub.Moderate': 'Riesgo moderado de lluvia que cause inundaciones (al menos 40%)',
+  'outlook.sub.High': 'Riesgo alto de lluvia que cause inundaciones (al menos 70%)',
   'sum.eyebrow': 'Resumen de FloodReady · {place}',
   'sum.regionLabel': 'Resumen de preparación ante inundaciones',
   'sum.now': 'Ahora mismo', 'sum.place': 'Este lugar',

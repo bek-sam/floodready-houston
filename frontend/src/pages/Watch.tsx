@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BellRing, Megaphone, MapPinned, MoreHorizontal, Plus, RefreshCw, Route, Volume2 } from 'lucide-react'
 import { ApiError, api, errText, type WatchLevel, type WatchPlace, type WatchStatus } from '../api'
 import { useApp } from '../ctx'
+import { easyT, useEasy } from '../components/easyread/easyRead'
 import AlertsSwitch, { usePush } from '../components/AlertsSwitch'
 import ReportSheet from '../components/ReportSheet'
 import { speak } from '../components/speak'
@@ -22,6 +23,7 @@ const save = (p: WatchPlace[]) => store.set(KEY, JSON.stringify(p))
 
 export default function Watch() {
   const { t, lang } = useApp()
+  const [easy] = useEasy(); const te = (k: string) => easyT(t, k, easy)
   const { place } = usePlace()
   const { demo } = useDemoMode()
   const { openPlaceSheet } = useShell()
@@ -111,7 +113,7 @@ export default function Watch() {
   if (!place && places.length === 0) {
     return (
       <div>
-        <PageHeader title={t('p3.alerts.title')} subtitle={t('p3.alerts.sub')} />
+        <PageHeader title={te('p3.alerts.title')} subtitle={te('p3.alerts.sub')} />
         <EmptyState icon={MapPinned} title={t('p3.noPlace.title')} body={t('p3.noPlace.body')} action={<Button onClick={openPlaceSheet}>{t('p3.noPlace.cta')}</Button>} />
       </div>
     )
@@ -120,10 +122,10 @@ export default function Watch() {
   const time = checkedAt ? checkedAt.toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit' }) : null
   return (
     <div className="space-y-4">
-      <PageHeader title={t('p3.alerts.title')} subtitle={t('p3.alerts.sub')} forPlace
+      <PageHeader title={te('p3.alerts.title')} subtitle={te('p3.alerts.sub')} forPlace
         action={<div className="flex items-center gap-1">
           {time && <span className="text-caption text-muted">{t('p3.alerts.checked').replace('{time}', time)}</span>}
-          <IconButton icon={RefreshCw} label={t('p3.alerts.refresh')} onClick={() => { void poll() }} />
+          <IconButton icon={RefreshCw} label={te('p3.alerts.refresh')} onClick={() => { void poll() }} />
         </div>} />
       <div className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">{announce}</div>
 

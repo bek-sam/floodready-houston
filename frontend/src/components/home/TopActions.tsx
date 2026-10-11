@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Accessibility, BellRing, ClipboardList, FileText, HeartPulse, Mail, MessageCircleQuestion, Route, type LucideIcon } from 'lucide-react'
 import { useApp } from '../../ctx'
+import { easyT, useEasy } from '../easyread/easyRead'
 import type { Exposure, Level } from '../../lib/levels'
 import { ACTION_HREF, fill, medicalKind, topActions, type ActionId } from '../../lib/summary'
 import { KEYS, store, usePlace } from '../../state/place'
@@ -36,7 +37,8 @@ const loadDone = (): Record<string, string> => {
 
 /** "Do these 3 things now" (§4.4). Waits for the levels so cards don't jump. */
 export function TopActions({ placeLabel, now, exposure, ready }: { placeLabel: string; now: Level; exposure: Exposure; ready: boolean }) {
-  const { t } = useApp()
+  const { t: t0 } = useApp()
+  const [easy] = useEasy(); const t = (k: string) => easyT(t0, k, easy)
   const { household, place } = usePlace()
   const hasPush = useHasPush()
   const [done, setDone] = useState(loadDone)

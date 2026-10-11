@@ -12,6 +12,7 @@ import { LiveConditions } from '../components/home/LiveConditions'
 import { FloodHistoryList, PlaceProfile } from '../components/home/PlaceProfile'
 import EvacSurgeBody, { evacShow, useEvac } from '../components/evac/EvacSurgeCard'
 import HwmBody, { hasMarks, useHwm } from '../components/hwm/HwmCard'
+import DigestBanner from '../components/digest/DigestBanner'
 import CoastalChip from '../components/coastal/CoastalChip'
 import RentBuy from '../components/RentBuy'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
@@ -191,6 +192,7 @@ export default function Home() {
 
         <section aria-labelledby="det-title" className="space-y-3 md:col-span-7 md:col-start-1 md:row-start-2">
           <h2 id="det-title" className="text-h2 text-ink">{t('det.title')}</h2>
+          <DigestBanner inputs={inputs} placeKey={`${loc!.lat.toFixed(4)},${loc!.lon.toFixed(4)}`} />
           <Disclosure id="profile" icon={<HomeIcon size={20} />} title={t('det.profile')}
             preview={r ? profilePreview(r, t) : inputs.risk.failed ? t('live.unavail') : t('sum.checking')}>
             {r ? <PlaceProfile r={r} /> : inputs.risk.failed ? <ErrorBox error={t('sum.exp.unknown')} onRetry={d.refresh} /> : <Busy />}

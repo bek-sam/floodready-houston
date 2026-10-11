@@ -7,6 +7,8 @@ import { usePlace, placeName } from '../state/place'
 import { cssVar } from '../lib/levels'
 import { RecoveryTracker, Share911 } from '../components/RecoverExtras'
 import { Map } from '../components/maps'
+import Report311 from '../components/civic311/Report311'
+import ClaimsHelper from '../components/claims/ClaimsHelper'
 import ReportSheet from '../components/ReportSheet'
 import { useAsync, Warnings } from '../components/ui'
 import { Card, Checkbox, Disclosure, EmptyState, ErrorBox, PageHeader, SkeletonCard, SourceLink } from '../components/ds'
@@ -186,6 +188,10 @@ export default function Recover() {
           </div>
         )}
       </Card>
+
+      <Report311 />
+
+      <ClaimsHelper />
 
       <Disclosure title={t('p5.rec.shelterTitle')} preview={t('p5.rec.shelterPreview')} icon={<Home size={20} />}>
         <Shelters loc={loc} name={name} hasPlace={!!place} />

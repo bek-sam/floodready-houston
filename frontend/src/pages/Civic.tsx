@@ -2,6 +2,7 @@
 import { api } from '../api'
 import { useApp } from '../ctx'
 import { usePlace, placeName } from '../state/place'
+import Report311 from '../components/civic311/Report311'
 import WhoToContact from '../components/WhoToContact'
 import { useAsync, Warnings } from '../components/ui'
 import { Card, ErrorBox, PageHeader, RiskBadge, SkeletonCard, SourceLink } from '../components/ds'
@@ -27,6 +28,7 @@ export default function Civic() {
         <>
           <Warnings items={c.warnings} />
           <WhoToContact civic={c} />
+          <Report311 civic={c} />
           <Card title={t('p5.civic.who')}>
             {resp.length === 0 && <p className="text-body-sm text-muted">{t('rec.na')}</p>}
             <ul className="divide-y divide-line text-body-sm">

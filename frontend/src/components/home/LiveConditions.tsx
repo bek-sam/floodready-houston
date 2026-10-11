@@ -4,6 +4,7 @@ import { CircleMarker, Tooltip } from 'react-leaflet'
 import { BellRing, CloudRain, Map as MapIcon, Waves } from 'lucide-react'
 import type { Alert, Alerts, Gauge, LatLon, Outlook, Risk } from '../../api'
 import { useApp } from '../../ctx'
+import { easyT, useEasy } from '../easyread/easyRead'
 import { cssVar, gaugeLabelKey, gaugeLevel, LEVEL_VAR, maxLevel, type Level } from '../../lib/levels'
 import { alertLevel, fill, isFloodAlert, milesBetween, SRC, timeOf, type Src } from '../../lib/summary'
 import { Map } from '../maps'
@@ -11,7 +12,8 @@ import Sparkline from '../Sparkline'
 import { Button, Card, Disclosure, ErrorBox, Freshness, GaugeChips, LoadingText, RiskBadge, Sheet, Skeleton, SourceLink, StatTile, StatusBadge } from '../ds'
 
 function AlertRow({ a, onRead }: { a: Alert; onRead: (a: Alert) => void }) {
-  const { t, lang } = useApp()
+  const { t: t0, lang } = useApp()
+  const [easy] = useEasy(); const t = (k: string) => easyT(t0, k, easy)
   const lvl = alertLevel(a.event)
   const exp = a.expires ? Date.parse(a.expires) : NaN
   return (
@@ -28,7 +30,8 @@ function AlertRow({ a, onRead }: { a: Alert; onRead: (a: Alert) => void }) {
 }
 
 function GaugeRow({ g, from }: { g: Gauge; from: LatLon | null }) {
-  const { t } = useApp()
+  const { t: t0 } = useApp()
+  const [easy] = useEasy(); const t = (k: string) => easyT(t0, k, easy)
   const dist = from && Number.isFinite(g.lat) && Number.isFinite(g.lon) ? milesBetween(from, g).toFixed(1) : null
   const stage = g.stage_ft != null ? String(g.stage_ft) : '—'
   return (
@@ -50,7 +53,8 @@ export function LiveConditions({ title, loc, risk, alerts, outlook, updatedAt, o
   title: string; loc: LatLon | null; risk: Src<Risk>; alerts: Src<Alerts>; outlook: Src<Outlook>
   updatedAt: number | null; onRetry: () => void; wide?: boolean
 }) {
-  const { t, lang } = useApp()
+  const { t: t0, lang } = useApp()
+  const [easy] = useEasy(); const t = (k: string) => easyT(t0, k, easy)
   const [read, setRead] = useState<Alert | null>(null)
   const [map, setMap] = useState(false)
   const all = (alerts.data?.alerts ?? []).filter((a) => a && typeof a.event === 'string')
@@ -92,7 +96,7 @@ export function LiveConditions({ title, loc, risk, alerts, outlook, updatedAt, o
         <div aria-busy={!outlook.done || undefined}>
           <StatTile label={t('live.outlook')} icon={CloudRain} level={outlook.done && !outlook.failed ? outLevel : undefined}
             value={!outlook.done ? sk : outlook.failed ? '—' : cat ? t('sum.cat.' + cat) : t('live.outlookNone')}
-            sub={outlook.failed ? t('live.unavail') : day1?.label && day1.label !== cat ? day1.label : undefined}
+            sub={outlook.failed ? t('live.unavail') : cat ? t('outlook.sub.' + cat) : undefined}
             source={outlook.failed ? <Button variant="secondary" size="sm" onClick={onRetry}>{t('retry')}</Button>
               : outlook.data?.source ? <SourceLink href={outlook.data.source} label="NOAA WPC" /> : undefined} />
         </div>

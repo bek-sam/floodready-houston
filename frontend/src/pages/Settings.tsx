@@ -4,6 +4,7 @@ import { useApp } from '../ctx'
 import { householdChips, placeName, store, usePlace } from '../state/place'
 import { Button, ButtonLink, Card, PageHeader, Segmented } from '../components/ds'
 import { LanguageList } from '../components/shell/LanguageSheet'
+import EasyReadToggle from '../components/easyread/EasyReadToggle'
 import { useShell } from '../components/shell/ShellContext'
 
 const DATA_KEYS = ['floodready.place.v1', 'floodready.household.v1', 'floodready.onboarded.v1', 'floodready.actionsDone.v1', 'watchPlaces', 'lastPlan', 'recoverDone']
@@ -43,6 +44,7 @@ export default function Settings() {
         <Segmented label={t('settings.appearance')} value={dark ? 'dark' : 'light'} onChange={(v) => setDark(v === 'dark')}
           options={[{ value: 'light', label: t('settings.light') }, { value: 'dark', label: t('settings.darkShort') }]} />
       </Card>
+      <EasyReadToggle />
       <Card title={t('settings.data')} subtitle={t('settings.dataSub')}>
         {confirm ? (
           <div className="flex flex-wrap gap-2">

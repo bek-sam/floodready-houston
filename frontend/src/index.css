@@ -94,3 +94,11 @@ html:has(dialog[open]) { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 @media (forced-colors: active) { :focus-visible { outline-color: Highlight; } }
+
+/* Cycle 22: easy-read mode (class on <html>) */
+html.easy-read { font-size: 120%; }
+html.easy-read body { line-height: 1.6; }
+html.easy-read main p, html.easy-read main li { line-height: 1.6; max-width: 65ch; }
+html.easy-read button[aria-expanded] .truncate.text-caption { display: none; }
+html.easy-read :focus-visible { outline: 4px solid #ffbf00 !important; outline-offset: 3px !important; box-shadow: 0 0 0 7px #000 !important; }
+@media (prefers-reduced-motion: reduce) { html.easy-read *, html.easy-read *::before, html.easy-read *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
