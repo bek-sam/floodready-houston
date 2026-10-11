@@ -31,6 +31,11 @@ export default function EvacuationHelp() {
           </div>
           <p className="mt-2"><SourceLink href="https://www.readyharris.org/" /></p>
         </li>
+        <li className="py-3">
+          <p className="font-semibold text-ink">{t('mh.h')}</p>
+          <p className="mt-0.5 text-body-sm text-muted">{t('mh.b')}</p>
+          <p className="mt-1"><SourceLink href="https://www.fema.gov/print/pdf/node/695591" /></p>
+        </li>
       </ul>
     </Card>
   )

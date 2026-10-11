@@ -5,7 +5,7 @@ source: https://www.ksat.com/news/texas/2024/05/20/the-government-wants-to-buy-t
 source: https://hcd.harriscountytx.gov/Disaster-Recovery/Buyout-Relocation-Programs/Involuntary-Buyout-Relocation-Program
 
 - More than 475,000 Harris County residents live in at-risk multifamily housing (2019). (Planetizen)
-- Neither the city nor the county requires flood-risk disclosure to buyers and renters; the only warning is a plat note. A renter said: "When I started to rent this house, nobody told me." (ProPublica)
+- ProPublica reported in 2017 that neither the city nor the county required flood-risk disclosure; a renter said: "When I started to rent this house, nobody told me." Texas now requires landlords to give written flood notice (Property Code 92.0135, see tenant-flood-disclosure.md). (ProPublica)
 - Harris County (excluding Houston) has 869 Severe Repetitive Loss properties with $400M in NFIP claims paid. (Harris County HCD)
 - Buyouts are slow: "18 months or longer to approve a buyout application," and residents ask "Who do I call?" Offers may not cover a move. (KSAT)
 - Renters are displaced by buyouts: for 114 demolitions, only 28 affordable units are to be replaced, in distant ZIP codes. (KSAT; HCD)

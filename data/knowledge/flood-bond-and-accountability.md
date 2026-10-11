@@ -1,14 +1,12 @@
 # The 2018 flood bond and who is responsible
-source: https://communityimpact.com/cypress/government/a-new-vision-harris-county-restructures-2018-bond-projects-and-funding/
+source: https://www.fox26houston.com/news/harris-county-flooding-projects-budget-shortfall
 source: https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf
 source: https://cp4.harriscountytx.gov/Connect/Newsroom/flood-bond
 source: https://projects.propublica.org/graphics/harvey-reservoirs
 source: https://maapnext.harriscountytx.gov/Understand-Your-Risk
 
-- County auditor memo, June 2025: by March 2025, 43 of 181 flood bond projects were complete and $864M of $2.5B had been spent. (County Auditor memo)
-- The county restructured the 2018 bond program in fall 2025: 54 project packages completed, 75 of the remaining 116 moving forward, 26 paused and 15 closed as not feasible. Check the HCFCD dashboard for current status. (Community Impact)
-- "Out of $834 million FRT funds originally anticipated, only $165 million materialized." (Auditor memo)
-- Funds were given "as-needed," not "in order of prioritization scores." Second-quartile projects got $317.5M vs. $187.3M for the first quartile. (Auditor memo)
+- County auditor memo, June 2025: by March 2025, 43 of 181 bond project groups in the 2018 flood bond program were complete. (County Auditor memo, as reported by Fox 26: https://www.fox26houston.com/news/harris-county-flooding-projects-budget-shortfall)
+- In September 2025 the county restructured the 2018 bond program: of 116 remaining project packages, 75 are moving forward, 26 are paused and 15 were closed as not feasible; 54 packages were already complete. Check the HCFCD dashboard for current status. (Harris County Precinct 4)
 - Governance is fragmented: "The city doesn't talk to the county... Nobody's in charge." (ProPublica)
 - Each jurisdiction follows its own floodplain criteria. (MAAPnext)
 

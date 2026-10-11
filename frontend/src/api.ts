@@ -127,6 +127,11 @@ export interface ZipInsurance extends Warned {
   premiums?: { median_annual: number | null; p25: number | null; p75: number | null; sample_size?: number; source?: string; as_of?: string } | null
 }
 export interface MedFacility { name: string; address: string; phone: string | null; lat: number; lon: number; distance_mi: number }
+export interface Empower extends Warned {
+  zip: string; medicare_benes: number | null; power_dependent_devices: number | null; oxygen: number | null; dialysis: number | null
+  available: boolean; source: string; map: string; note: string
+  puc: { url: string; note: string }; co: { url: string }; meta?: Meta
+}
 export interface Medical { facilities: MedFacility[]; source: string; note: string }
 
 export type StreamEvent =
@@ -198,6 +203,7 @@ export const api = {
   postReport: (r: Report) => post<Report>('/reports', r),
   zipInsurance: (zip: string) => req<ZipInsurance>('/zip-insurance?zip=' + encodeURIComponent(zip)),
   medical: (p: LatLon, limit = 5) => req<Medical>('/medical?' + q(p) + `&kind=dialysis&limit=${limit}`),
+  empower: (zip: string) => req<Empower>('/empower?zip=' + encodeURIComponent(zip)),
   buyoutArea: (p: LatLon) => req<BuyoutArea>('/buyout-area?' + q(p)),
   civic: (p?: LatLon | null) => req<Civic>('/civic' + (p ? '?' + q(p) : '')),
   voice: async (text: string, lang: string): Promise<Blob> => {

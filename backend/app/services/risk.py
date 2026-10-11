@@ -67,7 +67,7 @@ def build_facts(zone, sfha, reservoir) -> list[dict]:
     facts.append({"text": "Flat, clay-soil terrain means you don't have to live near a bayou to flood.", "source": SRC_FLAT, "code": "fact.flat", "params": {}})
     facts.append({"text": "Draft FEMA maps use rainfall rates more than 30% higher than the 2007 maps still in effect.", "source": SRC_MAPS, "code": "fact.maps", "params": {}})
     if reservoir:
-        facts.append({"text": "You are near the Addicks/Barker reservoirs (1940s dams rated extremely high risk); Harvey releases flooded homes downstream.", "source": SRC_DAMS, "code": "fact.dams", "params": {}})
+        facts.append({"text": "You are near the Addicks/Barker reservoirs (1940s dams that the Corps has found at high risk of failure from seepage and piping); Harvey releases flooded homes downstream.", "source": SRC_DAMS, "code": "fact.dams", "params": {}})
     return facts
 
 

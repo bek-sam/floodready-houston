@@ -31,7 +31,7 @@ async def get_civic(lat: float, lon: float) -> dict:
         d = {}
         warnings.append("civic data file not available yet")
     bond = dict(d.get("bond") or {})
-    bond["facts"] = [{**f, "code": f"civic.bond.{i}", "params": {}} for i, f in enumerate(bond.get("facts") or [])]
+    bond["facts"] = [{**f, "code": f.get("code") or f"civic.bond.{i}", "params": {}} for i, f in enumerate(bond.get("facts") or [])]
     bond["projects"] = await bond_projects(lat, lon)
     if not bond["projects"]:
         warnings.append("No HCFCD bond projects within 5 miles (or layer unavailable)")
@@ -40,7 +40,7 @@ async def get_civic(lat: float, lon: float) -> dict:
     reservoir["in_area"] = rs["in_area"]
     reservoir["note"] = rs["note"]
     reservoir["note_code"] = rs["note_code"]
-    reservoir["facts"] = [{**f, "code": f"civic.res.{i}", "params": {}} for i, f in enumerate(reservoir.get("facts") or [])]
+    reservoir["facts"] = [{**f, "code": f.get("code") or f"civic.res.{i}", "params": {}} for i, f in enumerate(reservoir.get("facts") or [])]
     out = {"bond": bond, "reservoir": reservoir, "responsibility": [{**r, "code": f"civic.resp.{i}"} for i, r in enumerate(d.get("responsibility") or [])],
            "officials": await get_officials(lat, lon)}
     if warnings:

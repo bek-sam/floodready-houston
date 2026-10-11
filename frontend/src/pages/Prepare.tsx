@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CalendarPlus, Check, ChevronLeft, ChevronRight, ExternalLink, Pencil } from 'lucide-react'
 import TenantLetter from '../components/TenantLetter'
 import MedicalAccess from '../components/MedicalAccess'
+import PowerDependentCard from '../components/prepare/PowerDependentCard'
 import PetsCard from '../components/pets/PetsCard'
 import SharePlanCard from '../components/share/SharePlanCard'
 import GoBag from '../components/gobag/GoBag'
@@ -198,7 +199,7 @@ export default function Prepare() {
           </>
         )}
 
-        {tab === 'medical' && <div id="prepare-medical"><MedicalAccess /></div>}
+        {tab === 'medical' && <div id="prepare-medical"><MedicalAccess /><div className="mt-4"><PowerDependentCard /></div></div>}
 
         {tab === 'renters' && (
           <>

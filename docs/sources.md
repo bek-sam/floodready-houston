@@ -48,4 +48,4 @@ Legend: ✓ = live call returned valid data; ✗ = failed/blocked; ? = not teste
 ## Risk notes
 - **Rate-limit risks**: Nominatim 1/s, OSRM demo ~1/s, NWS polite, FEMA/Houston ArcGIS slow -> cache every call (key = lat/lon rounded to 3 dp) and pre-seed demo addresses (downtown, Meyerland, Kingwood, Addicks area).
 - Gemini quota is per project and not published as a fixed table (see stack.md) -> cache answers, template fallbacks.
-- Bond audit stats (43 of 181 done, $165M of $834M) come from research-brief.md; the live layers give per-project spend to cross-check.
+- Bond audit stat (43 of 181 bond project groups done, per Fox 26 reporting on the June 2025 auditor memo) is the only auditor figure kept; the $864M/$165M/$317.5M figures were dropped as unverified; the live layers give per-project spend to cross-check.

@@ -44,7 +44,7 @@
 
 ### 1.3 Root causes
 - Flat, clay-soil terrain — "you don't have to live near a bayou to flood." https://maapnext.harriscountytx.gov/Understand-Your-Risk
-- Aging Addicks/Barker reservoirs (1940s), rated "extremely high risk"; Harvey releases flooded homes downstream. https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/
+- Aging Addicks/Barker reservoirs (1940s); the U.S. Army Corps of Engineers has rated them at high risk of failure due to seepage and piping. Harvey releases flooded homes downstream. https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/
 - Development and paved surfaces — widely cited, but no current impervious-cover figure was found **[GAP]**.
 
 ### 1.4 Who is most affected

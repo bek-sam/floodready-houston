@@ -141,6 +141,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Cycle 26 additions:** GET `/nri?lat&lon` → `{available, tract, inland_flood{rating,annual_freq_events}, expected_loss_rating, resilience{rating}, social_vulnerability{rating}, overall_risk{rating}, population, source, note, meta}` (FEMA National Risk Index, census tract; `available:false` on failure); `/outlook` adds `days[{day:1..5, category|null, label|null, valid_time|null}]`, `max_category`, `prepare_nudge`; `/insurance/countdown` adds `exceptions_note`, `exceptions_note_code`; gauges add `impact:{current, next, harvey_crest_ft, harvey_delta_ft, source}|null` (from `data/gauge_impacts.json`, NWPS impact statements).
 
+**Cycle 27 additions:** GET `/empower?zip=` → `{zip, medicare_benes, power_dependent_devices, oxygen, dialysis, available, source, map, note, puc{url,note}, co{url}, meta, warnings?}` (HHS emPOWER, ZIP-level counts only; 422 on bad zip); `/civic` facts carry explicit `code` (i18n key) from data/civic.json — never derive codes from list position.
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

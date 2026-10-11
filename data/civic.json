@@ -2,28 +2,19 @@
  "bond": {
   "facts": [
    {
-    "text": "Harris County auditor memo, June 2025: by March 2025, 43 of 181 projects in the 2018 flood bond program were complete.",
-    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
+    "code": "civic.bond.0",
+    "text": "Harris County auditor memo, June 2025: by March 2025, 43 of 181 bond project groups in the 2018 flood bond program were complete.",
+    "source": "https://www.fox26houston.com/news/harris-county-flooding-projects-budget-shortfall"
    },
    {
-    "text": "$864M of the $2.5B bond had been spent by that point.",
-    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
-   },
-   {
-    "text": "Out of $834 million in partner (FRT) funds originally anticipated, only $165 million materialized.",
-    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
-   },
-   {
-    "text": "Funds were allocated 'as-needed,' not 'in order of prioritization scores'; second-quartile projects received $317.5M vs. $187.3M for the first quartile.",
-    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
-   },
-   {
+    "code": "civic.bond.4",
     "text": "Flood bond project information is published by Harris County Precinct 4.",
     "source": "https://cp4.harriscountytx.gov/Connect/Newsroom/flood-bond"
    },
    {
-    "text": "The county restructured the 2018 bond program in fall 2025: 54 project packages completed, 75 of the remaining 116 moving forward, 26 paused and 15 closed as not feasible. Check the HCFCD dashboard for current status.",
-    "source": "https://communityimpact.com/cypress/government/a-new-vision-harris-county-restructures-2018-bond-projects-and-funding/"
+    "code": "civic.bond.5",
+    "text": "In September 2025 the county restructured the 2018 bond program: of 116 remaining project packages, 75 are moving forward, 26 are paused and 15 were closed as not feasible; 54 packages were already complete. Check the HCFCD dashboard for current status.",
+    "source": "https://cp4.harriscountytx.gov/Connect/Newsroom/flood-bond"
    }
   ],
   "projects": []
@@ -32,20 +23,28 @@
   "in_area": false,
   "facts": [
    {
-    "text": "Addicks and Barker reservoirs date from the 1940s and were rated 'extremely high risk'; the Corps found a 'high risk of failure due to seepage and piping' and more than $100M in repairs were needed.",
+    "code": "civic.res.0",
+    "text": "Addicks and Barker reservoirs date from the 1940s. Since 2004 the Army Corps of Engineers has found a high risk of failure due to seepage and piping; more than $100M in repairs were needed, and not all are complete.",
     "source": "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/"
    },
    {
-    "text": "5,138 of about 14,000 homes inside the reservoirs flooded in Harvey; about 4,000 were built after Allison.",
+    "code": "civic.res.1",
+    "text": "5,138 of about 14,000 homes inside the reservoirs flooded in Harvey; at least 4,000 were built after Allison.",
     "source": "https://projects.propublica.org/graphics/harvey-reservoirs"
    },
    {
+    "code": "civic.res.2",
     "text": "Reservoir releases during Harvey flooded thousands more homes downstream.",
     "source": "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/"
    },
    {
-    "text": "Neither the city nor the county requires flood disclosure to buyers; the only warning is a plat note.",
-    "source": "https://projects.propublica.org/graphics/harvey-reservoirs"
+    "code": "civic.res.3",
+    "text": "As of 2017 ProPublica reporting, Harris County and Houston did not require flood-risk disclosure to buyers. Texas law has since added a landlord flood notice (Property Code 92.0135, since 2022) and a seller's disclosure of floodplain and reservoir status (SB 339, 2019).",
+    "source": "https://projects.propublica.org/graphics/harvey-reservoirs",
+    "sources": [
+     "https://projects.propublica.org/graphics/harvey-reservoirs",
+     "https://capitol.texas.gov/tlodocs/86R/analysis/pdf/SB00339S.pdf"
+    ]
    }
   ]
  },

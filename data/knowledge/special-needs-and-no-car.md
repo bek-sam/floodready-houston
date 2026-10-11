@@ -25,3 +25,5 @@ What to do: call 211 early, before the storm, to ask about evacuation transporta
 - Help lines: National Kidney Foundation 1-855-653-2273; Kidney Community Emergency Response (KCER) 1-866-901-3773. (CDC)
 
 What to do: ask your clinic now for its backup plan and the emergency diet, and review the diet with your dietitian. Pack medicines and phone numbers. If you use a home machine, plan for power loss. Call 911 in an emergency.
+
+If you have no stable housing or need shelter help, call 2-1-1 (211 Texas: https://www.211texas.org/). Call 911 in an emergency.
