@@ -3,6 +3,7 @@ export interface RainWindow { start: number; end: number; inches: number }
 export interface PopPoint { t: number; pct: number }
 export interface Rain24 {
   windows: RainWindow[]; pop: PopPoint[]; asOf: string | null; source: string | null; sourceUrl: string | null
+  past: { last24: number; last72: number; gaugeUrl: string | null } | null
   action: { show: boolean; text: string; windowStart: number | null } | null
 }
 
@@ -27,12 +28,16 @@ export function parseRain24(raw: unknown): Rain24 | null {
     if (t != null && pct != null) pop.push({ t, pct: Math.min(100, Math.max(0, pct)) })
   }
   if (!windows.length && !pop.length) return null
+  const pa = rec(o.past)
+  const past = pa && pa.available === true && num(pa.last24_in) != null && num(pa.last72_in) != null
+    ? { last24: num(pa.last24_in)!, last72: num(pa.last72_in)!, gaugeUrl: typeof pa.gauge_url === 'string' && /^https:\/\//.test(pa.gauge_url) ? pa.gauge_url : null } : null
   const a = rec(o.action), meta = rec(o.meta)
   return {
     windows: windows.slice(0, 4), pop: pop.slice(0, 24),
     asOf: typeof meta?.as_of === 'string' ? meta.as_of : null,
     source: typeof o.source === 'string' ? o.source : null,
     sourceUrl: typeof o.source_url === 'string' && /^https:\/\//.test(o.source_url) ? o.source_url : null,
+    past,
     action: a && typeof a.text === 'string' ? { show: a.show === true, text: a.text, windowStart: ms(a.window_start) } : null,
   }
 }

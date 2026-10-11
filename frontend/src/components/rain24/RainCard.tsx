@@ -56,6 +56,12 @@ export default function RainCard({ loc }: { loc: LatLon | null }) {
               </svg>
             </div>
           )}
+          {d.past && (
+            <p className="text-body-sm text-ink">
+              {fill(t, 'p32.rain.past', { a: d.past.last24.toFixed(1), b: d.past.last72.toFixed(1) })}{' '}
+              <a href={d.past.gaugeUrl ?? 'https://www.harriscountyfws.org'} target="_blank" rel="noreferrer" className="underline">{t('p32.rain.gauges')}</a>
+            </p>
+          )}
           {act ? (
             <div className="rounded-md bg-surface-2 p-3">
               <p className="text-body-sm font-semibold text-ink">{act.text}</p>

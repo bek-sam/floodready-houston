@@ -3,7 +3,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Float, String, Text, create_engine, text
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config import database_url
@@ -23,6 +23,15 @@ class Report(Base):
     kind = Column(String(40), nullable=False, default="flooded_road")
     depth_in = Column(Float, nullable=True)
     note = Column(String(1000), nullable=True)
+
+
+class ReportVote(Base):
+    """Separate table (no ALTER on reports): one row per 'still there' / 'cleared' vote."""
+    __tablename__ = "report_votes"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    report_id = Column(String(32), nullable=False, index=True)
+    still_there = Column(Boolean, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
 class Place(Base):

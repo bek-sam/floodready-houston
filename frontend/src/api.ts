@@ -50,7 +50,7 @@ export interface CrossingFeature {
 export interface Crossings { type: 'FeatureCollection'; features: CrossingFeature[] }
 
 export interface LatLon { lat: number; lon: number }
-export interface Hazard { kind?: string; short_name?: string; crossing_id: string; name: string; lat: number; lon: number; reason: string; reason_code?: string | null; reason_params?: Record<string, unknown>; name_code?: string }
+export interface Hazard { kind?: string; report_id?: string; short_name?: string; crossing_id: string; name: string; lat: number; lon: number; reason: string; reason_code?: string | null; reason_params?: Record<string, unknown>; name_code?: string }
 export interface RouteCheck extends Warned {
   route: { type: 'LineString'; coordinates: [number, number][] } | null
   hazards: Hazard[]; verdict: 'safe' | 'caution' | 'avoid'; message: string; meta?: Meta
@@ -76,8 +76,11 @@ export interface Profile {
 }
 export type When = 'now' | 'storm_watch' | 'storm' | 'after'
 export interface Plan extends Warned { steps: { title: string; detail: string; when: When }[]; generated_by: string }
-export interface Ask extends Warned { answer: string; sources: string[]; citations?: { sentence_index: number; source_index: number }[]; uncited?: number[]; generated_by: string; tools_used?: string[]; tools?: string[]; speak?: string }
-export interface Report { id?: string; lat: number; lon: number; kind: string; depth_in: number | null; note: string; created_at?: string }
+export interface Ask extends Warned { answer: string; sources: string[]; citations?: { sentence_index: number; source_index: number }[]; uncited?: number[]; generated_by: string; tools_used?: string[]; tools?: string[]; speak?: string; trace?: AskTrace | null }
+export interface AskTrace { intent?: string; route?: string; retrieved?: { title: string; source: string; score?: number }[]; tools?: { name: string; ms?: number }[]; answer?: { by?: string; ms?: number }; total_ms?: number }
+export interface AreaAlerts { type: 'FeatureCollection'; features: { type: 'Feature'; properties: { id: string; event: string; severity?: string; headline?: string; expires?: string; has_geometry?: boolean; area_desc?: string; source?: string }; geometry: { type: string; coordinates: unknown } | null }[]; zone_only?: { event: string; headline?: string; area_desc?: string; expires?: string }[]; meta?: Meta }
+export interface VoteResult { id: string; confirms: number; clears: number; last_vote_at: string | null }
+export interface Report { id?: string; lat: number; lon: number; kind: string; depth_in: number | null; note: string; created_at?: string; confirms?: number | null; clears?: number | null; last_vote_at?: string | null }
 export interface BondProject { name: string; status?: string; budgeted?: number | null; spent?: number | null; distance_mi?: number | null; url?: string }
 export interface Civic extends Warned {
   bond: { facts: Fact[]; projects: BondProject[] }
@@ -208,6 +211,8 @@ export const api = {
   ask: (question: string, lang: string, loc?: LatLon | null, extra?: { history?: { role: 'user' | 'assistant'; content: string }[]; mode?: 'voice'; signal?: AbortSignal }) =>
     post<Ask>('/ask', { question, lang, ...(loc ? { lat: loc.lat, lon: loc.lon } : {}), ...(extra?.history?.length ? { history: extra.history } : {}), ...(extra?.mode ? { mode: extra.mode } : {}) }, extra?.signal),
   reports: () => req<Report[]>('/reports'),
+  voteReport: (id: string, still_there: boolean) => post<VoteResult>(`/reports/${encodeURIComponent(id)}/vote`, { still_there }),
+  alertsArea: (bbox: string) => req<AreaAlerts>('/alerts/area?bbox=' + bbox),
   postReport: (r: Report) => post<Report>('/reports', r),
   zipInsurance: (zip: string) => req<ZipInsurance>('/zip-insurance?zip=' + encodeURIComponent(zip)),
   medical: (p: LatLon, limit = 5) => req<Medical>('/medical?' + q(p) + `&kind=dialysis&limit=${limit}`),

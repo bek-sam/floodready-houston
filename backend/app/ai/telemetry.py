@@ -12,6 +12,7 @@ import time
 from collections import deque
 from datetime import datetime, timezone
 
+from . import trace as _tr
 from .config import BACKEND, sqlalchemy_url
 
 # USD per 1M tokens. ESTIMATES ONLY (list prices as we understood them; check ai.google.dev/pricing).
@@ -90,9 +91,19 @@ def stage(name: str):
         tr = current()
         if tr:
             tr.stage_add(name, (time.perf_counter() - t0) * 1000)
+        if name == "llm" and _tr.current():
+            _tr.current().llm_ms += int((time.perf_counter() - t0) * 1000)
 
 
 def set(**kw):  # noqa: A001
+    c = _tr.current()
+    if c is not None:
+        if "route" in kw and kw["route"]:
+            _tr.set_route(kw["route"])
+        if "intents" in kw:
+            c.intents = list(kw["intents"] or [])
+        if kw.get("cache_hit") in ("exact", "semantic"):
+            c.cache_hit = kw["cache_hit"]
     tr = current()
     if tr:
         tr.set(**kw)

@@ -10,6 +10,7 @@ import os
 LIMITS = [
     ("/api/ask", int(os.getenv("RATE_ASK", "60")), 60),
     ("/api/push/", int(os.getenv("RATE_PUSH", "20")), 60),
+    ("/api/reports", int(os.getenv("RATE_REPORTS", "20")), 60),  # POST /reports and /reports/{id}/vote
     ("/api/plan", int(os.getenv("RATE_PLAN", "40")), 60),
 ]
 MAX_QUESTION = 500

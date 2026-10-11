@@ -4,10 +4,12 @@ import { ArrowUpDown, Car, LocateFixed, Megaphone, Square, TriangleAlert, Volume
 import { api, errText, type DemoRoute, type LatLon, type RouteCheck, type WatchPlace } from '../api'
 import { useApp } from '../ctx'
 import { Map } from '../components/maps'
+import { useAreaAlerts, useWarningsOn, WarningsBar, WarningsMapLayer } from '../components/WarningsLayer'
 import { speak, stopSpeaking } from '../components/speak'
 import ParkCard from '../components/parking/ParkCard'
 import PosterSheet from '../components/poster/PosterSheet'
 import ReportSheet from '../components/ReportSheet'
+import VoteButtons from '../components/VoteButtons'
 import { useAsync, Warnings } from '../components/ui'
 import { Button, Card, DemoPanel, Disclosure, ErrorBox, Freshness, IconButton, PageHeader, RiskBadge, Skeleton, SourceLink, Switch, inputCls } from '../components/ds'
 import { cssVar, verdictLabelKey, verdictLevel } from '../lib/levels'
@@ -69,6 +71,9 @@ export default function Drive() {
   }, [demoGo, samples.data, t])
   // Real users never get a simulated route, even if a flag was left over.
   const simOn = demo && sim
+  const { place: areaPlace } = usePlace()
+  const area = useAreaAlerts(areaPlace ?? { lat: 29.76, lon: -95.37 })
+  const [warnOn, setWarnOn] = useWarningsOn(area)
 
   const watched = useMemo(() => store.json<WatchPlace[]>('watchPlaces', []).filter((w) => Number.isFinite(w.lat) && Number.isFinite(w.lon)).slice(0, 3), [])
   const pts = useMemo(() => (Array.isArray(crossings.data?.features) ? crossings.data!.features : []).flatMap((f) => {
@@ -201,6 +206,7 @@ export default function Drive() {
                         {h.kind === 'report' && <span className="ms-2 rounded-sm border border-dashed border-ui px-1.5 text-caption font-medium text-muted">{t('p3.drive.reportTag')}</span>}
                       </p>
                       <p className="text-body-sm text-ink">{hazardReason(bk, h)}{h.kind === 'report' && <span className="text-muted"> {t('p3.drive.unverified')}</span>}</p>
+                      {h.kind === 'report' && h.report_id && <VoteButtons id={h.report_id} />}
                       {h.kind !== 'report' && Number.isFinite(h.lat) && Number.isFinite(h.lon) && <button type="button" className="text-body-sm text-brand underline" onClick={() => setPoster({ name: h.name, lat: h.lat, lon: h.lon })}>{t('poster.act')}</button>}
                       {h.kind !== 'report' && (crossings.data?.features ?? []).find((f) => f?.properties?.id === h.crossing_id)?.properties?.sources?.slice(0, 1).map((s) => <SourceLink key={s} href={s} />)}
                     </div>
@@ -219,12 +225,14 @@ export default function Drive() {
       <ParkCard />
 
       {crossings.error && <ErrorBox error={crossings.error} onRetry={crossings.reload} />}
+      <WarningsBar data={area} on={warnOn} onChange={setWarnOn} />
       <Map label={t('p3.drive.mapLabel')} bounds={bounds} height="h-80 md:h-[440px]" loading={busy || crossings.loading}
         legend={<>
           <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-3 rounded-full" style={{ background: cHigh }} />{t('p3.drive.legendHigh')}</span>
           <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-3 rounded-full" style={{ background: cMed }} />{t('p3.drive.legendMed')}</span>
           <span className="inline-flex items-center gap-1.5"><TriangleAlert aria-hidden size={14} className="text-danger" />{t('p3.drive.legendHaz')}</span>
         </>}>
+        <WarningsMapLayer data={area} on={warnOn} />
         {pts.map(({ p, lat, lon }) => (
           <CircleMarker key={p.id} center={[lat, lon]} radius={6}
             pathOptions={{ color: cRing, weight: 1.5, fillColor: p.risk === 'high' ? cHigh : cMed, fillOpacity: 0.9 }}>

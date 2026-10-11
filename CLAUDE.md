@@ -147,6 +147,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Cycle 30:** `/parking/check` adds `headline_code`, `detail_code`, `limits_code`, reasons `{code, params}` (frontend renders t(code), English text is fallback).
 
+**Cycle 32 additions:** `/ask` + `/ask/stream` final add `trace:{intent, route:"prefetch"|"graph"|"cache"|"template", cache_hit, retrieved[{title,source,score?}], tools[{name,ms,source}], answer{by,ms}, total_ms}` (no extra LLM calls; tool source = official dataset per tool); `/rain24` adds `past{available,last24_in,last72_in,peak_hour,source,source_url,gauge_url}` (Open-Meteo, model-estimated); GET `/alerts/area?bbox=` → GeoJSON of NWS alerts with polygons + `zone_only[]` + `meta`; POST `/reports/{id}/vote {still_there:bool}` → `{id,confirms,clears,last_vote_at,cleared}` (table report_votes); GET `/reports` defaults to last 6 h (`since_hours` ≤168), items add confirms/clears/cleared; route-check ignores reports with clears≥2 and clears>confirms; POST /reports + votes rate-limited (RATE_REPORTS=20/min).
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

@@ -8,6 +8,7 @@ import { easyT, useEasy } from '../easyread/easyRead'
 import { cssVar, gaugeLabelKey, gaugeLevel, LEVEL_VAR, maxLevel, type Level } from '../../lib/levels'
 import { alertLevel, fill, isFloodAlert, milesBetween, SRC, timeOf, type Src } from '../../lib/summary'
 import { Map } from '../maps'
+import { useAreaAlerts, useWarningsOn, WarningsBar, WarningsMapLayer } from '../WarningsLayer'
 import Sparkline from '../Sparkline'
 import { Button, Card, Disclosure, ErrorBox, Freshness, GaugeChips, LoadingText, RiskBadge, Sheet, Skeleton, SourceLink, StatTile, StatusBadge } from '../ds'
 
@@ -105,6 +106,8 @@ export function LiveConditions({ title, loc, risk, alerts, outlook, updatedAt, o
   const [easy] = useEasy(); const t = (k: string) => easyT(t0, k, easy)
   const [read, setRead] = useState<Alert | null>(null)
   const [map, setMap] = useState(false)
+  const area = useAreaAlerts(loc)
+  const [warnOn, setWarnOn] = useWarningsOn(area)
   const all = (alerts.data?.alerts ?? []).filter((a) => a && typeof a.event === 'string')
   const flood = all.filter((a) => isFloodAlert(a.event))
   const other = all.filter((a) => !isFloodAlert(a.event))
@@ -180,8 +183,10 @@ export function LiveConditions({ title, loc, risk, alerts, outlook, updatedAt, o
             </Button>
             {map && loc && (
               <div className="mt-2">
+                <WarningsBar data={area} on={warnOn} onChange={setWarnOn} />
                 <Map label={t('live.mapLabel')} height="h-60" center={[loc.lat, loc.lon]}
                   bounds={bounds}>
+                  <WarningsMapLayer data={area} on={warnOn} />
                   <CircleMarker center={[loc.lat, loc.lon]} radius={9} pathOptions={{ color: '#fff', weight: 3, fillColor: cssVar('--brand', '#0B5CAD'), fillOpacity: 1 }}>
                     <Tooltip>{t('live.you')}</Tooltip>
                   </CircleMarker>

@@ -8,7 +8,7 @@ import re
 import time
 from typing import Any, AsyncIterator
 
-from . import cache, citations, graph, rag, routing, telemetry
+from . import cache, citations, graph, rag, routing, telemetry, trace
 from . import config as _cfg
 from .config import (chat_models, complex_models, gemini_key, gemini_keys, is_model_not_found, is_quota_error, live,
                      mark_dead, mark_exhausted, pairs, should_rotate, voice_models)
@@ -366,6 +366,7 @@ def _debug_evidence(s: dict) -> list[str]:
 
 async def stream_ask(question: str, lang: str = "en", lat=None, lon=None, history=None, mode=None) -> AsyncIterator[str]:
     t0 = time.perf_counter()
+    col = trace.begin()
     lang = lang or "en"
     hist = graph.clean_history(history)
     first_ms = None
@@ -373,12 +374,15 @@ async def stream_ask(question: str, lang: str = "en", lat=None, lon=None, histor
     def ms() -> int:
         return int((time.perf_counter() - t0) * 1000)
 
+    s_ref: list = []
+
     def final(answer, sources, used, by, warnings=None):
         cit = citations.attach({"answer": answer, "sources": sources}, template=by == "template")
         answer = cit["answer"]
         return sse({"type": "final", "answer": answer, "sources": sources, "tools_used": used, "generated_by": by,
                     "citations": cit["citations"], "uncited": cit["uncited"],
                     **({"warnings": warnings} if warnings else {}),
+                    "trace": trace.build(col, by, (s_ref[0].get("context") if s_ref else None)),
                     "timings": {"first_speak_ms": first_ms if first_ms is not None else ms(), "total_ms": ms()}})
 
     def speak(text):
@@ -389,6 +393,7 @@ async def stream_ask(question: str, lang: str = "en", lat=None, lon=None, histor
 
     try:
         s = _state(question, lang, lat, lon, hist, True)
+        s_ref.append(s)
         danger = bool({"emergency", "street_flood"} & set(s["intents"]))
         if "street_flood" in s["intents"]:  # canned multilingual safety answer, same as /ask
             telemetry.set(route="canned")
@@ -496,7 +501,10 @@ async def _template_ask(s: dict, results: dict, used: list, warning: str | None,
 
 async def ask_once(*a, **kw) -> dict:
     """ask_once_inner + per-sentence citations (`citations`, `uncited`) validated against `sources`."""
+    col = trace.begin()
     res = await _ask_once(*a, **kw)
+    if isinstance(res, dict):
+        res["trace"] = trace.build(col, res.get("generated_by", "template"))
     if isinstance(res, dict) and res.get("answer"):
         citations.attach(res, template=res.get("generated_by") == "template")
         if res["uncited"] and res.get("generated_by") == "gemini":

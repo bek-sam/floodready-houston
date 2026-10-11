@@ -19,6 +19,26 @@ def report_counts(kind, depth_in) -> bool:
     return kind in COUNTING_KINDS and (depth_in is None or depth_in > 0)
 
 
+def vote_counts(session, ids: list[str]) -> dict[str, dict]:
+    """{report_id: {confirms, clears, last_vote_at}} from the report_votes table (missing ids -> zeros)."""
+    out: dict[str, dict] = {}
+    if not ids:
+        return out
+    from app.db import ReportVote
+    for v in session.query(ReportVote).filter(ReportVote.report_id.in_(ids)).all():
+        c = out.setdefault(v.report_id, {"confirms": 0, "clears": 0, "last_vote_at": None})
+        c["confirms" if v.still_there else "clears"] += 1
+        ts = v.created_at.isoformat() if v.created_at else None
+        if ts and (c["last_vote_at"] is None or ts > c["last_vote_at"]):
+            c["last_vote_at"] = ts
+    return out
+
+
+def is_cleared(counts: dict | None) -> bool:
+    c = counts or {}
+    return c.get("clears", 0) >= 2 and c.get("clears", 0) > c.get("confirms", 0)
+
+
 def recent_reports() -> list[dict]:
     """Counting community reports from the last REPORT_MAX_AGE_H hours (empty list if the DB is unavailable)."""
     from datetime import datetime, timedelta, timezone
@@ -27,6 +47,7 @@ def recent_reports() -> list[dict]:
         cutoff = datetime.now(timezone.utc) - timedelta(hours=REPORT_MAX_AGE_H)
         with get_session() as s:
             rows = s.query(Report).order_by(Report.created_at.desc()).limit(500).all()
+            votes = vote_counts(s, [r.id for r in rows])
             out = []
             for r in rows:
                 ts = r.created_at
@@ -34,8 +55,9 @@ def recent_reports() -> list[dict]:
                     continue
                 if ts.tzinfo is None:
                     ts = ts.replace(tzinfo=timezone.utc)
-                if ts >= cutoff and report_counts(r.kind, r.depth_in):
-                    out.append({"lat": r.lat, "lon": r.lon, "kind": r.kind, "depth_in": r.depth_in,
+                vc = votes.get(r.id) or {"confirms": 0, "clears": 0, "last_vote_at": None}
+                if ts >= cutoff and report_counts(r.kind, r.depth_in) and not is_cleared(vc):
+                    out.append({"id": r.id, "confirms": vc["confirms"], "clears": vc["clears"], "lat": r.lat, "lon": r.lon, "kind": r.kind, "depth_in": r.depth_in,
                                 "note": r.note, "created_at": ts.isoformat()})
             return out
     except Exception:
@@ -110,6 +132,7 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
                             "reason_code": ("route.rep.dn" if rep.get("note") else "route.rep.d") if depth is not None
                             else ("route.rep.n" if rep.get("note") else "route.rep"),
                             "reason_params": {"depth": f"{depth:g}" if depth is not None else "", "note": rep.get("note") or ""},
+                            "report_id": rep.get("id"), "confirms": rep.get("confirms", 0), "clears": rep.get("clears", 0),
                             "reason": "Community report" + (f": about {depth:g} in of water" if depth is not None else "")
                             + (f" ({rep['note']})" if rep.get("note") else "")})
             if depth is not None and depth >= HIGH_DEPTH_IN:

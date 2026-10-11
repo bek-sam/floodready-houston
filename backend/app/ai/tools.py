@@ -10,7 +10,7 @@ from datetime import date
 
 from langchain_core.tools import tool
 
-from . import rag
+from . import rag, trace
 
 
 def _plain(x):
@@ -137,7 +137,31 @@ async def _invoke(t, args):
         return {"error": "unavailable"}
 
 
+# Primary data source per tool, shown in the Ask trace (falls back to the first source in the result).
+TOOL_SOURCE = {
+    "get_risk": "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28",
+    "get_alerts": "https://api.weather.gov/alerts/active",
+    "check_route": "https://router.project-osrm.org",
+    "insurance_countdown": "https://www.floodsmart.gov",
+    "get_flood_history": "https://water.noaa.gov",
+    "get_zip_insurance": "https://www.fema.gov/about/openfema/data-sets",
+    "get_medical": "https://data.cms.gov/provider-data/dataset/23ew-n7w9",
+}
+
+
 async def run_tool(name: str, args: dict):
+    t0 = time.perf_counter()
+    r = await _run_tool(name, args)
+    try:
+        from .graph import _tool_sources
+        src = sorted(_tool_sources(r))
+        trace.add_tool(name, (time.perf_counter() - t0) * 1000, TOOL_SOURCE.get(name) or (src[0] if src else None))
+    except Exception:  # noqa: BLE001  (tracing must never break an answer)
+        pass
+    return r
+
+
+async def _run_tool(name: str, args: dict):
     t = TOOLS_BY_NAME.get(name)
     if t is None:
         return {"error": "unknown tool"}

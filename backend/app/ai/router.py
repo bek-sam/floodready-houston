@@ -59,6 +59,8 @@ async def ask(body: AskBody):
         telemetry.set(route="error")
         return {"answer": "Sorry, I could not answer right now. In an emergency, Call 911. Not official guidance.",
                 "sources": [], "generated_by": "template", "tools_used": [],
+                "trace": {"intent": "general", "route": "template", "cache_hit": "none", "retrieved": [], "tools": [],
+                          "answer": {"by": "template", "ms": 0}, "total_ms": 0},
                 **({"speak": "Sorry, I could not answer right now. In an emergency, call 911."} if body.mode == "voice" else {})}
     finally:
         telemetry.finish(tr)

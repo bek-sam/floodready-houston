@@ -3,6 +3,7 @@ import { Copy, Square, ThumbsDown, ThumbsUp, Volume2 } from 'lucide-react'
 import { useApp } from '../../ctx'
 import { useDemoMode } from '../../state/place'
 import type { Ask } from '../../api'
+import TraceStepper from './TraceStepper'
 import { Button, Disclosure, ErrorBox, IconButton, SourceLink } from '../ds'
 
 export interface Msg { role: 'user' | 'bot'; text: string; res?: Ask; error?: boolean }
@@ -114,6 +115,7 @@ function Bot({ m, i, speakingIdx, onListen, question }: { m: Msg; i: number; spe
         </p>
       )}
       {res.sources.length > 0 && <div className="mt-2"><Sources list={res.sources} /></div>}
+      <TraceStepper trace={res.trace} />
       <Disclosure className="mt-2 shadow-none" title={<span className="text-body-sm font-medium text-muted">{t('p4.how')}</span>}>
         <p className="text-body-sm text-muted">{by}</p>
         {demo && <p className="mt-1 text-caption text-muted">via {res.generated_by}{tools.length ? ` · ${tools.join(', ')}` : ''}</p>}

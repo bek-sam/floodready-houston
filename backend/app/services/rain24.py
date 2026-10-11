@@ -87,8 +87,53 @@ def build(qpf: list[dict], pop: list[dict]) -> dict:
             "max_pop_pct": max_pop, "action": action}
 
 
+OM = "https://api.open-meteo.com/v1/forecast"
+PAST_SOURCE = "Open-Meteo (model-estimated, not a rain gauge)"
+PAST_URL = "https://open-meteo.com/en/docs"
+GAUGE_URL = "https://www.harriscountyfws.org"
+
+
+def build_past(hourly: dict, now: datetime) -> dict:
+    """Sum hourly precipitation (inches, UTC) ending at the current hour. Pure; raises on bad shape."""
+    times, vals = hourly["time"], hourly["precipitation"]
+    cur = now.astimezone(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    pts = []
+    for t, v in zip(times, vals):
+        if v is None:
+            continue
+        dt = datetime.fromisoformat(t).replace(tzinfo=timezone.utc)
+        if dt <= cur:
+            pts.append((dt, float(v)))
+    if not pts:
+        raise ValueError("no past hours")
+    l24 = sum(v for dt, v in pts if dt > cur - timedelta(hours=24))
+    l72 = sum(v for dt, v in pts if dt > cur - timedelta(hours=72))
+    peak = max(pts, key=lambda p: p[1])
+    return {"available": True, "last24_in": round(l24, 2), "last72_in": round(l72, 2),
+            "peak_hour": {"t": peak[0].isoformat(), "in": round(peak[1], 2)} if peak[1] > 0 else None,
+            "source": PAST_SOURCE, "source_url": PAST_URL, "gauge_url": GAUGE_URL}
+
+
+async def get_past(lat: float, lon: float, now: datetime) -> dict:
+    bad = {"available": False, "last24_in": None, "last72_in": None, "peak_hour": None,
+           "source": PAST_SOURCE, "source_url": PAST_URL, "gauge_url": GAUGE_URL}
+    try:
+        d = await get_json(OM, {"latitude": f"{lat:.3f}", "longitude": f"{lon:.3f}", "hourly": "precipitation",
+                                "past_days": 3, "forecast_days": 1, "precipitation_unit": "inch",
+                                "timezone": "UTC"}, ttl=900)
+        return build_past(d["hourly"], now)
+    except Exception:
+        return bad
+
+
 async def get_rain24(lat: float, lon: float) -> dict:
     now = datetime.now(timezone.utc)
+    out = await _forecast(lat, lon, now)
+    out["past"] = await get_past(lat, lon, now)
+    return out
+
+
+async def _forecast(lat: float, lon: float, now: datetime) -> dict:
     unavailable = {"available": False, "windows": [], "total_inches": None, "wettest_window": None, "pop_hourly": [],
                    "max_pop_pct": None, "action": {"show": False, "text": None, "window_start": None},
                    "source": SOURCE, "source_url": SOURCE_URL, "note": NOTE,

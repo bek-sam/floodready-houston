@@ -10,6 +10,7 @@ import { Map } from '../components/maps'
 import Report311 from '../components/civic311/Report311'
 import ClaimsHelper from '../components/claims/ClaimsHelper'
 import ReportSheet from '../components/ReportSheet'
+import VoteButtons from '../components/VoteButtons'
 import { useAsync, Warnings } from '../components/ui'
 import { Card, Checkbox, Disclosure, EmptyState, ErrorBox, PageHeader, SkeletonCard, SourceLink } from '../components/ds'
 
@@ -170,6 +171,7 @@ export default function Recover() {
               <li key={r.id ?? i} className="py-2">
                 <span className="font-semibold text-ink">{kindLabel(r.kind)}</span>{r.depth_in != null && ` · ${r.depth_in} ${t('c6.in')}`}{r.note && ` · ${r.note}`}
                 {r.created_at && !isNaN(Date.parse(r.created_at)) && <span className="block text-caption text-muted">{new Date(r.created_at).toLocaleString()}</span>}
+                <VoteButtons id={r.id} confirms={r.confirms} clears={r.clears} lastVoteAt={r.last_vote_at} />
               </li>
             ))}
           </ul>
@@ -180,7 +182,7 @@ export default function Recover() {
               <Map label={t('p5.rec.reportsMap')} center={[loc.lat, loc.lon]} height="h-64">
                 {near.map((r, i) => (
                   <CircleMarker key={r.id ?? i} center={[r.lat, r.lon]} radius={8} pathOptions={{ color: '#fff', weight: 2, fillColor: cssVar('--danger'), fillOpacity: 0.9 }}>
-                    <Popup><b>{kindLabel(r.kind)}</b>{r.depth_in != null && ` · ${r.depth_in} ${t('c6.in')}`}<br />{r.note}</Popup>
+                    <Popup><b>{kindLabel(r.kind)}</b>{r.depth_in != null && ` · ${r.depth_in} ${t('c6.in')}`}<br />{r.note}<VoteButtons id={r.id} confirms={r.confirms} clears={r.clears} lastVoteAt={r.last_vote_at} /></Popup>
                   </CircleMarker>
                 ))}
               </Map>

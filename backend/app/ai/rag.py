@@ -5,6 +5,7 @@ import re
 import numpy as np
 from rank_bm25 import BM25Okapi
 
+from . import trace as _trace
 from .config import BACKEND, ROOT, database_url, sqlalchemy_url, embed_model, gemini_key
 
 EMBED_DIM = 768
@@ -285,7 +286,9 @@ def get_index() -> Index:
 
 def search(query: str, k: int = 4) -> list[dict]:
     try:
-        return get_index().search(query, k)
+        out = get_index().search(query, k)
+        _trace.add_retrieved(out)
+        return out
     except Exception:
         return []
 
