@@ -260,4 +260,10 @@ export const es: Dict = {
   'empty.body': 'Revisaremos los mapas de FEMA, la inundación de Harvey, los medidores cercanos y las alertas para esa dirección.',
   'empty.cta': 'Elegir mi lugar', 'empty.sample': 'Probar una dirección de ejemplo',
   'empty.sampleFail': 'No pudimos cargar la dirección de ejemplo. Intente de nuevo.',
+  'sum.exp.evac': 'En la zona de evacuación por huracán {zone}.',
+  'sum.exp.evacSurge': 'En la zona de evacuación por huracán {zone}, con hasta {ft} pies de marejada ciclónica mapeada.',
+  'chip.evac': 'Zona de evacuación por huracán {zone}',
+  'chip.surge': 'Hasta {ft} pies de marejada (Cat {cat}+)',
+  'ex.evac': 'Este lugar está en la zona de evacuación por huracán {zone} del Condado de Harris. Las zonas se usan para órdenes de evacuación escalonadas: sigue a las autoridades locales.',
+  'ex.surge': 'Los mapas de NOAA muestran hasta {ft} pies de marejada sobre el suelo aquí en un huracán de Categoría {cat}+ (peor escenario).'
 }

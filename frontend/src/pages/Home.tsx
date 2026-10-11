@@ -10,7 +10,7 @@ import { SummaryHero } from '../components/home/SummaryHero'
 import { TopActions } from '../components/home/TopActions'
 import { LiveConditions } from '../components/home/LiveConditions'
 import { FloodHistoryList, PlaceProfile } from '../components/home/PlaceProfile'
-import EvacSurgeBody, { useEvac } from '../components/evac/EvacSurgeCard'
+import EvacSurgeBody, { evacShow, useEvac } from '../components/evac/EvacSurgeCard'
 import HwmBody, { hasMarks, useHwm } from '../components/hwm/HwmCard'
 import CoastalChip from '../components/coastal/CoastalChip'
 import RentBuy from '../components/RentBuy'
@@ -199,7 +199,7 @@ export default function Home() {
             preview={h ? (histN ? fill(t, 'det.historyPreview', { n: histN }) : t('det.historyNone')) : inputs.hist.failed ? t('live.unavail') : t('sum.checking')}>
             {h ? <FloodHistoryList h={h} /> : inputs.hist.failed ? <ErrorBox error={t('live.unavail')} onRetry={d.refresh} /> : <Busy />}
           </Disclosure>
-          {evac && (evac.zone || evac.surge) && (
+          {evacShow(evac) && evac && (
             <Disclosure id="evac" icon={<Waves size={20} />} title={t('p10.det.evac')} preview={t('p10.det.evacPrev')}><EvacSurgeBody d={evac} /></Disclosure>
           )}
           {hasMarks(hwm) && (

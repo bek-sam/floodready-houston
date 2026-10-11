@@ -1,7 +1,22 @@
 const pad = (n: number) => String(n).padStart(2, '0')
 const ymd = (d: Date) => `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}`
 const addDays = (d: Date, n: number) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + n))
-const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
+const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
+
+/** RFC 5545 3.1: fold content lines longer than 75 octets (UTF-8) with CRLF + space; never split a character. */
+export function fold(line: string): string {
+  const enc = new TextEncoder()
+  const out: string[] = []
+  let cur = '', n = 0, limit = 75
+  for (const ch of line) {
+    const b = enc.encode(ch).length
+    if (n + b > limit) { out.push(cur); cur = ' '; n = 1; limit = 75 }
+    cur += ch; n += b
+  }
+  out.push(cur)
+  return out.join('\r\n')
+}
+export const icsEscape = esc
 
 export interface SeasonText { start: string; startD: string; ins: string; insD: string; bag: string; bagD: string; stear: string; stearD: string; monthly: string; monthlyD: string }
 
@@ -35,5 +50,5 @@ export function buildIcs(tx: SeasonText, now = new Date()): string {
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${esc(e.summary)}`, 'TRIGGER:-PT0M', 'END:VALARM', 'END:VEVENT')
   }
   lines.push('END:VCALENDAR')
-  return lines.join('\r\n')
+  return lines.map(fold).join('\r\n') + '\r\n'
 }

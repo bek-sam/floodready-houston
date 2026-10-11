@@ -1,7 +1,9 @@
 """Galveston tide anomaly (NOAA CO-OPS) + NHC active Atlantic storms. Cached 8 min."""
 import asyncio
+import json
 from datetime import datetime, timedelta, timezone
 
+from app.services.data import haversine_m
 from app.services.http import get_json
 
 STATION = "8771450"
@@ -58,15 +60,24 @@ def _tide(obs, pred) -> dict:
     return t
 
 
+GALV = (29.31, -94.79)
+
+
 def _storms(d) -> list[dict]:
+    """Only storms relevant to the Texas/Gulf coast: Gulf/W-Caribbean box, or advisory text naming Texas."""
     out = []
     for s in (d or {}).get("activeStorms") or []:
         if not str(s.get("id", "")).lower().startswith("al"):
             continue  # Atlantic basin only
         lat, lon = _num(s.get("latitudeNumeric")), _num(s.get("longitudeNumeric"))
-        gulf = lat is not None and lon is not None and 17 <= lat <= 32 and -100 <= lon <= -80
+        in_box = lat is not None and lon is not None and 18 <= lat <= 31 and -98 <= lon <= -80
+        txt = json.dumps({k: v for k, v in s.items() if k not in ("id", "binNumber")}).lower()
+        texas = "texas" in txt and any(w in txt for w in ("watch", "warning"))
+        if not (in_box or texas):
+            continue
+        dist = round(haversine_m(GALV[0], GALV[1], lat, lon) / 1609.344) if lat is not None and lon is not None else None
         out.append({"name": s.get("name"), "type": s.get("classification"), "lat": lat, "lon": lon,
-                    "gulf_of_mexico": gulf,
+                    "gulf_of_mexico": in_box, "relevant": True, "distance_to_galveston_mi": dist,
                     "advisory_url": (s.get("publicAdvisory") or {}).get("url") or "https://www.nhc.noaa.gov/"})
     return out
 

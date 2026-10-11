@@ -5,10 +5,12 @@ import { api, errText, type DemoRoute, type LatLon, type RouteCheck, type WatchP
 import { useApp } from '../ctx'
 import { Map } from '../components/maps'
 import { speak, stopSpeaking } from '../components/speak'
+import PosterSheet from '../components/poster/PosterSheet'
 import ReportSheet from '../components/ReportSheet'
 import { useAsync, Warnings } from '../components/ui'
 import { Button, Card, DemoPanel, Disclosure, ErrorBox, Freshness, IconButton, PageHeader, RiskBadge, Skeleton, SourceLink, Switch, inputCls } from '../components/ds'
 import { cssVar, verdictLabelKey, verdictLevel } from '../lib/levels'
+import { parseHash } from '../components/shell/nav'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
 import { placeName, store, streetOf, usePlace, useDemoMode } from '../state/place'
 
@@ -31,6 +33,8 @@ export default function Drive() {
     // Alerts can hand over a destination ("Check a route here") through sessionStorage.
     const v = store.get(TO_KEY, true); store.set(TO_KEY, null, true)
     try { const p = JSON.parse(v || 'null'); if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)) return { text: p.label, ll: { lat: p.lat, lon: p.lon } } } catch { /* ignore */ }
+    const m = /^to=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(parseHash().sub ?? '')
+    if (m && Math.abs(+m[1]) <= 90 && Math.abs(+m[2]) <= 180) return { text: `${m[1]}, ${m[2]}`, ll: { lat: +m[1], lon: +m[2] } }
     return EMPTY
   })
   // Judge step 2: preselect the Allen Parkway sample route with the storm simulation on (demo mode only).
@@ -45,6 +49,7 @@ export default function Drive() {
   const [cached, setCached] = useState<Saved | null>(() => store.json<Saved | null>(LAST, null))
   const [speaking, setSpeaking] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
+  const [poster, setPoster] = useState<{ name: string; lat: number; lon: number } | null>(null)
   const head = useRef<HTMLHeadingElement>(null)
 
   // My place follows the saved place until the user edits From.
@@ -188,6 +193,7 @@ export default function Drive() {
                         {h.kind === 'report' && <span className="ms-2 rounded-sm border border-dashed border-ui px-1.5 text-caption font-medium text-muted">{t('p3.drive.reportTag')}</span>}
                       </p>
                       <p className="text-body-sm text-ink">{h.reason}{h.kind === 'report' && <span className="text-muted"> {t('p3.drive.unverified')}</span>}</p>
+                      {h.kind !== 'report' && Number.isFinite(h.lat) && Number.isFinite(h.lon) && <button type="button" className="text-body-sm text-brand underline" onClick={() => setPoster({ name: h.name, lat: h.lat, lon: h.lon })}>{t('poster.act')}</button>}
                       {h.kind !== 'report' && (crossings.data?.features ?? []).find((f) => f?.properties?.id === h.crossing_id)?.properties?.sources?.slice(0, 1).map((s) => <SourceLink key={s} href={s} />)}
                     </div>
                   </li>
@@ -235,6 +241,7 @@ export default function Drive() {
           </ul>
         </Disclosure>
       )}
+      {poster && <PosterSheet {...poster} onClose={() => setPoster(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} />
     </div>
   )

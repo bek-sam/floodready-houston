@@ -84,6 +84,7 @@ function baseExposure(i: SummaryInputs): ExposureResult {
   if (r.low_ground === true) return { exposure: 'elevated', final: true, reason: { key: 'sum.exp.low' } }
   if (r.reservoir_area) return { exposure: 'elevated', final: true, reason: { key: 'sum.exp.reservoir' } }
   if (!hist.done) return { exposure: 'unknown', final: false, reason: { key: 'sum.checking' } }
+  if (hist.failed) return { exposure: 'unknown', final: true, reason: { key: 'sum.exp.histUnknown' } }
   const hit = historyHit(hist.data)
   if (hit) return { exposure: 'elevated', final: true, reason: { key: 'sum.exp.gauge', vars: { event: hit.event, status: '@gauge.' + hit.status } } }
   return { exposure: 'lower', final: true, reason: { key: 'sum.exp.lower' } }
@@ -95,12 +96,22 @@ export function surgeInfo(e: Evac | null | undefined): SurgeInfo | null {
   if (!e?.surge) return null
   let maxFt = 0, plus = false, minCat = 0
   for (let n = 1; n <= 5; n++) {
-    const v = e.surge['cat' + n]
-    if (!v) continue
+    const raw = e.surge['cat' + n] as unknown
+    if (!raw) continue
+    if (typeof raw === 'object') { // new shape {min_ft, max_ft|null, label}
+      const o = raw as { min_ft?: number | null; max_ft?: number | null; label?: string }
+      const open = o.max_ft == null
+      const top = Number(open ? o.min_ft : o.max_ft)
+      if (!Number.isFinite(top)) continue
+      // minCat = lowest category at which the deepest surge appears (so "9+ ft" pairs with Cat 3+, not Cat 2+)
+      if (top > maxFt || (top === maxFt && open && !plus)) { maxFt = top; plus = open; minCat = n }
+      continue
+    }
+    const v = String(raw)
     const nums = (v.match(/\d+(?:\.\d+)?/g) ?? []).map(Number)
-    if (!minCat) minCat = n
     const top = nums.length ? Math.max(...nums) : 0
-    if (top > maxFt || (top === maxFt && /greater|more|over|above \d/i.test(v))) { maxFt = top; plus = /greater|more|over/i.test(v) }
+    const isPlus = /greater|more|over/i.test(v)
+    if (top > maxFt || (top === maxFt && isPlus && !plus)) { maxFt = top; plus = isPlus; minCat = n }
   }
   return minCat && maxFt > 0 ? { maxFt, plus, minCat } : null
 }
@@ -115,7 +126,7 @@ export function exposure(i: SummaryInputs): ExposureResult {
   const sg = surgeInfo(i.evac)
   const [level, key]: [Exposure, string] = zone === 'A' && sg && sg.maxFt >= 6 ? ['high', 'sum.exp.evacSurge'] : ['elevated', 'sum.exp.evac']
   if (EXP_RANK[base.exposure] >= EXP_RANK[level]) return base
-  return { exposure: level, final: true, reason: { key, vars: { zone, ft: sg ? String(sg.maxFt) : '' } } }
+  return { exposure: level, final: true, reason: { key, vars: { zone, ft: sg ? sg.maxFt + (sg.plus ? '+' : '') : '' } } }
 }
 
 // ---------- Why chips (in the order of the rules table) ----------

@@ -57,6 +57,25 @@ def _zone_letter(raw: str | None):
     return (m.group(1).upper() if len(m.group(1)) == 1 else m.group(1).title()) if m else raw.strip()
 
 
+def _range(txt):
+    """NHC class text -> {min_ft, max_ft|null, label}; open-ended ranges have max_ft null and a "N+ ft" label."""
+    if not txt:
+        return None
+    t = str(txt).lower()
+    m = re.search(r"(\d+)", t)
+    n = int(m.group(1)) if m else None
+    if n is None:
+        return {"min_ft": None, "max_ft": None, "label": str(txt)}
+    if re.search(r"greater|more|over", t):
+        return {"min_ft": n, "max_ft": None, "label": f"{n}+ ft"}
+    if re.search(r"less|under|below", t):
+        return {"min_ft": 0, "max_ft": n, "label": f"under {n} ft"}
+    r = re.findall(r"\d+", t)
+    if len(r) >= 2:
+        return {"min_ft": int(r[0]), "max_ft": int(r[1]), "label": f"{r[0]}-{r[1]} ft"}
+    return {"min_ft": n, "max_ft": n, "label": f"{n} ft"}
+
+
 def _build(zst, zattrs, sres) -> dict:
     surge_ok = all(s == "ok" for s, _ in sres.values())
     surge = {k: (v if s == "ok" else None) for k, (s, v) in sres.items()}
@@ -78,8 +97,9 @@ def _build(zst, zattrs, sres) -> dict:
         "zip": (zattrs or {}).get("Zip5digit"),
         "area": (zattrs or {}).get("Name"),
         "county": (zattrs or {}).get("County"),
-        "zone_status": "unavailable" if zst == "error" else ("found" if zattrs else "none"),
+        "zone_status": "unavailable" if zst == "error" else ("in_zone" if zone else "not_in_zone"),
         "surge": surge,
+        "surge_ranges": {k: _range(v) for k, v in surge.items()},
         "surge_status": "unavailable" if not surge_ok else ("mapped" if in_surge else "none"),
         "guidance": GUIDANCE,
         "surge_note": SURGE_NOTE,

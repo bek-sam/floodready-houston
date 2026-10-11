@@ -234,12 +234,12 @@ export const api = {
   },
 }
 
-export interface Evac { zone: 'A' | 'B' | 'C' | null; zone_label?: string | null; surge?: Record<string, string | null> | null; sources?: string[]; meta?: Meta }
-export interface HwmMark { id: string | number; distance_mi: number; height_above_ground_ft: number | null; elevation_ft: number | null; site_desc: string | null; event: string | null; url: string | null }
-export interface Hwm { marks: HwmMark[]; nearest_depth_ft: number | null; source?: string; meta?: Meta }
+export interface Evac { zone: 'A' | 'B' | 'C' | null; zone_status?: 'in_zone' | 'not_in_zone' | 'unavailable' | 'found' | 'none' | string; surge_status?: string; notes?: string[] | string | null; zone_label?: string | null; surge?: Record<string, string | null> | null; sources?: string[]; meta?: Meta }
+export interface HwmMark { dry?: boolean; id: string | number; distance_mi: number; height_above_ground_ft: number | null; elevation_ft: number | null; site_desc: string | null; event: string | null; url: string | null }
+export interface Hwm { marks: HwmMark[]; wet_marks?: HwmMark[]; dry_marks?: HwmMark[]; nearest_depth_ft: number | null; source?: string; meta?: Meta }
 export interface Coastal {
   tide: { station: string; observed_ft: number | null; predicted_ft: number | null; anomaly_ft: number | null; as_of: string | null } | null
-  active_storms: { name: string; type: string; advisory_url: string | null }[]; meta?: Meta
+  active_storms: { name: string; type: string; advisory_url: string | null; relevant?: boolean; gulf_of_mexico?: boolean }[]; meta?: Meta
 }
 /** Cycle 20 endpoints: any failure (404, offline) resolves to null so the card is simply hidden. */
 const soft = <T,>(path: string) => req<T>(path).catch(() => null as T | null)

@@ -10,7 +10,7 @@ export default function CoastalChip() {
   const [d, setD] = useState<Coastal | null>(null)
   useEffect(() => { let live = true; apiC20.coastal().then((c) => { if (live) setD(c) }); return () => { live = false } }, [])
   const a = d?.tide?.anomaly_ft
-  const storms = (d?.active_storms ?? []).filter((s) => s && s.name)
+  const storms = (d?.active_storms ?? []).filter((s) => s && s.name && s.relevant !== false && s.gulf_of_mexico !== false)
   if (!d || (a == null && !storms.length)) return null
   const txt = a == null ? t('p10.tide.unavail')
     : t('p10.tide').replace('{ft}', (a >= 0 ? '+' : '') + a.toFixed(1))
@@ -20,7 +20,7 @@ export default function CoastalChip() {
       {storms.map((s) => (
         <p key={s.name} className="text-caption text-muted">
           {t('p10.storm').replace('{name}', s.name).replace('{type}', s.type || '')}
-          {s.advisory_url && /^https?:/.test(s.advisory_url) && <> · <a className="text-brand underline" href={s.advisory_url} target="_blank" rel="noreferrer">NHC</a></>}
+          {s.advisory_url && /^https?:/.test(s.advisory_url) && <> · <a className="text-brand underline" href={s.advisory_url} target="_blank" rel="noreferrer">{t('p10.nhc')}</a></>}
         </p>
       ))}
     </div>

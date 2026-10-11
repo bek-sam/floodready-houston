@@ -20,7 +20,8 @@ def test_hwm_snapshot_nearest(monkeypatch):
         {"id": 3, "lat": 31.0, "lon": -95.40, "h": 9.0, "elev": 1, "q": "Good", "desc": "Out", "date": "2017-09-10"}]})
     d = c.get("/api/hwm", params={"lat": 29.704, "lon": -95.40}).json()
     assert [m["id"] for m in d["marks"]] == [1, 2]
-    assert d["nearest_depth_ft"] == 3.2
+    assert d["nearest_depth_ft"] == 3.2 and d["wet_marks"] == 1 and d["dry_marks"] == 1
+    assert "with water above ground: 3.2 ft" in d["nearest_note"]
     assert "above ground at a surveyed point" in d["marks"][0]["note"] and "not your exact address" in d["marks"][0]["note"]
     assert "does not mean your address stayed dry" in d["marks"][1]["note"]
     assert d["meta"]["freshness"] == "historical" and d["meta"]["snapshot_date"] == "2026-10-11"
@@ -53,10 +54,13 @@ def test_coastal_normal(monkeypatch):
     _mock(monkeypatch, {"data": [{"t": now, "v": "3.0"}]}, {"predictions": [{"t": hr, "v": "2.6"}]},
           {"activeStorms": [{"id": "al092026", "name": "Isaias", "classification": "PTC", "latitudeNumeric": 25,
                              "longitudeNumeric": -90, "publicAdvisory": {"url": "https://nhc/x"}},
+                            {"id": "al102026", "name": "Remnant", "classification": "PTC", "latitudeNumeric": 35.0,
+                             "longitudeNumeric": -86.7},
                             {"id": "ep012026", "name": "Pacific", "classification": "TS"}]})
     d = c.get("/api/coastal").json()
     assert d["tide"]["anomaly_ft"] == 0.4 and d["tide"]["stale"] is False
-    assert [s["name"] for s in d["active_storms"]] == ["Isaias"] and d["active_storms"][0]["gulf_of_mexico"]
+    assert [s["name"] for s in d["active_storms"]] == ["Isaias"] and d["active_storms"][0]["relevant"]
+    assert 400 < d["active_storms"][0]["distance_to_galveston_mi"] < 700
     assert d["meta"]["freshness"] == "live"
 
 

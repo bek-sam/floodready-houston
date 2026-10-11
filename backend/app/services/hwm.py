@@ -21,9 +21,14 @@ def _load() -> dict:
     return _snap
 
 
+def _wet(m) -> bool:
+    h = m.get("h")
+    return isinstance(h, (int, float)) and h > 0
+
+
 def _note(h: float, mi: float) -> str:
     d = f"{mi:.1f} mi away"
-    if h <= 0:
+    if not h or h <= 0:
         return f"Water was at or below ground (0 ft) at a surveyed point {d} during Harvey. That does not mean your address stayed dry."
     return f"Water reached about {h:.1f} ft above ground at a surveyed point {d} during Harvey — not your exact address."
 
@@ -40,10 +45,20 @@ def nearby(lat: float, lon: float, radius_mi: float = 2.0, limit: int = 5) -> di
     out.sort(key=lambda t: t[0])
     marks = [{"id": m["id"], "distance_mi": round(mi, 2), "height_above_ground_ft": m["h"],
               "elevation_ft": m.get("elev"), "site_desc": m.get("desc"), "event": EVENT,
-              "quality": m.get("q"), "survey_date": m.get("date"),
+              "quality": m.get("q"), "survey_date": m.get("date"), "wet": _wet(m),
               "url": f"https://stn.wim.usgs.gov/STNServices/HWMs/{m['id']}.json",
               "note": _note(m["h"], mi)} for mi, m in out[:limit]]
-    return {"marks": marks, "nearest_depth_ft": marks[0]["height_above_ground_ft"] if marks else None,
-            "nearest_note": marks[0]["note"] if marks else f"No surveyed Harvey high-water mark within {radius_mi:g} mi. That does not mean the area stayed dry.",
+    wet_n = sum(1 for _, m in out if _wet(m))
+    first_wet = next(((mi, m) for mi, m in out if _wet(m)), None)
+    if first_wet:
+        mi, m = first_wet
+        depth, note = m["h"], f"Nearest surveyed high-water mark with water above ground: {m['h']:.1f} ft, {mi:.1f} mi away (Harvey). Not your exact address."
+    elif out:
+        depth, note = None, (f"No surveyed Harvey high-water mark with water above ground within {radius_mi:g} mi "
+                             f"({len(out)} dry or depth-not-recorded). That does not mean the area stayed dry.")
+    else:
+        depth, note = None, f"No surveyed Harvey high-water mark within {radius_mi:g} mi. That does not mean the area stayed dry."
+    return {"marks": marks, "nearest_depth_ft": depth, "nearest_note": note,
+            "wet_marks": wet_n, "dry_marks": len(out) - wet_n,
             "source": "USGS Short-Term Network (STN), Harvey event 180",
             "snapshot_date": snap.get("snapshot_date")}

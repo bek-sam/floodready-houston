@@ -4,6 +4,7 @@ import { apiC20, type Evac } from '../../api'
 import { useApp } from '../../ctx'
 import { store, usePlace } from '../../state/place'
 import { Button, Card, Checkbox, Field, Input, SourceLink } from '../ds'
+import { zoneState } from '../evac/EvacSurgeCard'
 import { bagItems } from './items'
 
 const DONE_KEY = 'floodready.gobag.v1'
@@ -34,7 +35,8 @@ export default function GoBag() {
   const toggle = (id: string, v: boolean) => { const n = { ...done, [id]: v }; setDone(n); store.set(DONE_KEY, JSON.stringify(n)) }
   const edit = (k: keyof CardData, v: string) => { const n = { ...card, [k]: v }; setCard(n); store.set(CARD_KEY, JSON.stringify(n)) }
   const doneN = items.filter((i) => done[i.id]).length
-  const zone = evac?.zone ? evac.zone_label || `${t('p10.zone')} ${evac.zone}` : evac ? t('p10.noZone') : t('p10.zoneUnknown')
+  const zs = evac ? zoneState(evac) : null
+  const zone = !evac ? t('p10.zoneUnknown') : zs === 'unavailable' ? t('p10.zoneUnavail') : zs === 'in' ? evac.zone_label || `${t('p10.zone')} ${evac.zone ?? ''}` : t('p10.noZone')
 
   return (
     <div className="space-y-4">
@@ -66,7 +68,7 @@ export default function GoBag() {
               <p>{place?.label ?? ''}</p>
               <p className="mt-1"><b>{t('p10.card.contacts')}:</b> {card.contacts || '________'}</p>
               <p><b>{t('p10.card.meds')}:</b> {card.meds || '________'}</p>
-              <p className="mt-1 font-semibold">STEAR stear.texas.gov · 211 · 311 · 911</p>
+              <p className="mt-1 font-semibold">{t('p10.card.stear')}</p>
             </section>
             <section className="fr-wallet rounded-lg border border-line bg-surface p-3 text-body-sm text-ink" aria-label={t('p10.card.back')}>
               <p className="text-caption font-semibold uppercase text-muted">{t('p10.card.back')}</p>

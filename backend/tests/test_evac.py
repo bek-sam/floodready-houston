@@ -32,6 +32,7 @@ def test_seabrook(client, monkeypatch):
     r = client.get("/api/evac", params={"lat": 29.564, "lon": -95.025}).json()
     assert r["zone"] == "A" and r["zip"] == "77586"
     assert r["surge"]["cat1"] is None and r["surge"]["cat3"].startswith("Greater than 6")
+    assert r["zone_status"] == "in_zone" and r["surge_ranges"]["cat3"] == {"min_ft": 6, "max_ft": None, "label": "6+ ft"}
     assert r["surge_status"] == "mapped" and "official" in r["guidance"].lower()
     assert r["meta"]["freshness"] == "live"
 
@@ -39,7 +40,7 @@ def test_seabrook(client, monkeypatch):
 def test_outside_coverage_is_null_with_note(client, monkeypatch):
     monkeypatch.setattr(evac_mod, "get_json", _fake([], {}))
     r = client.get("/api/evac", params={"lat": 29.6876, "lon": -95.4583}).json()
-    assert r["zone"] is None and r["zone_status"] == "none" and r["surge_status"] == "none"
+    assert r["zone"] is None and r["zone_status"] == "not_in_zone" and r["surge_status"] == "none"
     assert all(v is None for v in r["surge"].values()) and r["notes"]
 
 
