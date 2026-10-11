@@ -31,7 +31,7 @@ And the biggest killer isn't the house. 77 percent of Texas flood deaths came fr
 ### Slide 2: "What the research says"
 This isn't our opinion; it's the research.
 
-A peer-reviewed study of Harvey found that 81 percent of the deaths were drownings, mostly in and around vehicles. A UTHealth study found that 77 percent of Texas flood deaths came from driving into water, and Harris County leads the state.
+A peer-reviewed study of Harvey found that 81 percent of the deaths were drownings, "particularly in and around vehicles". A UTHealth study found that 77 percent of Texas flood deaths came from driving into water, and Harris County leads the state.
 
 Rice University found that the vast majority of at-risk homes have no flood insurance, and that if one storm shifts just a few miles, the number of flooded homes can grow from about 3,600 to more than 13,000. Rainfall rates in Harris County are up more than 30 percent, but the flood maps in force predate that. And the Army Corps has rated our two big reservoir dams at high risk of failure.
 
