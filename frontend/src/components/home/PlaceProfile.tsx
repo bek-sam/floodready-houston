@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
-import type { FloodHistory, Risk } from '../../api'
+import { useEffect, useState, type ReactNode } from 'react'
+import { apiC20, type FloodHistory, type Nri, type Risk } from '../../api'
 import { useApp } from '../../ctx'
 import { fill, NOAA_GAUGE, SRC } from '../../lib/summary'
 import { coded, useBk } from '../../lib/bk'
@@ -14,8 +14,39 @@ function Row({ k, children }: { k: string; children: ReactNode }) {
   )
 }
 
+/** FEMA National Risk Index chip for the census tract. Hidden when unavailable. */
+function NeighborhoodChip({ lat, lon }: { lat: number; lon: number }) {
+  const { t } = useApp()
+  const [n, setN] = useState<Nri | null>(null)
+  useEffect(() => {
+    let live = true
+    setN(null)
+    if (Number.isFinite(lat) && Number.isFinite(lon)) apiC20.nri({ lat, lon }).then((x) => { if (live) setN(x) }).catch(() => {})
+    return () => { live = false }
+  }, [lat, lon])
+  if (!n || n.available === false) return null
+  const rate = (v?: string | null) => {
+    const key = 'p26.nri.r.' + (v ?? '').toLowerCase().replace(/[^a-z]/g, '')
+    const txt = t(key)
+    return v && txt !== key ? txt : t('p26.nri.r.na')
+  }
+  const parts = [
+    n.inland_flood && fill(t, 'p26.nri.flood', { v: rate(n.inland_flood.rating) }),
+    n.resilience && fill(t, 'p26.nri.resl', { v: rate(n.resilience.rating) }),
+    n.social_vulnerability && fill(t, 'p26.nri.sovi', { v: rate(n.social_vulnerability.rating) }),
+  ].filter(Boolean) as string[]
+  if (!parts.length) return null
+  return (
+    <section className="rounded-md border border-line bg-surface-2 p-3">
+      <h4 className="text-body-sm font-semibold text-ink">{t('p26.nri.title')}</h4>
+      <p className="mt-1 text-body-sm text-ink">{parts.join(' · ')}<SourceLink href={n.source || 'https://hazards.fema.gov/nri/'} label={t('p26.nri.src')} /></p>
+      <p className="mt-1 text-caption text-muted">{t('p26.nri.note')}</p>
+    </section>
+  )
+}
+
 /** "Your place's flood profile": key facts as a key-value list + what the FEMA map misses. */
-export function PlaceProfile({ r }: { r: Risk }) {
+export function PlaceProfile({ r, loc }: { r: Risk; loc?: { lat: number; lon: number } | null }) {
   const { t } = useApp()
   const bk = useBk()
   const approx = r.elevation_source === 'open_meteo_approx'
@@ -53,6 +84,7 @@ export function PlaceProfile({ r }: { r: Risk }) {
         </Row>
         <Row k={t('prof.jurisdiction')}>{bk(r.jurisdiction_code, r.jurisdiction_params, r.jurisdiction ?? '—')}</Row>
       </dl>
+      {loc && <NeighborhoodChip lat={loc.lat} lon={loc.lon} />}
       {facts.length > 0 && (
         <section>
           <h4 className="text-h3 text-ink">{t('prof.misses')}</h4>

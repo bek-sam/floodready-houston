@@ -5,10 +5,15 @@ export interface FloodStages { action: number | null; minor: number | null; mode
 export type FreshnessKind = 'live' | 'recent' | 'cached' | 'snapshot' | 'historical'
 export interface Meta { as_of: string; source: string; freshness: FreshnessKind; snapshot_date?: string; storm_mode?: boolean }
 export interface GaugeFlags { stale?: boolean; provisional?: boolean; spike?: boolean; offline?: boolean }
+export interface GaugeImpact {
+  current: { stage: number; statement: string } | null; next: { stage: number; statement: string } | null
+  harvey_crest_ft: number | null; harvey_delta_ft: number | null; source?: string
+}
 export interface Gauge extends GaugeFlags {
   id: string; name: string; lat: number; lon: number
   stage_ft: number | null; observed_at: string | null
   flood_stages: FloodStages; status: Status
+  impact?: GaugeImpact | null
 }
 export interface SourceHealth {
   name: string; last_success: string | null; last_error: string | null; p50_ms: number | null
@@ -63,7 +68,7 @@ export interface History { id: string; name: string; readings: { t: string; stag
 
 export interface Countdown {
   purchase_date: string; effective_date: string; days_wait: number; season_end: string
-  covered_before_season_end: boolean; message: string; message_code?: string; message_params?: Record<string, unknown>; source: string
+  covered_before_season_end: boolean; message: string; exceptions_note?: string; exceptions_note_code?: string; message_code?: string; message_params?: Record<string, unknown>; source: string
 }
 export interface Profile {
   id?: string; language: string; age_group: string; mobility: string
@@ -97,7 +102,14 @@ export interface Shelter {
 export interface Shelters extends Warned { shelters: Shelter[]; any_open: boolean; historical?: boolean; data_as_of?: string; source: string; note: string; note_code?: string }
 export interface Outlook extends Warned {
   day1: { category: 'None' | 'Marginal' | 'Slight' | 'Moderate' | 'High'; label: string } | null
+  days?: { day: number; category: 'None' | 'Marginal' | 'Slight' | 'Moderate' | 'High' | null; label?: string; valid_time?: string | null }[]
+  max_category?: string | null; prepare_nudge?: boolean
   source: string; note: string; note_code?: string
+}
+export interface Nri extends Warned {
+  available?: boolean; tract?: string; population?: number
+  inland_flood?: { rating: string | null }; resilience?: { rating: string | null }; social_vulnerability?: { rating: string | null }
+  source?: string; note?: string
 }
 export interface ParkingCheck extends Warned {
   lat: number; lon: number; address?: string | null; verdict: 'move' | 'no_flags'; headline: string; detail: string
@@ -256,6 +268,7 @@ export interface Coastal {
 const soft = <T,>(path: string) => req<T>(path).catch(() => null as T | null)
 export const apiC20 = {
   evac: (p: { lat: number; lon: number }) => soft<Evac>(`/evac?lat=${p.lat}&lon=${p.lon}`),
+  nri: (p: { lat: number; lon: number }) => soft<Nri>(`/nri?lat=${p.lat}&lon=${p.lon}`),
   hwm: (p: { lat: number; lon: number }) => soft<Hwm>(`/hwm?lat=${p.lat}&lon=${p.lon}&radius_mi=2`),
   coastal: () => soft<Coastal>('/coastal'),
 }

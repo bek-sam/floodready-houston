@@ -45,7 +45,7 @@ def _template_en(profile: dict, risk: dict | None = None) -> list[dict]:
     if risk.get("sfha") or risk.get("low_ground"):
         add("Know your higher risk", "Your location is in a high-risk flood area or low ground. Plan an exit route that avoids underpasses.", "now")
     add("Build a go-bag", "Water, 3 days of food, flashlight, phone charger, copies of IDs and insurance papers in a waterproof bag.", "now")
-    add("Check flood insurance", "Standard homeowner and renter policies usually exclude flood. NFIP policies have a 30-day wait, so buy before storm season.", "now")
+    add("Check flood insurance", "Standard homeowner and renter policies usually exclude flood. NFIP policies generally have a 30-day wait (a few exceptions, e.g. buying with a mortgage), so buy before storm season.", "now")
     if p.get("renter"):
         add("Renters: get renters + flood coverage", "Your landlord's policy does not cover your belongings. Photograph your things and keep the lease handy.", "now")
     medical = [m.lower() for m in p.get("medical") or []]

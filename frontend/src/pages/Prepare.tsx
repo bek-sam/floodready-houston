@@ -184,6 +184,7 @@ export default function Prepare() {
                 <div className="mt-4 space-y-3">
                   <StatTile label={t('p5a.ins.starts')} value={fmtDate(cd.effective_date, lang)} sub={t('p5a.ins.wait').replace('{n}', String(cd.days_wait)).replace('{d}', cd.season_end)} icon={Check} />
                   <p className="text-body-sm text-ink">{bk(cd.message_code, cd.message_params, cd.message)}</p>
+                  {cd.exceptions_note && <p className="text-caption text-muted">{bk(cd.exceptions_note_code || 'ins.exceptions', {}, cd.exceptions_note)}<SourceLink href="https://www.floodsmart.gov/get-insured/buy-a-policy" label={t('p26.ins.src')} /></p>}
                   <div className="flex flex-wrap items-center gap-3">
                     <Button variant="secondary" icon={CalendarPlus} onClick={() => downloadIcs(cd)}>{t('p5a.ins.cal')}</Button>
                     <SourceLink href={cd.source} />

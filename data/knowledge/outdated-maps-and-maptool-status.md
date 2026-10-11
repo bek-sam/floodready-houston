@@ -1,4 +1,5 @@
 # Outdated flood maps and the new draft maps
+source: https://communityimpact.com/cypress/government/harris-county-officials-publish-draft-fema-flood-map-data-talk-next-steps/
 source: https://reduceflooding.com/2026/02/12/fema-releases-new-draft-flood-maps-for-harris-county-and-houston/
 source: https://www.hcfcd.org/MAAPnext
 source: https://news.rice.edu/news/2026/10-years-after-tax-day-flood-rice-researchers-warn-hidden-risk
@@ -6,7 +7,7 @@ source: https://maapnext.harriscountytx.gov/Understand-Your-Risk
 
 - The effective FEMA maps for Harris County date from 2007 and use older rainfall data. (ReduceFlooding; Rice: maps are "looking in the rearview mirror")
 - FEMA released new draft maps in Feb 2026, based on Atlas 14 rainfall rates "more than 30%" higher than those behind the 2007 maps. (ReduceFlooding)
-- The drafts are "not final, not regulatory," "cannot be used for insurance or regulatory decisions," and are "not open for formal comments or appeals." They are expected to take effect in about 2-3 years. (ReduceFlooding; HCFCD MAAPnext)
+- The drafts are "not final, not regulatory," "cannot be used for insurance or regulatory decisions," and are "not open for formal comments or appeals." County officials say the new maps may not be final until 2028 (Community Impact, Oct 2025 reporting). (ReduceFlooding; HCFCD MAAPnext)
 - The draft map viewer is hard to use: it "doesn't work on cell phones," shows zones as "shades and dots, not colors," and boundaries can be "just a foot or two wide." (ReduceFlooding)
 - Each jurisdiction follows its own floodplain criteria. (MAAPnext)
 - ReduceFlooding warns developers may "rush to develop floodplain properties" before the new maps take effect.

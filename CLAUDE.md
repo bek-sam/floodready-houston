@@ -139,6 +139,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Cycle 25 additions:** GET `/rain24?lat&lon` → `{available, windows[], total_inches|null, wettest_window|null, pop_hourly[], max_pop_pct, action{show,text,window_start}, source, source_url, note, meta}`; GET `/parking/check?lat&lon|q` → `{verdict:"move"|"no_flags", headline, detail, reasons[{code,text}], fema_zone, harvey_flooded, elevation_ft, crossings_within_300m[], active_flood_alerts, higher_ground|null, limits, sources, meta}`; DEMO_SNAPSHOT=1 serves data/demo_snapshot responses (header X-FloodReady-Snapshot: 1); frontend #widget (iframe) and #share=… (family plan in URL fragment).
 
+**Cycle 26 additions:** GET `/nri?lat&lon` → `{available, tract, inland_flood{rating,annual_freq_events}, expected_loss_rating, resilience{rating}, social_vulnerability{rating}, overall_risk{rating}, population, source, note, meta}` (FEMA National Risk Index, census tract; `available:false` on failure); `/outlook` adds `days[{day:1..5, category|null, label|null, valid_time|null}]`, `max_category`, `prepare_nudge`; `/insurance/countdown` adds `exceptions_note`, `exceptions_note_code`; gauges add `impact:{current, next, harvey_crest_ft, harvey_delta_ft, source}|null` (from `data/gauge_impacts.json`, NWPS impact statements).
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

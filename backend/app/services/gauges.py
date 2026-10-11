@@ -39,6 +39,33 @@ def _stale(valid_time: str, hours: float = 6) -> bool:
         return False
 
 
+_impacts: dict | None = None
+
+
+def _impact_for(gid, stage) -> dict | None:
+    global _impacts
+    if _impacts is None:
+        d = load_json("gauge_impacts.json", {})
+        _impacts = d if isinstance(d, dict) else {}
+    e = _impacts.get(gid) if gid else None
+    if not isinstance(e, dict):
+        return None
+    imps = sorted((i for i in e.get("impacts") or [] if isinstance(i, dict) and i.get("stage") is not None),
+                  key=lambda i: i["stage"])
+    cur = nxt = None
+    if stage is not None:
+        below = [i for i in imps if i["stage"] <= stage]
+        above = [i for i in imps if i["stage"] > stage]
+        cur = {"stage": below[-1]["stage"], "statement": below[-1].get("statement")} if below else None
+        nxt = {"stage": above[0]["stage"], "statement": above[0].get("statement")} if above else None
+    elif imps:
+        nxt = None
+    crest = (e.get("harvey_crest") or {}).get("stage")
+    return {"current": cur, "next": nxt, "harvey_crest_ft": crest,
+            "harvey_delta_ft": round(crest - stage, 2) if crest is not None and stage is not None else None,
+            "source": e.get("source") or f"https://water.noaa.gov/gauges/{gid}"}
+
+
 def _gid(g):
     return g.get("id") or g.get("nwps_id") or g.get("lid")
 
@@ -73,7 +100,7 @@ async def gauge_status(g: dict, simulate: bool = False) -> dict:
     flags["offline"] = bool(offline)
     return {"id": _gid(g), "name": g.get("name"), "lat": g["lat"], "lon": g["lon"], "stage_ft": stage,
             "observed_at": observed, "flood_stages": {k: stages.get(k) for k in ("action", "minor", "moderate", "major")},
-            "status": status, **flags}
+            "status": status, **flags, "impact": _impact_for(_gid(g), stage)}
 
 
 async def nearest_gauges(lat: float, lon: float, n: int = 3, simulate: bool = False) -> list[dict]:

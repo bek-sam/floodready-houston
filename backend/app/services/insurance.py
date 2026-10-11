@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 
 SOURCE = "https://www.floodsmart.gov/get-insured/buy-a-policy"
+EXC = ("Exceptions exist: there is generally no wait when the policy is required for a mortgage that is made, "
+       "increased, extended or renewed, or when you change coverage at renewal. Ask your agent.")
 
 
 def _season_end(d: date) -> date:
@@ -19,11 +21,11 @@ async def insurance_countdown(purchase_date: str | None = None) -> dict:
     covered = eff <= end
     mcode = "ins.covered" if covered else "ins.late"
     if covered:
-        msg = (f"A policy bought {pd:%b %d} generally starts {eff:%b %d}. Until then you have NO flood coverage. "
+        msg = (f"A policy bought {pd:%b %d} generally starts {eff:%b %d}. Until then you generally have NO flood coverage (a few exceptions exist, such as buying with a mortgage). "
                f"That is still before hurricane season ends ({end:%b %d}).")
     else:
         msg = (f"A policy bought {pd:%b %d} generally starts {eff:%b %d}, after this hurricane season ends "
-               f"({end:%b %d}). Buy earlier next year: there is a 30-day wait.")
+               f"({end:%b %d}). Buy earlier next year: there is generally a 30-day wait (a few exceptions exist, such as buying with a mortgage).")
     return {"purchase_date": pd.isoformat(), "effective_date": eff.isoformat(), "days_wait": 30,
             "season_end": end.isoformat(), "covered_before_season_end": covered, "message": msg, "message_code": mcode,
-            "message_params": {"pd": pd.isoformat(), "eff": eff.isoformat(), "end": end.isoformat()}, "source": SOURCE}
+            "exceptions_note": EXC, "exceptions_note_code": "ins.exceptions", "message_params": {"pd": pd.isoformat(), "eff": eff.isoformat(), "end": end.isoformat()}, "source": SOURCE}

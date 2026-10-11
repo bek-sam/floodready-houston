@@ -22,6 +22,7 @@ import { vi as viF2, zh as zhF2, ar as arF2 } from './i18n/fill2'
 import * as P13 from './i18n/p13'
 import * as P14 from './i18n/p14'
 import * as P15 from './i18n/p15'
+import * as P26 from './i18n/p26'
 
 export const LANGS = [
   { code: 'en', label: 'English', speech: 'en-US' },
@@ -342,5 +343,5 @@ const ar: Dict = {
   'ask.disclaimer': 'إجابات الذكاء الاصطناعي ليست إرشادًا رسميًا. للطوارئ اتصل بـ 911.',
 }
 // Redesign phase dictionaries (src/i18n/p1..p6) override older keys.
-export const dicts: Record<string, Dict> = { en: { ...en, ...en2, ...en3, ...en5, ...en11, ...enP1, ...enP2, ...enP3, ...enP4, ...enP5, ...enP5a, ...enP6, ...enP7, ...enP8, ...enP9, ...enP10, ...enP11a, ...enP11b, ...P13.en, ...P14.en, ...enP12, ...P15.en }, es: { ...es, ...es2, ...es3, ...es5, ...es11, ...esP1, ...esP2, ...esP3, ...esP4, ...esP5, ...esP5a, ...esP6, ...esP7, ...esFill, ...esP8, ...esP9, ...esP10, ...esP11a, ...esP11b, ...P13.es, ...P14.es, ...esP12, ...P15.es }, vi: { ...vi, ...vi2, ...vi3, ...viFill, ...viP8, ...viF2, ...P13.vi, ...P14.vi, ...viP12, ...P15.vi }, zh: { ...zh, ...zh2, ...zh3, ...zhFill, ...zhP8, ...zhF2, ...P13.zh, ...P14.zh, ...zhP12, ...P15.zh }, ar: { ...ar, ...ar2, ...ar3, ...arFill, ...arP8, ...arF2, ...P13.ar, ...P14.ar, ...arP12, ...P15.ar } }
+export const dicts: Record<string, Dict> = { en: { ...en, ...en2, ...en3, ...en5, ...en11, ...enP1, ...enP2, ...enP3, ...enP4, ...enP5, ...enP5a, ...enP6, ...enP7, ...enP8, ...enP9, ...enP10, ...enP11a, ...enP11b, ...P13.en, ...P14.en, ...enP12, ...P15.en, ...P26.en }, es: { ...es, ...es2, ...es3, ...es5, ...es11, ...esP1, ...esP2, ...esP3, ...esP4, ...esP5, ...esP5a, ...esP6, ...esP7, ...esFill, ...esP8, ...esP9, ...esP10, ...esP11a, ...esP11b, ...P13.es, ...P14.es, ...esP12, ...P15.es, ...P26.es }, vi: { ...vi, ...vi2, ...vi3, ...viFill, ...viP8, ...viF2, ...P13.vi, ...P14.vi, ...viP12, ...P15.vi, ...P26.vi }, zh: { ...zh, ...zh2, ...zh3, ...zhFill, ...zhP8, ...zhF2, ...P13.zh, ...P14.zh, ...zhP12, ...P15.zh, ...P26.zh }, ar: { ...ar, ...ar2, ...ar3, ...arFill, ...arP8, ...arF2, ...P13.ar, ...P14.ar, ...arP12, ...P15.ar, ...P26.ar } }
 export const tr = (lang: string, key: string) => dicts[lang]?.[key] ?? dicts.en[key] ?? key

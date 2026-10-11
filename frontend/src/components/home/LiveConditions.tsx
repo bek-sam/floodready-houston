@@ -29,6 +29,28 @@ function AlertRow({ a, onRead }: { a: Alert; onRead: (a: Alert) => void }) {
   )
 }
 
+/** "What this level means": NWS impact statements and the Harvey crest (hidden when the gauge has none). */
+function GaugeImpactInfo({ g }: { g: Gauge }) {
+  const { t } = useApp()
+  const im = g.impact
+  if (!im || (!im.current && !im.next && im.harvey_crest_ft == null)) return null
+  const d = im.harvey_delta_ft
+  const harvey = im.harvey_crest_ft == null ? null
+    : d == null ? fill(t, 'p26.imp.harveyOnly', { ft: im.harvey_crest_ft })
+    : fill(t, d >= 0 ? 'p26.imp.harvey' : 'p26.imp.harveyBelow', { ft: im.harvey_crest_ft, d: Math.abs(d).toFixed(1) })
+  return (
+    <Disclosure className="col-span-full" title={t('p26.imp.toggle')}>
+      <div className="space-y-2 text-body-sm text-ink">
+        {(im.current || im.next) && <p className="text-caption text-muted">{t('p26.imp.nws')}</p>}
+        {im.current && <p>{fill(t, 'p26.imp.now', { text: im.current.statement })}</p>}
+        {im.next && <p>{fill(t, 'p26.imp.next', { ft: im.next.stage, text: im.next.statement })}</p>}
+        {harvey && <p>{harvey}</p>}
+        <p><SourceLink href={im.source || `https://water.noaa.gov/gauges/${g.id}`} label={t('p26.imp.src')} /></p>
+      </div>
+    </Disclosure>
+  )
+}
+
 function GaugeRow({ g, from }: { g: Gauge; from: LatLon | null }) {
   const { t: t0 } = useApp()
   const [easy] = useEasy(); const t = (k: string) => easyT(t0, k, easy)
@@ -44,7 +66,33 @@ function GaugeRow({ g, from }: { g: Gauge; from: LatLon | null }) {
       </span>
       <span className="hidden sm:block"><StatusBadge status={g.status} /></span>
       <Sparkline id={g.id} width={96} height={32} />
+      <GaugeImpactInfo g={g} />
     </li>
+  )
+}
+
+/** WPC Excessive Rainfall outlook, Days 1-5, with a Prepare nudge. Renders nothing without `days`. */
+function OutlookDays({ o }: { o: Outlook | null | undefined }) {
+  const { t } = useApp()
+  const days = Array.isArray(o?.days) ? o.days.filter((d) => d && Number.isFinite(d.day)) : []
+  if (!o || days.length === 0) return null
+  const tone = (c: string | null) => c === 'Moderate' || c === 'High' ? 'border-watch text-ink' : c === 'Slight' ? 'border-line-strong text-ink' : 'border-line text-muted'
+  return (
+    <Card className="mt-3" title={<span className="flex items-center gap-2"><CloudRain aria-hidden size={18} className="text-water" />{t('p26.days.title')}</span>}
+      action={<span className="inline-flex min-h-11 items-center"><SourceLink href={o.source} label="NOAA WPC" /></span>}>
+      <ul className="grid grid-cols-5 gap-1.5">
+        {days.map((d) => (
+          <li key={d.day} className={`rounded-md border px-1 py-2 text-center ${tone(d.category)}`}>
+            <span className="block text-caption text-muted">{fill(t, 'p26.days.day', { n: d.day })}</span>
+            <span className="block text-body-sm font-semibold">{d.category === 'None' ? t('p26.days.clear') : d.category ? t('sum.cat.' + d.category) : t('p26.days.none')}</span>
+          </li>
+        ))}
+      </ul>
+      {o.prepare_nudge && (
+        <p className="mt-3 text-body-sm text-ink">{t('p26.days.nudge')}{' '}
+          <a href="#prepare" className="font-semibold text-brand underline underline-offset-2">{t('p26.days.cta')}</a></p>
+      )}
+    </Card>
   )
 }
 
@@ -101,6 +149,8 @@ export function LiveConditions({ title, loc, risk, alerts, outlook, updatedAt, o
               : outlook.data?.source ? <SourceLink href={outlook.data.source} label="NOAA WPC" /> : undefined} />
         </div>
       </div>
+
+      <OutlookDays o={outlook.data} />
 
       {flood.length > 0 && (
         <Card className="mt-3"><ul className="divide-y divide-line">{flood.map((a, i) => <AlertRow key={i} a={a} onRead={setRead} />)}</ul></Card>

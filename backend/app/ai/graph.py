@@ -483,6 +483,9 @@ def _lead(s: State, cite: Cites) -> list[str]:
         if isinstance(g, dict):
             parts.append(f"Nearest gauge: {g.get('name')}, status {g.get('status', 'unknown')}"
                          + citations.asof_phrase(risk, s.get("lang", "en")) + ".")
+            cur = ((g.get("impact") or {}).get("current") or {}).get("statement")
+            if cur:
+                parts.append(f"NWS impact at this gauge level: {str(cur)[:200]}")
     al = res.get("get_alerts")
     if isinstance(al, dict) and "error" not in al and not al.get("warnings"):
         items = [a for a in al.get("alerts") or []
@@ -492,8 +495,8 @@ def _lead(s: State, cite: Cites) -> list[str]:
                      else f"No active flood-related NWS alerts here right now{ph}.")
     ins = res.get("insurance_countdown")
     if isinstance(ins, dict) and "error" not in ins and ins.get("effective_date"):
-        parts.append(f"Flood insurance takes 30 days to start; buy today and you are covered from "
-                     f"{ins['effective_date']}" + cite(ins.get("source", "")) + ".")
+        parts.append(f"Flood insurance generally takes 30 days to start (exceptions exist, e.g. buying with a mortgage; "
+                     f"ask your agent); buy today and coverage generally starts {ins['effective_date']}" + cite(ins.get("source", "")) + ".")
     sh = res.get("get_shelters")
     if isinstance(sh, dict) and "error" not in sh:
         parts.append(_t(s.get("lang", "en"), "shelter", "I don't have live shelter status. During a storm call 311 or 211, "

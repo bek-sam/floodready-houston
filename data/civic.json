@@ -2,7 +2,7 @@
  "bond": {
   "facts": [
    {
-    "text": "By March 2025, 43 of 181 projects in Harris County's 2018 flood bond program were complete.",
+    "text": "Harris County auditor memo, June 2025: by March 2025, 43 of 181 projects in the 2018 flood bond program were complete.",
     "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
    },
    {
@@ -20,6 +20,10 @@
    {
     "text": "Flood bond project information is published by Harris County Precinct 4.",
     "source": "https://cp4.harriscountytx.gov/Connect/Newsroom/flood-bond"
+   },
+   {
+    "text": "The county restructured the 2018 bond program in fall 2025: 54 project packages completed, 75 of the remaining 116 moving forward, 26 paused and 15 closed as not feasible. Check the HCFCD dashboard for current status.",
+    "source": "https://communityimpact.com/cypress/government/a-new-vision-harris-county-restructures-2018-bond-projects-and-funding/"
    }
   ],
   "projects": []

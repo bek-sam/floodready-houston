@@ -1,0 +1,764 @@
+{
+ "ADDT2": {
+  "impacts": [
+   {
+    "stage": 67.8,
+    "statement": "Bottom of Addicks Reservoir"
+   },
+   {
+    "stage": 87.6,
+    "statement": "Low point on Patterson Road"
+   },
+   {
+    "stage": 88.8,
+    "statement": "Low point on Bear Creek Drive"
+   },
+   {
+    "stage": 96,
+    "statement": "Low point of SH 6"
+   },
+   {
+    "stage": 96.6,
+    "statement": "Low point of Eldridge Parkway"
+   },
+   {
+    "stage": 103.4,
+    "statement": "First home flooded south side of dam"
+   },
+   {
+    "stage": 103.8,
+    "statement": "Low point of Barker Cypress Road"
+   },
+   {
+    "stage": 108,
+    "statement": "Top of spillway/natural ground at end of dam."
+   },
+   {
+    "stage": 109.09,
+    "statement": "Pool of Record (Harvey)"
+   },
+   {
+    "stage": 120,
+    "statement": "High point of dam"
+   }
+  ],
+  "harvey_crest": {
+   "stage": 109.09,
+   "occurred": "2017-08-30"
+  },
+  "source": "https://water.noaa.gov/gauges/ADDT2"
+ },
+ "BAKT2": {
+  "impacts": [
+   {
+    "stage": 71.05,
+    "statement": "Bottom of Barker Reservoir"
+   },
+   {
+    "stage": 82.7,
+    "statement": "Low point on Barker-Clodine Road"
+   },
+   {
+    "stage": 93.2,
+    "statement": "Low point on Westheimer Parkway"
+   },
+   {
+    "stage": 93.4,
+    "statement": "Low point on Beeler Road"
+   },
+   {
+    "stage": 94.9,
+    "statement": "First street flooded in Fort Bend County."
+   },
+   {
+    "stage": 96.6,
+    "statement": "First street flooding in Harris County."
+   },
+   {
+    "stage": 97.1,
+    "statement": "First home flooded in Harris County."
+   },
+   {
+    "stage": 98.1,
+    "statement": "First home flooded in Fort Bend County. "
+   },
+   {
+    "stage": 101.56,
+    "statement": "Pool of Record (Harvey)"
+   },
+   {
+    "stage": 104,
+    "statement": "Top of spillway/natual ground at end of dam"
+   }
+  ],
+  "harvey_crest": {
+   "stage": 101.6,
+   "occurred": "2017-08-27"
+  },
+  "source": "https://water.noaa.gov/gauges/BAKT2"
+ },
+ "BBAT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 114.71,
+   "occurred": "2017-08-27"
+  },
+  "source": "https://water.noaa.gov/gauges/BBAT2"
+ },
+ "BBST2": {
+  "impacts": [
+   {
+    "stage": 17,
+    "statement": "At levels above 17.0 feet, hike and bike trails within the channel become inundated."
+   },
+   {
+    "stage": 28,
+    "statement": "At levels above 28.0 feet, minor lowland flooding begins as water spills out of main channel and floods the lowest levels of apartments near the gage."
+   },
+   {
+    "stage": 28.7,
+    "statement": "At levels above 28.7 feet, Allen Parkway east of Montrose Boulevard and Memorial Drive east of Waugh Drive flood."
+   },
+   {
+    "stage": 29.5,
+    "statement": "At levels above 29.5 feet, moderate lowland flooding begins Memorial Drive between Sandman Streeet and Waugh Drive becomes inundated."
+   },
+   {
+    "stage": 32,
+    "statement": "At levels above 32.0 feet, major flooding begins as portions of Allen Parkway and Memorial Drive are under 1 to 2 feet of water and homes upstream of the gage begin flooding."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 41.9,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/BBST2"
+ },
+ "CCGT2": {
+  "impacts": [
+   {
+    "stage": 122,
+    "statement": "Minor lowland flooding begins as water tops the banks of the main channel."
+   },
+   {
+    "stage": 124,
+    "statement": "Moderate lowland flooding begins as low-lying areas along the creek become inundated."
+   },
+   {
+    "stage": 125,
+    "statement": "Major lowland flooding begins. In past floods, homes in the 13600 block of Oak Hollow, downstream from the gage, began flooding."
+   },
+   {
+    "stage": 125.3,
+    "statement": "Major lowland flooding continues as homes in the 10700 block of Normont begin flooding with water in many homes along Oak Hollow."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 129.97,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/CCGT2"
+ },
+ "GBHT2": {
+  "impacts": [
+   {
+    "stage": 55,
+    "statement": "Minor lowland flooding begins as water escapes the north side of the upstream bank at U.S. Highway 59. Water is close to inundating the southbound feeder road south of the channel."
+   },
+   {
+    "stage": 56.5,
+    "statement": "Moderate lowland flooding begins as streets in the Sequoia Estates subdivision and west of JFK Boulevard become inundated. The southbound feeder road of U.S Highway 59 is under close to one foot of water."
+   },
+   {
+    "stage": 59.5,
+    "statement": "Major lowland flooding begins as home in Sequoia Estates subdiviision begin flooding. Homestead Road south of the channel in inundated with one to two feet of water and water is several feet deep on the southbound feeder of U.S. Highway 59."
+   },
+   {
+    "stage": 60,
+    "statement": "Major lowland flooding continues as homes on McDermott Drive begin flooding."
+   },
+   {
+    "stage": 61,
+    "statement": "Major lowland flooding continues as homes on Sequoia Bend Drive begin flooding with widespread flooding of homes on McDermott Drive."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 62.88,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/GBHT2"
+ },
+ "GBLT2": {
+  "impacts": [
+   {
+    "stage": 30,
+    "statement": "Minor lowland flooding begins in the vicinity of the gage."
+   },
+   {
+    "stage": 32,
+    "statement": "Moderate lowland flooding begins at the gage."
+   },
+   {
+    "stage": 33,
+    "statement": "Major lowland flooding begins in the vicinity of the gage."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 44.85,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/GBLT2"
+ },
+ "GMKT2": {
+  "impacts": [],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/GMKT2"
+ },
+ "GSST2": {
+  "impacts": [
+   {
+    "stage": 57,
+    "statement": "Minor flooding begins along Fondren Drive north and south of the channel. Flooding is likely along Valley View Drive in the Braeburn Valley subdivision."
+   },
+   {
+    "stage": 58,
+    "statement": "Moderate flooding begins with numerous streets flooded in the Braeburn Glen and Braeburn Valley subdivisions. Fondren bridge approaches are impassable and water is hitting bridge deck. Water is nearing homes in the Braeburn Glen subdivision along Valley View Drive, Kennard and Mahoning Street. "
+   },
+   {
+    "stage": 59,
+    "statement": "Major flooding begins with homes flooded in the Braeburn Glen subdivision and numerous homes nearing flood in the Braeburn Valley subdivision. Many streets are flooded and impassable including Fondren Drive near the channel and North and South Braeswood Blvd. Gessner Road bridge deck overtopped and inundated with approximately 1.25ft of water."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 60,
+   "occurred": "2017-08-27"
+  },
+  "source": "https://water.noaa.gov/gauges/GSST2"
+ },
+ "HBMT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 45.67,
+   "occurred": "2017-08-27"
+  },
+  "source": "https://water.noaa.gov/gauges/HBMT2"
+ },
+ "HCCT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 24.25,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/HCCT2"
+ },
+ "HCDT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 58.99,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/HCDT2"
+ },
+ "HFFT2": {
+  "impacts": [],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/HFFT2"
+ },
+ "HGBT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 85.84,
+   "occurred": "2017-08-27"
+  },
+  "source": "https://water.noaa.gov/gauges/HGBT2"
+ },
+ "HGTT2": {
+  "impacts": [
+   {
+    "stage": 29,
+    "statement": "At levels above 29.0 feet, minor lowland flooding begins as water escapes the main channel and floods White Oak Drive between Taylor Street and I-10."
+   },
+   {
+    "stage": 33.5,
+    "statement": "At levels above 33.5 feet, moderate lowland flooding begins as the southbound ramp to I-10 West floods."
+   },
+   {
+    "stage": 36,
+    "statement": "At levels above 36.0 feet, major lowland flooding begins as apartments along White Oak Drive begin flooding. The I-45 southbound ramp to I-10 West is under 2.5 feet of water and the I-10 eastbound feeder road west of Studemont is inundated. The I-45 main lanes north of I-10 are close to being flooded."
+   },
+   {
+    "stage": 38.5,
+    "statement": "At levels above 38.5 feet, major lowland flooding continues as the I-45 main lanes north of I-10 are inundated."
+   },
+   {
+    "stage": 40.29,
+    "statement": "At levels above 40.3 feet, major lowland flooding continues as the Heights Boulevard bridge is inundated."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 45.6,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/HGTT2"
+ },
+ "HMMT2": {
+  "impacts": [
+   {
+    "stage": 49.3,
+    "statement": "Minor lowland flooding begins in the vicinity of the gage. North side turnaround at US 59 begins to flood. Low points on Thelma Road, Aqua Vista Drive, and Riverview Drive begin to flood."
+   },
+   {
+    "stage": 50.3,
+    "statement": "Moderate lowland flooding begins as homes on Lake Point Drive in the Northshore subdivision begin flooding and roads in the Bellaeu Woods subdivision are cutoff."
+   },
+   {
+    "stage": 51.5,
+    "statement": "Moderate lowland flooding continues with up to one foot of water is over the road at the intersection of Bellau Wodd and Riviera and many homes in the Northshore subdivision are cutoff. "
+   },
+   {
+    "stage": 52.3,
+    "statement": "Major lowland flooding begins as homes on Lake Lane West and Southshore Drive in the Belleau Woods subdivision begin flooding. Roads into the Treasure Cove subdivision are inundated and homes along Aqua Vista Drive threatened. Water is in many homes on Lake Point Drive in the Northshore subdivision. "
+   },
+   {
+    "stage": 53.3,
+    "statement": "Major lowland flooding continues with water is in homes on Lake Lane West and Southshore Drive in the Bellau Woods subdivision and Homes in the Treasure Cove subdivision and along Aqua Vista Drive begin flooding."
+   },
+   {
+    "stage": 54.4,
+    "statement": "Major lowland flooding continues with homes along Riverview Drive in River Ridge subdivision upstream of the gage begin to flood."
+   },
+   {
+    "stage": 55.2,
+    "statement": "Major lowland flooding continues with up to 6 inches of water is over the 800 block Hamblen Road adjacent to the Kingwood Cove Country Club Golf Course with many homes in the Bellau Woods and Treasure Cove subdivision are flooded."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 69.18,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/HMMT2"
+ },
+ "HSIT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 26.56,
+   "occurred": "2017-08-27"
+  },
+  "source": "https://water.noaa.gov/gauges/HSIT2"
+ },
+ "HSJT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 53.12,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/HSJT2"
+ },
+ "HYST2": {
+  "impacts": [],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/HYST2"
+ },
+ "KHOT2": {
+  "impacts": [
+   {
+    "stage": 157.3,
+    "statement": "Minor lowland flooding begins in the vicinity of the gage as water escapes the main channel and spills into the floodplain."
+   },
+   {
+    "stage": 159.3,
+    "statement": "Moderate lowland flooding begins in the vicinity of the gage."
+   },
+   {
+    "stage": 160.6,
+    "statement": "Major lowland flooding begins in the vicinity of the gage."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 162.85,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/KHOT2"
+ },
+ "LLYT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 111.85,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/LLYT2"
+ },
+ "LWCT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 133.89,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/LWCT2"
+ },
+ "MBVT2": {
+  "impacts": [],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/MBVT2"
+ },
+ "MGPT2": {
+  "impacts": [],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/MGPT2"
+ },
+ "NCET2": {
+  "impacts": [
+   {
+    "stage": 54.5,
+    "statement": "Bankfull"
+   },
+   {
+    "stage": 58,
+    "statement": "Minor lowland flooding begins in the vicinity of the gage with minor roads such as Chinquapin and Riverside Roads beginning to flood."
+   },
+   {
+    "stage": 62,
+    "statement": "Moderate lowland flooding begins with secondary roads near the river inundated, including FM 1485 west of the river."
+   },
+   {
+    "stage": 68.5,
+    "statement": "Moderate lowland flooding continues with water over the lowest slab elevations of buildings on the downstream side near the gauge, as well as several hunting camps along the left bank approximately 2 miles downstream of the gage begin to take on water. Widespread flooding continues in the vicinity of the gage and in the right floodplain with many roads including FM 1485 inundated and closed."
+   },
+   {
+    "stage": 69,
+    "statement": "Major lowland flooding begins as several homes become inundated."
+   },
+   {
+    "stage": 76.2,
+    "statement": "Flood of record."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 81.15,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/NCET2"
+ },
+ "NCHT2": {
+  "impacts": [],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/NCHT2"
+ },
+ "POET2": {
+  "impacts": [
+   {
+    "stage": 81,
+    "statement": "Minor lowland flooding begins in the vicinty of the gage as water escapes the main channel. Bottom of the old gage house and road near the old gage house begin to flood."
+   },
+   {
+    "stage": 83,
+    "statement": "Minor lowland flooding continues as the turnaround under SH99 at Riley Fuzzel Road begins to flood."
+   },
+   {
+    "stage": 88.5,
+    "statement": "Moderate lowland flooding begins. Lowest homes in Summer Hills subdivision along Firefly Lane and Butterfly Lane begin to flood."
+   },
+   {
+    "stage": 92,
+    "statement": "Major lowland flooding begins in the vicinty of the gage with low point on SH99 inundated."
+   },
+   {
+    "stage": 105.5,
+    "statement": "Major lowland flooding continues as lowest homes in Riverwalk subdivision along Serpenteer Road begin to flood."
+   },
+   {
+    "stage": 117,
+    "statement": "Major lowland flooding continues as homes on Old Houston Road (upstream of the gage) begin to flood."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 94.87,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/POET2"
+ },
+ "PPTT2": {
+  "impacts": [
+   {
+    "stage": 52,
+    "statement": "At levels above 52.0 feet, minor lowland flooding begins as pool decks, tennis courts, and lower garage area are inundated."
+   },
+   {
+    "stage": 53.5,
+    "statement": "At levels above 54.5 feet, garages on Arrowhead begin to flood."
+   },
+   {
+    "stage": 57,
+    "statement": "At levels above 57.0 feet, moderate lowland flooding begins as portions of Briar Forest Drive begin to flood."
+   },
+   {
+    "stage": 59.3,
+    "statement": "At levels above 59.3 feet, the bridge at Briar Forest SW is inundated."
+   },
+   {
+    "stage": 60,
+    "statement": "At levels above 60.0 feet, major lowland flooding begins as homes above the gage begin to flood and several streets near the gage are inundated."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 62.84,
+   "occurred": "2017-08-31"
+  },
+  "source": "https://water.noaa.gov/gauges/PPTT2"
+ },
+ "PRLT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 47.4,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/PRLT2"
+ },
+ "RMOT2": {
+  "impacts": [
+   {
+    "stage": 20,
+    "statement": "Bankfull"
+   },
+   {
+    "stage": 45,
+    "statement": "Minor lowland flooding begins as water escapes the main channel below the gage. Livestock operations near Thompsons are affected and precautions should be taken to protect cattle including potential relocation in low-lying areas. Baudet Road southeast of Richmond and Redbird Lane in Fulshear are threatened."
+   },
+   {
+    "stage": 46,
+    "statement": "Minor lowland flooding continues with water in the Simonton area upstream of the gage. Simonton closes their gates and pumping begins. Water is over Baudet Road southeast of Richmond, Red Bird Lane in Fulshear, and Sixth Street & Ave B in Rosenberg. Significant portions of the floodplain near Thompsons are inundated requiring relocation of cattle from low-lying areas. FM 1458 near FM 1093 in Austin County is threatened."
+   },
+   {
+    "stage": 47,
+    "statement": "Minor lowland flooding continues as the Brazos River begins filling the Frydek Bottom upstream of Valley Lodge. Gates are closed and pumping continues in Simonton and FM 1458 near FM 1093 in Austin County is inundated. Baudet Road and Red Bird Lane have close to one foot of water over them."
+   },
+   {
+    "stage": 48,
+    "statement": "Moderate lowland flooding begins in the vicinity of the gage. Homes are threatened upstream in Simonton and downstream in Thompsons. Strange Drive & Greenwood Drive in Richmond, and Jones River Road in Thompsons are inundated. FM 1458 near FM 1093 in Austin County has close to one half foot of water over the road. The low water crossing on Newton Drive in Richmond begins taking on water."
+   },
+   {
+    "stage": 49,
+    "statement": "Moderate lowland flooding continues. Widespread inundation of the floodplain occurs with homes in Simonton and Thompsons flooded. FM 1458 near FM 1093 in Austin County is flooded with one foot of water. Six inches to one foot of water covers Strange Dr & Greenwood Dr in Richmond, Sixth St & Avenue B in Rosenberg, and Pittman Rd in Thompsons is inundated. Homes along Carrol Rd near FM 2759 (west bank) and McKeever Rd (east bank) in southeast Fort Bend County are threatened."
+   },
+   {
+    "stage": 50,
+    "statement": "Major flooding begins as homes in Richmond flood. Many homes in Simonton and Thompsons have water in them and homes along Cumings/Baker Rds and in Rio Brazos are flooded. FM 1458 near FM 1093 remains inundated and closed. Homes along Carrol/McKeever Rds in southeast Fort Bend are close to taking water. Strange Dr & Greenwood Dr in Richmond and Sixth St & Ave B in Rosenberg, and Pittman Rd in Thompsons are inundated with over one foot of water. Thompsons Ferry Rd south of LJ Pkwy is inundated outside levees"
+   },
+   {
+    "stage": 51,
+    "statement": "FM 1093 is inundated to Stansberry Rd in Simonton. Second St in Richmond is inundated. Fort Bend County flood fight operations in Simonton are exceeded and cease. Low lying streets on west side of Quail Valley take on water. Low lying areas along Knights Ct take on water."
+   },
+   {
+    "stage": 52,
+    "statement": "Major lowland flooding continues with homes near intersection of Sixth St and Avenue B in Rosenberg beginning to take on water. FM 723 is inundated north of Rosenberg to FM 359, making the Kingdom Heights and Riverside ranch subdivisions inaccessable. FM 359 between US90A and Pecan Grove begins taking on water. "
+   },
+   {
+    "stage": 53,
+    "statement": "FM 1489 is inundated south of Simonton to Johnson Rd. FM 359 is impassable between US90A and the Pecan Grove levee near Southern Place Dr. The intersection of FM 359 and Mason Rd is impassable. FM 2759 is completely inundated east of Agnes Rd. Street flooding occurs along Sienna Parkway between McKeever Rd and Steep Bank Trace. Street flooding occurs along McKeever Rd between Sienna Parkway and SH6. Miller Rd near Arcola is inundated."
+   },
+   {
+    "stage": 54,
+    "statement": "Major flooding continues with US90A eastbound lanes inundated and impassable between Harlem Rd and New Territory. Pitts Rd is impassable between US90A and Savannah Dr."
+   },
+   {
+    "stage": 55,
+    "statement": "Major flooding continues with significant home flooding in the following areas: Valley Lodge near Simonton, Bar Rd, Baker Rd/Cumings Rd/Rio Brazos area north of Rosenberg, Edgewood/Baudet Rd in Richmond, and FM 2759 near Thompsons. Low-lying homes in Grand River, Rivers Edge, Pecan Estates in Thompson, and Pecan Bend flood as well. "
+   },
+   {
+    "stage": 55.19,
+    "statement": "Record Flood (Harvey)"
+   },
+   {
+    "stage": 56,
+    "statement": "Flooding begins to occur in Weston Lakes."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 55.19,
+   "occurred": "2017-09-01"
+  },
+  "source": "https://water.noaa.gov/gauges/RMOT2"
+ },
+ "SHLT2": {
+  "impacts": [
+   {
+    "stage": 10,
+    "statement": "Minor lowland flooding begins."
+   },
+   {
+    "stage": 13,
+    "statement": "Moderate lowland flooding begins with widespread inundation of the flood plain."
+   },
+   {
+    "stage": 15,
+    "statement": "Major lowland flooding begins."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 28.72,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/SHLT2"
+ },
+ "SLNT2": {
+  "impacts": [
+   {
+    "stage": 40,
+    "statement": "Action stage begins as the first levee district internal drainage outfall is impacted."
+   },
+   {
+    "stage": 62,
+    "statement": "Bankfull conditions begin."
+   },
+   {
+    "stage": 65.5,
+    "statement": "Minor lowland flooding begins as water escapes the main channel below the gauge. Baudet Road southeast of Richmond is threatened. Livestock operations near Thompsons are affected and precautions should be taken to protect cattle including potential relocation in low-lying areas. "
+   },
+   {
+    "stage": 66.5,
+    "statement": "Minor flooding continues with water over Baudet Road southeast of Richmond. Significant portions of the floodplain near Thompsons are inundated requiring relocation of cattle from low-lying areas. "
+   },
+   {
+    "stage": 67.5,
+    "statement": "Minor flooding continues as Baudet Road has close to one foot of water over the road. "
+   },
+   {
+    "stage": 68.5,
+    "statement": "Moderate flooding begins in the vicinity of the gage. Homes are threatened downstream in Thompsons. Strange Drive, Greenwood Drive, and Second Street in Richmond; Sixth Street & Avenue B in Rosenberg; and Jones River Road in Thompsons are inundated. The low water crossing on Newton Drive in Richmond begins taking on water. "
+   },
+   {
+    "stage": 69.5,
+    "statement": "Moderate flooding continues. Widespread inundation of the floodplain occurs with homes in Thompsons flooded. The portion of Hagerson Rd outside of LID15 begins to be inundated. Six inches to one foot of water covers Strange Dr, Greenwood Dr, and Second St in Richmond; Sixth St & Avenue B in Rosenberg; and Pittman Rd in Thompsons are inundated. Homes along Carroll Rd near FM 2759 (west bank) and McKeever Rd (east bank) in southeast Ft Bend County are threatened. Flooding occurs in Camp Sienna."
+   },
+   {
+    "stage": 70.5,
+    "statement": "Major flooding begins as homes in Richmond begin flooding and many homes in Thompsons have water in them. Homes along Carroll and McKeever Roads in southeast Ft Bend County are close to taking water. Sugar Land Memorial Park and Festival Site begin to flood. Strange Drive, Greenwood Drive, and Second Street in Richmond; Sixth Street, Avenue B, and River Road in Rosenberg; and Pittman Road in Thompsons are inundated with over one foot of water. "
+   },
+   {
+    "stage": 71.5,
+    "statement": "Major flooding continues with homes flooding along Cumings and Baker Roads in Rio Brazos north of Rosenberg. The underpass at the intersection of SH36/90A west of Rosenberg is inundated and impassable. Low-lying streets on the west side of Quail Valley take on water. Feeder roads along SH6 near the intersection of FM 521 and McKeever Road are inundated. Low-lying areas along Knights Court take on water. "
+   },
+   {
+    "stage": 72,
+    "statement": "Major flooding continues with homes near the intersection of Sixth Street and Avenue B in Rosenberg begin to take on water. FM 723 is inundated north of Rosenberg to FM 359 making the Kingdom Heights and Riverside Ranch subdivisions inaccessible. FM 359 between US 90A and Pecan Grove begins taking on water. Thompson Ferry Road souther of LJ Parkway is inundated outside of the leveed area. "
+   },
+   {
+    "stage": 73,
+    "statement": "Major flooding continues with FM 359 impassable between US 90A and the Pecan Grove levee near Southern Place Drive. The intersection of FM 359 and Mason Road is impassable. FM 2759 is completely inundated east of Agnes Road. Street flooding occurs along Sienna Parkway between McKeever Road adn Steep Bank Trace. Street flooding occurs along McKeever Road between Sienna Parkway and SH6. Miller Road near Arcola is inundated. "
+   },
+   {
+    "stage": 73.5,
+    "statement": "Major flooding continues with US 90A eastbound lanes inundated and impassable between Harlem Road and New Territory. Pitts Road is impassable between US 90A and Savannah Drive. "
+   }
+  ],
+  "harvey_crest": null,
+  "source": "https://water.noaa.gov/gauges/SLNT2"
+ },
+ "SPNT2": {
+  "impacts": [
+   {
+    "stage": 91.5,
+    "statement": "Minor lowland flooding begins near the gage site as as flow escapes on the north bank. N. Plum Creek and Spring Creek Roads begin to take on water."
+   },
+   {
+    "stage": 92.5,
+    "statement": "Minor lowland flooding contiues with the north side of I-45 turnaround beginning to take on water."
+   },
+   {
+    "stage": 95,
+    "statement": "Moderate lowland flooding begins with some roads near the gage inundated, including Spring Creek, N. Plum Creek, and Geneva Roads. North side of I-45 turnaround is flooded and impassable."
+   },
+   {
+    "stage": 96.5,
+    "statement": "Moderate lowland flooding continues with the lowest slabs on Spring Creek and N. Plum Creek Roads threatened."
+   },
+   {
+    "stage": 100,
+    "statement": "Major lowland flooding begins as homes on Spring Creek and N. Plum Creek are inundated."
+   },
+   {
+    "stage": 102,
+    "statement": "Major lowland flooding continues with N. Hilltop Road and the northeast portion of Riley Fuzzel Road inundated."
+   },
+   {
+    "stage": 104,
+    "statement": "Major lowland flooding continues."
+   },
+   {
+    "stage": 109,
+    "statement": "Major lowland flooding continue with Riley Fuzzel Bridge and the northbound feeder bridge inundated."
+   },
+   {
+    "stage": 112,
+    "statement": "Top of Northgate Levee at I-45"
+   }
+  ],
+  "harvey_crest": {
+   "stage": 111.52,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/SPNT2"
+ },
+ "TMBT2": {
+  "impacts": [
+   {
+    "stage": 143,
+    "statement": "Top of bank"
+   },
+   {
+    "stage": 155,
+    "statement": "Minor flooding begins with widespread lowland flooding occurring upstream and downstream of the gage. The lowest streets and structures in the Foxwood subdivision are flooded."
+   },
+   {
+    "stage": 157,
+    "statement": "Moderate flooding begins with several homes and streets in the Foxwood subdivision flooded."
+   },
+   {
+    "stage": 159,
+    "statement": "Major flooding begins with widespread significant flooding of streets and homes in the Foxwood subdivision."
+   },
+   {
+    "stage": 161.5,
+    "statement": "SH 249 begins to flood north of the creek."
+   },
+   {
+    "stage": 166.38,
+    "statement": "Flood of record set on 8/28/2017 during Harvey."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 166.38,
+   "occurred": "2017-08-28"
+  },
+  "source": "https://water.noaa.gov/gauges/TMBT2"
+ },
+ "WFDT2": {
+  "impacts": [
+   {
+    "stage": 85.5,
+    "statement": "Minor lowland flooding begins."
+   },
+   {
+    "stage": 88,
+    "statement": "Moderate lowland flooding begins."
+   },
+   {
+    "stage": 90,
+    "statement": "Major lowland flooding begins with water to the bottom of I-45 bridge."
+   }
+  ],
+  "harvey_crest": {
+   "stage": 97.12,
+   "occurred": "2017-08-29"
+  },
+  "source": "https://water.noaa.gov/gauges/WFDT2"
+ },
+ "WSBT2": {
+  "impacts": [],
+  "harvey_crest": {
+   "stage": 71.22,
+   "occurred": "2017-08-31"
+  },
+  "source": "https://water.noaa.gov/gauges/WSBT2"
+ }
+}

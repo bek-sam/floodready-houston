@@ -250,6 +250,10 @@ def test_shelters_offline_is_200(client):
 
 def test_outlook(client, monkeypatch):
     from app.services import outlook
+
+    async def down(url, params=None, ttl=0):
+        return None
+    monkeypatch.setattr(outlook, "get_json", down)
     r = client.get("/api/outlook", params={"lat": 29.76, "lon": -95.37}).json()
     assert r["day1"] is None and r["warnings"]
 

@@ -18,11 +18,11 @@ DATE_RE = re.compile(r"\b(20\d\d-\d\d-\d\d)\b")
 
 L = {  # deterministic templates (short, sourced)
     "countdown": {
-        "en": "Flood insurance from the NFIP usually has a 30-day waiting period{c}. If you buy a policy today ({p}), coverage generally starts {e}; until then you have no flood coverage. {season} Buy before a storm is forecast.",
-        "es": "El seguro de inundación del NFIP normalmente tiene un período de espera de 30 días{c}. Si compra una póliza hoy ({p}), la cobertura generalmente empieza el {e}; hasta entonces no tiene cobertura. {season} Compre antes de que se pronostique una tormenta.",
-        "vi": "Bảo hiểm lũ NFIP thường có thời gian chờ 30 ngày{c}. Nếu bạn mua hôm nay ({p}), bảo hiểm thường bắt đầu từ {e}; trước đó bạn không được bảo hiểm lũ. {season} Hãy mua trước khi có dự báo bão.",
-        "zh": "NFIP洪水保险通常有30天的等待期{c}。如果您今天（{p}）购买，保障一般从{e}开始；在此之前您没有洪水保障。{season}请在风暴预报之前购买。",
-        "ar": "عادةً ما يكون لتأمين الفيضانات من NFIP فترة انتظار مدتها 30 يومًا{c}. إذا اشتريت وثيقة اليوم ({p})، تبدأ التغطية عادةً في {e}؛ وقبل ذلك لا توجد لديك تغطية للفيضانات. {season} اشترِ قبل التنبؤ بالعاصفة.",
+        "en": "Flood insurance from the NFIP usually has a 30-day waiting period{c} (a few exceptions exist, e.g. buying with a mortgage; ask your agent). If you buy a policy today ({p}), coverage generally starts {e}; until then you have no flood coverage. {season} Buy before a storm is forecast.",
+        "es": "El seguro de inundación del NFIP normalmente tiene un período de espera de 30 días{c} (hay algunas excepciones, p. ej. al comprar con una hipoteca; pregunte a su agente). Si compra una póliza hoy ({p}), la cobertura generalmente empieza el {e}; hasta entonces no tiene cobertura. {season} Compre antes de que se pronostique una tormenta.",
+        "vi": "Bảo hiểm lũ NFIP thường có thời gian chờ 30 ngày{c} (có một vài ngoại lệ, ví dụ khi mua cùng khoản vay thế chấp; hãy hỏi đại lý của bạn). Nếu bạn mua hôm nay ({p}), bảo hiểm thường bắt đầu từ {e}; trước đó bạn không được bảo hiểm lũ. {season} Hãy mua trước khi có dự báo bão.",
+        "zh": "NFIP洪水保险通常有30天的等待期{c}（有少数例外，例如随房贷一起购买；请咨询您的保险代理人）。如果您今天（{p}）购买，保障一般从{e}开始；在此之前您没有洪水保障。{season}请在风暴预报之前购买。",
+        "ar": "عادةً ما يكون لتأمين الفيضانات من NFIP فترة انتظار مدتها 30 يومًا{c} (توجد بعض الاستثناءات، مثل الشراء مع قرض عقاري؛ اسأل وكيلك). إذا اشتريت وثيقة اليوم ({p})، تبدأ التغطية عادةً في {e}؛ وقبل ذلك لا توجد لديك تغطية للفيضانات. {season} اشترِ قبل التنبؤ بالعاصفة.",
     },
     "season_in": {"en": "That is before hurricane season ends ({d}).", "es": "Eso es antes de que termine la temporada de huracanes ({d}).",
                   "vi": "Ngày đó trước khi mùa bão kết thúc ({d}).", "zh": "这在飓风季结束（{d}）之前。", "ar": "وذلك قبل نهاية موسم الأعاصير ({d})."},

@@ -197,7 +197,7 @@ export default function Home() {
           <DigestBanner inputs={inputs} placeKey={`${loc!.lat.toFixed(4)},${loc!.lon.toFixed(4)}`} />
           <Disclosure id="profile" icon={<HomeIcon size={20} />} title={t('det.profile')}
             preview={r ? profilePreview(r, t) : inputs.risk.failed ? t('live.unavail') : t('sum.checking')}>
-            {r ? <PlaceProfile r={r} /> : inputs.risk.failed ? <ErrorBox error={t('sum.exp.unknown')} onRetry={d.refresh} /> : <Busy />}
+            {r ? <PlaceProfile r={r} loc={loc} /> : inputs.risk.failed ? <ErrorBox error={t('sum.exp.unknown')} onRetry={d.refresh} /> : <Busy />}
           </Disclosure>
           <Disclosure id="history" icon={<Waves size={20} />} title={t('det.history')}
             preview={h ? (histN ? fill(t, 'det.historyPreview', { n: histN }) : t('det.historyNone')) : inputs.hist.failed ? t('live.unavail') : t('sum.checking')}>
