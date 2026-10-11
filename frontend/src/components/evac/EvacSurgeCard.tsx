@@ -9,7 +9,7 @@ export function useEvac(loc: { lat: number; lon: number } | null) {
     setD(null)
     if (!loc) return
     let live = true
-    apiC20.evac(loc).then((e) => { if (live) setD(e) })
+    apiC20.evac(loc).then((e) => { if (live) setD(e); try { localStorage.setItem('floodready.evacCache.v1', JSON.stringify({ at: Date.now(), zone: e?.zone ?? null })) } catch { /* ignore */ } })
     return () => { live = false }
   }, [loc?.lat, loc?.lon]) // eslint-disable-line react-hooks/exhaustive-deps
   return d

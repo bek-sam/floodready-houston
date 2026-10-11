@@ -31,6 +31,7 @@ const PAGES = {
   status: lazy(() => import('./pages/Status')),
   judge: lazy(() => import('./pages/Judge')),
   compare: lazy(() => import('./pages/Compare')),
+  offline: lazy(() => import('./pages/Offline')),
 } as const
 type Route = keyof typeof PAGES
 const Widget = lazy(() => import('./pages/Widget'))

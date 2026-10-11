@@ -7,6 +7,8 @@ import { useApp } from '../ctx'
 import { speak, stopSpeaking, unlockAudio, createSpeechQueue, preloadFiller, type SpeechQueue } from '../components/speak'
 import { Button, DemoPanel, EmptyState, IconButton, LoadingText, PageHeader, Segmented } from '../components/ds'
 import { useDemoMode } from '../state/place'
+import OfflineNotice from '../components/OfflineNotice'
+import { useOnline } from '../lib/offline'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
 import { SuggestedQuestions } from '../components/ask/SuggestedQuestions'
 import { VoiceOrb, type OrbState } from '../components/ask/VoiceOrb'
@@ -57,6 +59,7 @@ export default function AskPage() {
   const { t, lang, place } = useApp()
   const offlineVoice = () => offlineVoiceFor(t('p14.voice.offline'), lang)
   const { demo } = useDemoMode()
+  const online = useOnline()
   const [mode, setModeState] = useState<AskMode>(loadMode)
   const [sheet, setSheet] = useState(false)
   const [aloud, setAloudState] = useState(() => { try { return localStorage.getItem(ALOUD_KEY) === '1' } catch { return false } })
@@ -238,7 +241,7 @@ export default function AskPage() {
       setMsgs((m) => [...m, { role: 'bot', text: answer, res: { ...res, sources: Array.isArray(res.sources) ? res.sources : [] } }])
       if (aloud) { const say = (typeof res.speak === 'string' && res.speak.trim()) || speakFallback(answer); if (say) speak(say, lang, () => {}) }
     } catch (e) {
-      setMsgs((m) => [...m, { role: 'bot', text: e instanceof ApiError && e.status === 429 ? t('p4.rate') : t('p4.error'), error: true }])
+      setMsgs((m) => [...m, { role: 'bot', text: e instanceof ApiError && e.status === 429 ? t('p4.rate') : e instanceof ApiError && e.status === 0 ? t('p37.ask.off') : t('p4.error'), error: true }])
     } finally { setBusy(false) }
   }
   const retry = () => {
@@ -269,6 +272,7 @@ export default function AskPage() {
     <div className="flex min-h-[60vh] flex-col">
       <PageHeader title={t('ask.title')} subtitle={t('ask.subtitle')} forPlace
         action={<IconButton icon={Settings2} label={t('p4.settings')} onClick={() => setSheet(true)} />} />
+      {!online && <div className="mb-4"><OfflineNotice /></div>}
       <Segmented<AskMode> label={t('p4.mode')} value={mode} onChange={setMode} className="mb-4 md:max-w-xs"
         options={[{ value: 'type', label: t('p4.mode.type'), icon: Keyboard }, { value: 'talk', label: t('p4.mode.talk'), icon: Mic }]} />
 

@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { CircleMarker, Polyline, Popup, Tooltip } from 'react-leaflet'
 import { ArrowUpDown, Car, LocateFixed, Megaphone, Square, TriangleAlert, Volume2, X } from 'lucide-react'
-import { api, errText, type DemoRoute, type LatLon, type RouteCheck, type WatchPlace } from '../api'
+import { ApiError, api, errText, type DemoRoute, type LatLon, type RouteCheck, type WatchPlace } from '../api'
 import { useApp } from '../ctx'
 import { Map } from '../components/maps'
 import { useAreaAlerts, useWarningsOn, WarningsBar, WarningsMapLayer } from '../components/WarningsLayer'
@@ -16,6 +16,7 @@ import { cssVar, verdictLabelKey, verdictLevel } from '../lib/levels'
 import { parseHash } from '../components/shell/nav'
 import { hazardReason, hazName, routeMessage, useBk } from '../lib/bk'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
+import OfflineNotice from '../components/OfflineNotice'
 import { placeName, store, streetOf, usePlace, useDemoMode, useSimStorm } from '../state/place'
 import { AirportChip } from '../components/p35/P35'
 import SimToggle from '../components/SimToggle'
@@ -25,7 +26,7 @@ interface Pt { text: string; ll?: LatLon; mine?: boolean }
 const EMPTY: Pt = { text: '' }
 const LAST = 'floodready.lastRoute'
 const TO_KEY = 'floodready.driveTo'
-interface Saved { res: RouteCheck; from: string; to: string }
+interface Saved { res: RouteCheck; from: string; to: string; at?: number }
 
 export default function Drive() {
   const { t, lang } = useApp()
@@ -52,6 +53,7 @@ export default function Drive() {
   const [sample, setSample] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const [off, setOff] = useState(false)
   const [res, setRes] = useState<RouteCheck | null>(null)
   const [simulated, setSimulated] = useState(false)
   const [cached, setCached] = useState<Saved | null>(() => store.json<Saved | null>(LAST, null))
@@ -96,13 +98,13 @@ export default function Drive() {
   const check = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!from.text.trim() || !to.text.trim()) { setErr(t('p3.drive.needBoth')); return }
-    setBusy(true); setErr(null); setRes(null); stopSpeaking(); setSpeaking(false)
+    setBusy(true); setErr(null); setOff(false); setRes(null); stopSpeaking(); setSpeaking(false)
     try {
       const [o, d] = await Promise.all([resolve(from), resolve(to)])
       const r = await api.routeCheck(o, d, simOn)
       setRes(r); setSimulated(simOn)
-      if (!simOn) { const s = { res: r, from: from.text, to: to.text }; setCached(s); store.set(LAST, JSON.stringify(s)) }
-    } catch (e2) { setErr(errText(e2, t('p3.drive.offline'))) } finally { setBusy(false) }
+      if (!simOn) { const s = { res: r, from: from.text, to: to.text, at: Date.now() }; setCached(s); store.set(LAST, JSON.stringify(s)) }
+    } catch (e2) { if (e2 instanceof ApiError && e2.status === 0) setOff(true); else setErr(errText(e2, t('p3.drive.offline'))) } finally { setBusy(false) }
   }
   const useMyLocation = () => {
     setErr(null)
@@ -178,6 +180,7 @@ export default function Drive() {
         </form>
       </Card>
 
+      {off && <OfflineNotice at={cached?.at ?? null} />}
       {err && <ErrorBox error={err} onRetry={() => document.querySelector<HTMLFormElement>('form')?.requestSubmit()} />}
       {err && cached && !res && <p className="text-caption text-muted">{t('p3.drive.offline')}</p>}
 

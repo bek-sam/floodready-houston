@@ -9,8 +9,9 @@ import { PayLess } from '../components/p35/P35'
 import GoBag from '../components/gobag/GoBag'
 import SeasonReminders from '../components/season/SeasonReminders'
 import EvacuationHelp from '../components/prepare/EvacuationHelp'
-import { api, errText, type Countdown, type Plan, type When } from '../api'
+import { ApiError, api, errText, type Countdown, type Plan, type When } from '../api'
 import { useApp } from '../ctx'
+import { PLAN_AT, fmtAt, useOnline } from '../lib/offline'
 import { useBk } from '../lib/bk'
 import { Button, Card, Checkbox, ErrorBox, Field, Input, PageHeader, SkeletonText, SourceLink, StatTile, Stepper, Tabs } from '../components/ds'
 import { Warnings } from '../components/ui'
@@ -79,7 +80,13 @@ export default function Prepare() {
   const [plan, setPlanState] = useState<Plan | null>(() => {
     try { const p = JSON.parse(localStorage.getItem('lastPlan') || 'null'); return p && Array.isArray(p.steps) ? p : null } catch { return null }
   })
-  const setPlan = (p: Plan | null) => { setPlanState(p); store.set('lastPlan', JSON.stringify(p)) }
+  const [planAt, setPlanAt] = useState<number | null>(() => Number(store.get(PLAN_AT)) || null)
+  const [fallback, setFallback] = useState(false)
+  const online = useOnline()
+  const setPlan = (p: Plan | null, fb = false) => {
+    setPlanState(p); setFallback(fb)
+    if (!fb) { const now = Date.now(); store.set('lastPlan', JSON.stringify(p)); store.set(PLAN_AT, String(now)); setPlanAt(now) }
+  }
   const [planErr, setPlanErr] = useState<string | null>(null)
   const [planBusy, setPlanBusy] = useState(false)
   const [stage, setStage] = useState(0)
@@ -93,7 +100,12 @@ export default function Prepare() {
       try { saved = await api.saveProfile(profile) } catch { /* plan can still run without saving */ }
       setPlan(await api.plan(saved, place?.lat ?? 29.7604, place?.lon ?? -95.3698))
       setStage(0)
-    } catch (e2) { setPlanErr(errText(e2, t('offline'))) } finally { setPlanBusy(false) }
+    } catch (e2) {
+      if (e2 instanceof ApiError && e2.status === 0 && !plan) {
+        const st = (n: number, when: When) => ({ title: t(`p37.plan.fb${n}t`), detail: t(`p37.plan.fb${n}d`), when })
+        setPlan({ steps: [st(1, 'now'), st(2, 'now'), st(3, 'storm'), st(4, 'storm')], generated_by: 'template' }, true); setStage(0)
+      } else setPlanErr(errText(e2, t('offline')))
+    } finally { setPlanBusy(false) }
   }
   const chips = householdChips(household)
   const stages = WHEN.map((w) => ({ w, steps: (plan?.steps ?? []).filter((s) => s.when === w) }))
@@ -123,11 +135,19 @@ export default function Prepare() {
 
             <SharePlanCard />
 
+            <a href="#offline" className="inline-flex min-h-11 items-center font-semibold text-brand underline underline-offset-2">{t('p37.card.open')}</a>
+
             {planBusy && (
               <Card aria-busy={true}>
                 <p className="mb-3 text-body-sm font-semibold text-ink">{t('p5a.plan.building')}</p>
                 <SkeletonText lines={5} />
               </Card>
+            )}
+
+            {plan && !planBusy && (!online || fallback) && (
+              <p role="status" className="text-body-sm text-muted">
+                {fallback ? t('p37.plan.fbNote') : planAt ? t('p37.plan.saved').replace('{time}', fmtAt(planAt, lang)) : ''}
+              </p>
             )}
 
             {plan && !planBusy && (

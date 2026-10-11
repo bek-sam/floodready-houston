@@ -12,6 +12,8 @@ import { Button, Card, DemoPanel, EmptyState, ErrorBox, Field, Freshness, GaugeC
 import { useShell } from '../components/shell/ShellContext'
 import { watchLevel } from '../lib/levels'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
+import OfflineNotice from '../components/OfflineNotice'
+import { WATCH_CACHE } from '../lib/offline'
 import { placeName, store, streetOf, usePlace, useDemoMode, useSimStorm } from '../state/place'
 import SimToggle from '../components/SimToggle'
 
@@ -43,6 +45,7 @@ export default function Watch() {
   const { sim: simOn } = useSimStorm()
   const sim = simOn
   const [pollErr, setPollErr] = useState<string | null>(null)
+  const [offAt, setOffAt] = useState<number | null | undefined>(undefined) // undefined = online
   const [checkedAt, setCheckedAt] = useState<Date | null>(null)
   const [announce, setAnnounce] = useState('')
   const [addOpen, setAddOpen] = useState(false)
@@ -80,7 +83,8 @@ export default function Watch() {
       const r = await api.watchStatus(ids, sim, c.signal)
       if (c.signal.aborted) return
       const got = Array.isArray(r.places) ? r.places : []
-      setPollErr(null); setStatus(got); setCheckedAt(new Date()); setLoaded(true)
+      setPollErr(null); setOffAt(undefined); setStatus(got); setCheckedAt(new Date()); setLoaded(true)
+      store.set(WATCH_CACHE, JSON.stringify({ at: Date.now(), status: got }))
       for (const s of got) {
         const before = prev.current[s.id]
         if (before !== undefined && RANK[s.level] > RANK[before] && s.level !== 'ok') {
@@ -94,6 +98,11 @@ export default function Watch() {
       }
     } catch (e) {
       if (c.signal.aborted || (e instanceof DOMException && e.name === 'AbortError')) return
+      if (e instanceof ApiError && e.status === 0) {
+        const c = store.json<{ at: number; status: WatchStatus[] } | null>(WATCH_CACHE, null)
+        setPollErr(null); setOffAt(c?.at ?? null); if (c && Array.isArray(c.status)) { setStatus(c.status); setCheckedAt(new Date(c.at)) }
+        setLoaded(true); return
+      }
       setPollErr(errText(e, t('offline'))); setLoaded(true)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,6 +156,7 @@ export default function Watch() {
       <SimToggle />
       {sim && <p className="text-caption font-semibold text-watch">{t('p3.demo.simBadge')}</p>}
 
+      {offAt !== undefined && <OfflineNotice at={offAt} />}
       {pollErr && <ErrorBox error={pollErr} onRetry={() => { void poll() }} />}
 
       <h2 className="text-h2 text-ink">{t('p3.places.heading')}</h2>
