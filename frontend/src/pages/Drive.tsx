@@ -121,6 +121,8 @@ export default function Drive() {
   const failed = !!shown && !shown.route
   const level = failed ? 'unknown' : verdictLevel(shown?.verdict)
   const hazards = shown?.hazards ?? []
+  const alt = shown?.alternative
+  const altLine = alt?.route?.coordinates?.map(([lon, lat]) => [lat, lon] as [number, number])
   const line = shown?.route?.coordinates?.map(([lon, lat]) => [lat, lon] as [number, number])
   const bounds = line && line.length > 1 ? line : undefined
   const sampleTag = sample && !simulated
@@ -199,6 +201,11 @@ export default function Drive() {
             {sampleTag && <p className="mt-2 text-caption font-semibold text-watch">{t('p3.drive.sample')}</p>}
             <p className="mt-3 text-h3 font-normal text-ink">{failed ? t('p3.drive.failed') : routeMessage(bk, t, shown)}</p>
             <div className="mt-2"><Warnings items={shown.warnings} codes={shown.warning_codes} /></div>
+            {alt && altLine && Number.isFinite(alt.extra_min) && (
+              <p className="mt-2 rounded-md bg-surface-2 p-3 text-body-sm text-ink" role="note">
+                {t('p39c.alt').replace('{n}', String(Math.max(1, hazards.length - alt.hazard_count))).replace('{x}', String(Math.max(0, Math.round(alt.extra_min))))}
+              </p>
+            )}
             <h3 className="mt-4 text-h3 text-ink">{t('p3.drive.hazards')}</h3>
             {hazards.length === 0 ? <p className="mt-1 text-body-sm text-muted">{t('p3.drive.noHazards')}</p> : (
               <ul className="mt-2 divide-y divide-line">
@@ -247,6 +254,7 @@ export default function Drive() {
             </Popup>
           </CircleMarker>
         ))}
+        {altLine && <Polyline positions={altLine} pathOptions={{ color: cRoute, weight: 4, dashArray: '8 8' }} />}
         {line && <Polyline positions={line} pathOptions={{ color: cRoute, weight: 5 }} />}
         {hazards.filter((h) => Number.isFinite(h.lat) && Number.isFinite(h.lon)).map((h, i) => (
           <CircleMarker key={i} center={[h.lat, h.lon]} radius={10} pathOptions={{ color: cRing, weight: 2, fillColor: cHigh, fillOpacity: 1 }}>

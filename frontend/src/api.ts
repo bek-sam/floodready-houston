@@ -57,6 +57,7 @@ export interface RouteCheck extends Warned {
   route: { type: 'LineString'; coordinates: [number, number][] } | null
   hazards: Hazard[]; verdict: 'safe' | 'caution' | 'avoid'; message: string; meta?: Meta
   message_code?: string; message_params?: Record<string, unknown>; conditions?: { code: string; params?: Record<string, unknown> }[]; report_count?: number
+  alternative?: { route: { type: 'LineString'; coordinates: [number, number][] }; hazards?: Hazard[]; hazard_count: number; extra_min: number; extra_mi?: number } | null
 }
 
 export interface ReplayEvent { id: string; name: string; start: string; end: string; summary: string; source: string }
@@ -139,7 +140,7 @@ export interface ZipInsurance extends Warned {
   policies_in_force: number | null; source: string; note: string; note_code?: string
   premiums?: { median_annual: number | null; p25: number | null; p75: number | null; sample_size?: number; source?: string; as_of?: string } | null
 }
-export interface MedFacility { name: string; address: string; phone: string | null; lat: number; lon: number; distance_mi: number }
+export interface MedFacility { name: string; address: string; phone: string | null; lat: number; lon: number; distance_mi: number; fema_zone?: string | null; sfha?: boolean | null; harvey_flooded?: boolean | null }
 export interface Empower extends Warned {
   zip: string; medicare_benes: number | null; power_dependent_devices: number | null; oxygen: number | null; dialysis: number | null
   available: boolean; source: string; map: string; note: string

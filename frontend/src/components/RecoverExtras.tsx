@@ -102,3 +102,17 @@ export function Share911() {
     </Card>
   )
 }
+
+// Same guidance as the SMS "danger" reply (backend/app/services/sms.py). Source: Ready.gov floods.
+export function WaitingForRescue() {
+  const { t } = useApp()
+  return (
+    <Card title={t('p39c.rescue.t')} tone="inset">
+      <p className="text-body-sm text-ink">{t('p39c.rescue.body')}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <ButtonLink variant="danger" icon={Phone} href="tel:911">{t('sos')}</ButtonLink>
+      </div>
+      <SourceLink href="https://www.ready.gov/floods" label={t('p39c.rescue.src')} />
+    </Card>
+  )
+}

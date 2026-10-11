@@ -31,6 +31,12 @@ export default function MedicalAccess() {
             <div className="min-w-0 text-body-sm">
               <p className="font-semibold text-ink">{f.name} <span className="font-normal text-muted">{typeof f.distance_mi === 'number' ? `· ${f.distance_mi.toFixed(1)} mi` : ''}</span></p>
               <p className="text-muted">{f.address}</p>
+              {(f.sfha || f.harvey_flooded) && (
+                <p className="mt-1 flex flex-wrap gap-1">
+                  {f.sfha && <span className="rounded-full bg-surface-2 px-2 py-0.5 text-caption font-semibold text-ink">{t('p39c.med.zone').replace('{z}', f.fema_zone ?? '')}</span>}
+                  {f.harvey_flooded && <span className="rounded-full bg-surface-2 px-2 py-0.5 text-caption font-semibold text-ink">{t('p39c.med.harvey')}</span>}
+                </p>
+              )}
             </div>
             {typeof f.phone === 'string' && f.phone && (
               <ButtonLink variant="secondary" icon={Phone} href={`tel:${f.phone.replace(/[^\d+]/g, '')}`} aria-label={t('p5a.med.callName').replace('{name}', f.name)}>{t('p5a.med.call')}</ButtonLink>
@@ -38,7 +44,7 @@ export default function MedicalAccess() {
           </li>
         ))}
       </ul>
-      {on && m.data && <p className="mt-2 text-caption text-muted">{t('p39.med.note')} <SourceLink href={m.data.source} /></p>}
+      {on && m.data && <p className="mt-2 text-caption text-muted">{t('p39.med.note')} {(m.data.facilities ?? []).some((f) => f.sfha != null || f.harvey_flooded != null) && t('p39c.med.call') + ' '}<SourceLink href={m.data.source} /></p>}
     </Card>
   )
 }

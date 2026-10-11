@@ -157,6 +157,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Audit fix round (Oct 11, docs/problems/):** `/route-check` adds `active_warnings[]`; codes `route.cautionReport` (single unverified report → caution only; avoid from reports needs ≥2), `route.warning` {event} (NWS flood warning polygon on the route raises safe → caution), condition `route.c.warning`; `/parking/check` adds reason `reservoir_pool` and `info[]` (`reservoir_area`); `/risk` no longer returns `low_ground`; `/watch` returns 422 `watch.outOfRegion` outside lat 29.0–30.5 / lon -96.5–-94.5; SMS distress texts get a 911-first reply; SMS ALERTS ON is honest without Twilio and sends level-rise texts when TWILIO_* is set; push retries failed sends.
 
+**Cycle 39:** `/route-check` adds optional `alternative{route, hazards, hazard_count, verdict, message, message_code:"route.alt", extra_min, extra_mi}` (OSRM alternatives, only when verdict is avoid/caution and the alternative has strictly fewer hazards; never labelled safe); `/medical` facilities add `fema_zone`, `sfha`, `harvey_flooded` + top-level `exposure_source`.
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

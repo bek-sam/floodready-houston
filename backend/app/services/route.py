@@ -93,9 +93,10 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
     url = OSRM.format(a=o["lon"], b=o["lat"], c=d["lon"], d=d["lat"])
     rkey = f"{o['lat']:.4f},{o['lon']:.4f};{d['lat']:.4f},{d['lon']:.4f}"
     data = diskcache.get("routes", rkey)
-    if not data:
-        data = await get_json(url, {"overview": "full", "geometries": "geojson"}, ttl=600)
-        if data and data.get("routes"):
+    if not data or len(data.get("routes") or []) < 2:  # older cache entries have no alternatives; refresh once
+        fresh = await get_json(url, {"overview": "full", "geometries": "geojson", "alternatives": "true"}, ttl=600)
+        if fresh and fresh.get("routes"):
+            data = fresh
             diskcache.put("routes", rkey, data)
     fallback = False
     try:
@@ -104,6 +105,28 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
         fallback = True
         warnings.append("Routing service unavailable; showing a straight line, not a real route")
         line = {"type": "LineString", "coordinates": [[o["lon"], o["lat"]], [d["lon"], d["lat"]]]}
+    out = await _evaluate(line, fallback, simulate, warnings)
+    if not fallback and out["verdict"] in ("avoid", "caution") and out["hazards"]:
+        try:
+            best = None
+            for r in (data.get("routes") or [])[1:3]:
+                alt = await _evaluate(r["geometry"], False, simulate, [])
+                if len(alt["hazards"]) < len(out["hazards"]) and (best is None or len(alt["hazards"]) < len(best[0]["hazards"])):
+                    best = (alt, r)
+            if best:
+                alt, r = best
+                p0 = data["routes"][0]
+                dmin = max(0.0, (r["duration"] - p0["duration"]) / 60)
+                dmi = max(0.0, (r["distance"] - p0["distance"]) / 1609.344)
+                out["alternative"] = {"route": alt["route"], "hazards": alt["hazards"], "hazard_count": len(alt["hazards"]),
+                                      "verdict": alt["verdict"], "message": alt["message"],
+                                      "extra_min": round(dmin, 1), "extra_mi": round(dmi, 1), "message_code": "route.alt"}
+        except Exception:
+            pass
+    return out
+
+
+async def _evaluate(line: dict, fallback: bool, simulate: bool, warnings: list) -> dict:
     coords = line["coordinates"]
 
     hazards, high, deep_report = [], False, None

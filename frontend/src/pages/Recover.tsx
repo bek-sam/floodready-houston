@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { CircleMarker, Popup } from 'react-leaflet'
-import { Home, Info, LifeBuoy, Megaphone, ChevronRight } from 'lucide-react'
+import { Phone, Home, Info, LifeBuoy, Megaphone, ChevronRight } from 'lucide-react'
 import { api } from '../api'
 import { HOUSTON, useApp } from '../ctx'
 import { usePlace, placeName } from '../state/place'
 import { cssVar } from '../lib/levels'
-import { RecoveryTracker, Share911 } from '../components/RecoverExtras'
+import { RecoveryTracker, Share911, WaitingForRescue } from '../components/RecoverExtras'
 import { Map } from '../components/maps'
 import Report311 from '../components/civic311/Report311'
 import ClaimsHelper from '../components/claims/ClaimsHelper'
@@ -61,6 +61,7 @@ function Checklists() {
                 <li key={s.id}>
                   <Checkbox checked={!!done[s.id]} onChange={(v) => toggle(s.id, v)}
                     label={<span className={done[s.id] ? 'text-muted line-through' : ''}>{i + 1}. {t(`rec.${s.id}`)}</span>} />
+                  {s.id === 'b2' && <div className="ps-9"><a href="tel:+13462864020" className="inline-flex min-h-12 items-center gap-2 font-semibold text-brand underline underline-offset-2"><Phone aria-hidden size={18} />{t('p35.buy.call')}</a></div>}
                   {s.src && <div className="ps-9"><SourceLink href={s.src} label={s.label} /></div>}
                 </li>
               ))}
@@ -197,6 +198,7 @@ export default function Recover() {
       <PageHeader title={t('rec.title')} subtitle={t('p5.rec.sub')} forPlace />
 
       <Share911 />
+      <WaitingForRescue />
       <Card title={t('p39.safe.t')}>
         <ul className="list-disc space-y-1 ps-5 text-body-sm text-ink">
           {['l1', 'l2', 'l3', 'l4'].map((k) => <li key={k}>{t('p39.safe.' + k)}</li>)}
