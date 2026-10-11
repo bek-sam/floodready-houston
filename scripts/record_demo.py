@@ -78,6 +78,7 @@ for z in ("77096", "77025", "77586"):
 for z in ("77096", "77025", "77586", "77079"):
     g("/empower", zip=z)
 g("/airports/status")
+g("/declarations", county="Harris", state="TX")
 g("/coastal")
 g("/crossings")
 g("/status")

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T13:05:54+00:00",
+  "generated_at": "2026-10-11T14:47:06+00:00",
   "items": [
     {
       "id": "ai_eval",
@@ -31,9 +31,9 @@
     {
       "id": "tests",
       "label": "Backend tests",
-      "value": "228 passed",
-      "detail": "228 passed, 4 warnings in 9.37s",
-      "as_of": "2026-10-11 08:05",
+      "value": "240 passed",
+      "detail": "240 passed, 1 warning in 10.12s",
+      "as_of": "2026-10-11 09:47",
       "source_path": "backend/tests",
       "source_url": null
     },
