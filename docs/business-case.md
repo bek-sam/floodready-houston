@@ -20,7 +20,7 @@
 | Homeowners | Half of flooded homes outside mapped zones; 30-day NFIP wait (CL cycle 11) | "Should I insure, and do it before the wait costs me." |
 
 ## 3. Solution and why now
-FloodReady is an address-first PWA: FEMA zone beside "flooded in Harvey", ZIP-level NFIP claims, route check (safe / caution / avoid), storm replay, Watch with Web Push and SMS, tenant-disclosure letter (Tex. Prop. Code 92.0135), dialysis finder, and a cited assistant. Voice runs in **5 languages** (EN/ES/VI/ZH/AR). Self-audit: it **directly reduces 37 of 52 catalogued problems (71%)**, informs 13, 2 are not addressed; the rest are policy issues (strict recount in `docs/cycles/cycle-24-coverage.md` + `cycle-28-coverage.md`; self-audit, not a measurement).
+FloodReady is an address-first PWA: FEMA zone beside "flooded in Harvey", ZIP-level NFIP claims, route check (safe / caution / avoid), storm replay, Watch with Web Push and SMS, tenant-disclosure letter (Tex. Prop. Code 92.0135), dialysis finder, and a cited assistant. Voice runs in **5 languages** (EN/ES/VI/ZH/AR). Self-audit: it **reduces harm for 33 of 52 catalogued problems (5 fully, 28 partly)**, informs on 13, and 6 are beyond any app; the rest are policy issues (strict recount in `docs/cycles/cycle-24-coverage.md` + `cycle-28-coverage.md`; self-audit, not a measurement).
 
 Measured (CL cycles 18-19, EV):
 - Live voice model benchmark: median 1.42 s (gemini-3.1-flash-live-preview), versus 3.83 s for the slowest option tested.
@@ -88,6 +88,6 @@ Why it matters: NFIP has a 30-day wait (CL cycle 11), so a reminder 30+ days ahe
 "Harvey flooded 154,170 Harris County homes; nearly half were outside the floodplain and only 36% had insurance. Our tools show gauges and 2007 maps, not you. FloodReady turns your address into a plain-language answer in your language: did it flood here, is my route safe, should I insure. Residents pay nothing. The City, property managers and health networks pay because it cuts calls, disclosure disputes and missed appointments. Our AI passes 40 of 40 safety checks and answers in 228 ms median in the bench. We start with a 90-day pilot in Meyerland, Kashmere Gardens and Alief."
 1. Half the flooded homes were never on the map
 2. Your address, your language, your route
-3. 37 of 52 problems directly reduced, safety-tested
+3. 33 of 52 problems reduced (5 fully, 28 partly), each verified with a live test
 4. Free for residents, paid by institutions
 5. 90 days, 3 neighborhoods, measurable outcomes

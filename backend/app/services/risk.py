@@ -44,6 +44,8 @@ async def reservoir_status(lat: float, lon: float) -> dict:
     return {"in_area": barker or addicks, "barker": barker, "addicks_approx": addicks, "note": note, "note_code": code}
 
 
+# NOTE: `low_ground` was removed from /risk responses (it was null at every tested point: no gauge datum data
+# exists, and we do not invent a rule). The helper below is kept only for a future datum-backed implementation.
 def _low_ground(elev, gauges):
     """Compare ground elevation with the minor-flood ELEVATION of the nearest gauge that has a known datum.
     Needs gauge['datum_ft'] (ft above sea level). Returns (value, note); None if no datum is available."""
@@ -157,10 +159,9 @@ async def get_risk(lat: float, lon: float, simulate: bool = False) -> dict:
         warnings.append("Jurisdiction lookup failed")
     rs = await reservoir_status(lat, lon)
     reservoir = rs["in_area"]
-    low, low_note, low_code, low_params = _low_ground(elevation, gauges)
     hv = harvey_for_jurisdiction(harvey_at(lat, lon), jur)
     out = {"fema_zone": zone, "zone_subtype": subtype, "sfha": sfha, "elevation_ft": elevation, "elevation_source": elev_source,
-           "low_ground": low, "low_ground_note": low_note, "low_ground_note_code": low_code, "low_ground_note_params": low_params, "nearest_gauges": gauges,
+           "nearest_gauges": gauges,
            "reservoir_area": reservoir, "harvey": hv, "jurisdiction": jur, "jurisdiction_code": jur_code, "jurisdiction_params": jur_params, "facts": build_facts(zone, sfha, reservoir)}
     if warnings:
         out["warnings"] = warnings

@@ -113,13 +113,17 @@ def _places_for(s, sub: PushSub) -> list[dict]:
             for p in s.query(Place).filter(Place.id.in_(ids)).all()]
 
 
-def _process(s, sub: PushSub, payload: dict) -> bool:
-    """Send; delete the subscription if gone. Returns True if sent."""
+def _process_status(s, sub: PushSub, payload: dict) -> str:
+    """Send; delete the subscription if gone (404/410). Returns 'ok' | 'gone' | 'error'."""
     r = send_one(sub, payload)
     if r == "gone":
         s.delete(sub)
         s.commit()
-    return r == "ok"
+    return r
+
+
+def _process(s, sub: PushSub, payload: dict) -> bool:
+    return _process_status(s, sub, payload) == "ok"
 
 
 async def push_test(endpoint: str) -> int:
@@ -146,21 +150,36 @@ async def check_all() -> int:
     """One pass of the background loop: push only when a place's level rises."""
     sent = 0
     with get_session() as s:
-        for sub in s.query(PushSub).all():
+        for sub in list(s.query(PushSub).all()):
             last = json.loads(sub.last_levels or "{}")
             new = dict(last)
+            gone = False
             for p in _places_for(s, sub):
                 ev = await evaluate(p, False)
                 prev = last.get(p["id"], "ok")
-                new[p["id"]] = ev["level"]
                 if RANK[ev["level"]] > RANK[prev]:
-                    if _process(s, sub, make_payload(sub.lang or "en", ev["level"], p["label"], p["id"])):
+                    r = _process_status(s, sub, make_payload(sub.lang or "en", ev["level"], p["label"], p["id"]))
+                    if r == "ok":
                         sent += 1
+                        new[p["id"]] = ev["level"]
+                    elif r == "gone":
+                        gone = True
+                        break
+                    # failed send: keep the previous level so the next pass retries
+                else:
+                    new[p["id"]] = ev["level"]  # level fell or unchanged: track it so a later rise alerts again
+            if gone:
+                continue
             try:
                 sub.last_levels = json.dumps(new)
                 s.commit()
             except Exception:
                 s.rollback()
+    try:
+        from app.services.sms import send_level_rises
+        sent += await send_level_rises()
+    except Exception as e:
+        log.warning("sms alert pass failed: %s", e)
     return sent
 
 

@@ -17,12 +17,23 @@ class PlaceIn(BaseModel):
     lang: Optional[str] = Field(default="en", max_length=8)
 
 
+# Houston region bbox (same as the area-alerts default): lon -96.5..-94.5, lat 29.0..30.5
+REGION = (-96.5, 29.0, -94.5, 30.5)
+
+
+def in_region(lat: float, lon: float) -> bool:
+    return REGION[0] <= lon <= REGION[2] and REGION[1] <= lat <= REGION[3]
+
+
 def _row(p: Place) -> dict:
     return {"id": p.id, "label": p.label, "lat": p.lat, "lon": p.lon, "lang": p.lang}
 
 
 @router.post("/watch")
 async def add_place(body: PlaceIn):
+    if not in_region(body.lat, body.lon):
+        raise HTTPException(422, {"code": "watch.outOfRegion",
+                                  "message": "FloodReady watches places in the Houston area only (lat 29.0-30.5, lon -96.5 to -94.5)."})
     try:
         with get_session() as s:
             p = Place(**body.model_dump())

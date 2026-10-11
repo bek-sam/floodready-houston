@@ -109,3 +109,47 @@ def add_simulated_alert(out: dict, lat: float, lon: float) -> dict:
     out["simulated"] = True
     out["meta"] = {**(out.get("meta") or freshness.meta("simulated", "live")), "storm_mode": True}
     return out
+
+
+def _in_ring(x, y, ring) -> bool:
+    inside, n, j = False, len(ring), len(ring) - 1
+    for i in range(n):
+        xi, yi, xj, yj = ring[i][0], ring[i][1], ring[j][0], ring[j][1]
+        if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / ((yj - yi) or 1e-12) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
+def point_in_geom(x: float, y: float, geom: dict) -> bool:
+    """Point-in-Polygon/MultiPolygon (lon, lat); holes respected."""
+    t, c = (geom or {}).get("type"), (geom or {}).get("coordinates")
+    polys = [c] if t == "Polygon" else c if t == "MultiPolygon" else []
+    for rings in polys or []:
+        if rings and _in_ring(x, y, rings[0]) and not any(_in_ring(x, y, h) for h in rings[1:]):
+            return True
+    return False
+
+
+async def route_warnings(coords: list) -> list[dict]:
+    """Active NWS Flood / Flash Flood / Coastal Flood WARNING polygons that the route line passes through."""
+    if not coords:
+        return []
+    xs, ys = [c[0] for c in coords], [c[1] for c in coords]
+    bb = (min(xs) - 0.01, min(ys) - 0.01, max(xs) + 0.01, max(ys) + 0.01)
+    d = await get_json(AREA_URL, {"area": "TX"}, ttl=300)
+    if not isinstance(d, dict):
+        return []
+    area = build_area(d, bb)
+    out = []
+    step = max(1, len(coords) // 400)
+    pts = coords[::step] + [coords[-1]]
+    for f in area["features"]:
+        p = f["properties"]
+        if "flood" not in p["event"].lower() or "warning" not in p["event"].lower():
+            continue
+        if any(point_in_geom(x, y, f["geometry"]) for x, y in pts):
+            out.append({"event": p["event"], "headline": p.get("headline"), "expires": p.get("expires"), "id": p.get("id")})
+    if out:
+        freshness.mark_storm()
+    return out

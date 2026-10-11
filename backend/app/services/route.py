@@ -1,7 +1,7 @@
 """Route safety check: OSRM route + crossings near it + live conditions."""
 from app.services import diskcache
 from app.services.codes import reason_code, tag_warnings
-from app.services.alerts import get_alerts, is_flood_alert
+from app.services.alerts import get_alerts, is_flood_alert, route_warnings
 from app.services.data import haversine_m, load_json
 from app.services.gauges import nearest_gauges
 from app.services.http import get_json
@@ -107,6 +107,8 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
     coords = line["coordinates"]
 
     hazards, high, deep_report = [], False, None
+    deep_ids: set = set()
+    rep_ids: set = set()
     for f in load_crossings():
         try:
             lon, lat = f["geometry"]["coordinates"][:2]
@@ -135,9 +137,16 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
                             "report_id": rep.get("id"), "confirms": rep.get("confirms", 0), "clears": rep.get("clears", 0),
                             "reason": "Community report" + (f": about {depth:g} in of water" if depth is not None else "")
                             + (f" ({rep['note']})" if rep.get("note") else "")})
+            rep_ids.add(rep.get("id"))
             if depth is not None and depth >= HIGH_DEPTH_IN:
-                high = True
+                deep_ids.add(rep.get("id"))
                 deep_report = depth
+    # Anonymous reports are unverified: one report can raise a route to "caution" at most.
+    # It takes >= 2 distinct reports (at least one deep) to count as evidence of active flooding.
+    if deep_report is not None and len(rep_ids) >= 2:
+        high = True
+    else:
+        deep_report = None
 
     # live conditions near the route midpoint
     mid = coords[len(coords) // 2]
@@ -165,6 +174,16 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
                 cond_codes.append({"code": "route.c.gauge", "params": {"name": g["name"], "status": g["status"]}})
                 break
 
+    wl = []
+    try:
+        wl = await route_warnings(coords)
+    except Exception:
+        pass
+    if wl:
+        active = True
+        conds.append(wl[0]["event"])
+        cond_codes.append({"code": "route.c.warning", "params": {"event": wl[0]["event"]}})
+
     if hazards and high and active:
         verdict, mcode, mparams = "avoid", "route.avoid", {"n": len(hazards)}
         msg = (f"Avoid this route. It passes {len(hazards)} flood-prone crossing(s) "
@@ -175,6 +194,10 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
         msg = (f"Use caution. This route crosses {len(hazards)} known flood-prone spot(s) "
                f"({_names(hazards)}). Simulated storm: conditions are active ({'; '.join(conds)}). "
                "This is a demo, not a real route verdict. Turn around, don't drown.")
+    elif hazards and all(h.get("kind") == "report" for h in hazards) and len(hazards) == 1:
+        verdict, mcode, mparams = "caution", "route.cautionReport", {}
+        msg = ("Use caution. One unverified community report of water on this route. "
+               "A single report cannot confirm flooding; check alerts and never drive into water.")
     elif hazards:
         verdict, mcode, mparams = "caution", "route.caution", {"n": len(hazards)}
         msg = (f"Use caution. This route crosses {len(hazards)} known flood-prone spot(s) "
@@ -186,11 +209,22 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
     else:
         verdict, mcode, mparams = "safe", "route.safe", {}
         msg = "No known flood-prone crossings on this route — conditions can change fast; never drive into water."
+    if wl:
+        ev = wl[0]["event"]
+        if verdict == "safe":
+            verdict, mcode, mparams = "caution", "route.warning", {"event": ev}
+            msg = (f"Use caution. A {ev} is in effect along this route"
+                   + (f" ({wl[0]['headline']})" if wl[0].get("headline") else "")
+                   + ". Do not drive through water. Turn around, don't drown. Call 911 if you are in danger.")
+        else:
+            msg += f" An active {ev} also covers part of this route."
     n_rep = sum(1 for h in hazards if h.get("kind") == "report")
     if n_rep:
         msg += f" {n_rep} community report{'s' if n_rep != 1 else ''} on this route in the last 6 hours."
     out = {"route": line, "hazards": hazards, "verdict": verdict, "message": msg, "report_count": n_rep,
            "message_code": mcode, "message_params": mparams, "conditions": cond_codes}
+    if wl:
+        out["active_warnings"] = [{"event": w["event"], "headline": w.get("headline"), "expires": w.get("expires")} for w in wl]
     if warnings:
         out["warnings"] = warnings
         tag_warnings(out)

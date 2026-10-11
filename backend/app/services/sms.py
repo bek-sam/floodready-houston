@@ -63,6 +63,7 @@ STR = {
         "nf": "FloodReady: could not find that place. Text a Houston ZIP (e.g. 77096) or full street address.",
         "help": "FloodReady: text a ZIP or address for flood risk. ALERTS ON <ZIP> = alerts, ALERTS OFF, STOP = unsubscribe. Msg&data rates may apply. Call 911 if in danger.",
         "on": "FloodReady: flood alerts ON for {p}. Msg&data rates may apply. Reply ALERTS OFF or STOP to cancel, HELP for help.",
+        "on_saved": "FloodReady: your alert sign-up for {p} is saved. Texts will start once our SMS service is connected; none are sent yet. Reply ALERTS OFF or STOP to cancel. Msg&data rates may apply. Call 911 if in danger.",
         "on_need": "FloodReady: to turn alerts on, text ALERTS ON plus your ZIP (e.g. ALERTS ON 77096).",
         "off": "FloodReady: flood alerts OFF. Text ALERTS ON <ZIP> any time to resume.",
         "stop": "FloodReady: you are unsubscribed and will get no more texts. Text START to resume.",
@@ -82,6 +83,7 @@ STR = {
         "nf": "FloodReady: no encontre ese lugar. Envie un ZIP de Houston (ej. 77096) o la direccion completa.",
         "help": "FloodReady: envie un ZIP o direccion para ver el riesgo. ALERTAS SI <ZIP> = alertas, ALERTAS NO, STOP = cancelar. Pueden aplicar tarifas de msj y datos. Llame al 911 si esta en peligro.",
         "on": "FloodReady: alertas de inundacion ACTIVADAS para {p}. Pueden aplicar tarifas. Responda ALERTAS NO o STOP para cancelar, AYUDA para ayuda.",
+        "on_saved": "FloodReady: su registro de alertas para {p} esta guardado. Los mensajes comenzaran cuando nuestro servicio SMS este conectado; aun no se envia ninguno. Responda ALERTAS NO o STOP para cancelar. Pueden aplicar tarifas. Llame al 911 si esta en peligro.",
         "on_need": "FloodReady: para activar alertas envie ALERTAS SI y su ZIP (ej. ALERTAS SI 77096).",
         "off": "FloodReady: alertas DESACTIVADAS. Envie ALERTAS SI <ZIP> para reanudar.",
         "stop": "FloodReady: se cancelo su suscripcion y no recibira mas mensajes. Envie START para reanudar.",
@@ -101,6 +103,7 @@ STR = {
         "nf": "FloodReady: khong tim thay dia diem. Nhan ZIP Houston (vd 77096) hoac dia chi day du.",
         "help": "FloodReady: nhan ZIP hoac dia chi de xem nguy co lu. ALERTS ON <ZIP> = canh bao, ALERTS OFF, STOP = huy. Co the tinh phi tin nhan/du lieu. Goi 911 neu nguy hiem.",
         "on": "FloodReady: da BAT canh bao lu cho {p}. Co the tinh phi. Nhan ALERTS OFF hoac STOP de huy, GIUP de tro giup.",
+        "on_saved": "FloodReady: da luu dang ky canh bao cho {p}. Tin nhan se duoc gui khi dich vu SMS ket noi; hien chua gui tin nao. Nhan ALERTS OFF hoac STOP de huy. Co the tinh phi. Goi 911 neu nguy hiem.",
         "on_need": "FloodReady: de bat canh bao, nhan ALERTS ON kem ZIP (vd ALERTS ON 77096).",
         "off": "FloodReady: da TAT canh bao. Nhan ALERTS ON <ZIP> de bat lai.",
         "stop": "FloodReady: ban da huy dang ky, se khong nhan them tin. Nhan START de tiep tuc.",
@@ -283,7 +286,7 @@ async def summarize(lat: float, lon: float, label: str, lang: str, simulate: boo
     elif hv is True or risk.get("sfha") or risk.get("low_ground"):
         act = S["act_risk"]
     else:
-        act = S["act_low"].format(z=label.split()[0] if label[:5].isdigit() else "77096")
+        act = S["act_low"].format(z=(_ZIP.findall(label) or [label])[-1])
     return clip(f"{label}: " + ". ".join(parts) + f". {act} {S['c911']}")
 
 
@@ -334,7 +337,7 @@ async def handle(phone: str, body: str, simulate: bool = False) -> str:
                     return S["on_need"]
                 row.opted_in = True
                 s.commit()
-                return clip(S["on"].format(p=row.label or "your area"))
+                return clip(S["on" if twilio_configured() else "on_saved"].format(p=row.label or "your area"))
             place = await resolve_place(rest if cmd in ("on", "help") else body)
             if not place:
                 s.commit()
@@ -344,7 +347,7 @@ async def handle(phone: str, body: str, simulate: bool = False) -> str:
             if cmd == "on":
                 row.opted_in = True
                 s.commit()
-                return clip(S["on"].format(p=label))
+                return clip(S["on" if twilio_configured() else "on_saved"].format(p=label))
             s.commit()
             summary = await summarize(lat, lon, label, lang, simulate)
             if cmd == "help":
@@ -354,6 +357,65 @@ async def handle(phone: str, body: str, simulate: bool = False) -> str:
             log.warning("sms handle failed: %s", e)
             s.rollback()
             return S["err"]
+
+
+# ---------- outbound level-rise alerts (only when TWILIO_* is configured) ----------
+
+class SmsAlertState(Base):
+    __tablename__ = "sms_alert_state"
+    phone = Column(String(32), primary_key=True)
+    level = Column(String(8), default="ok")
+
+
+ALERT_TXT = {
+    "en": {"warning": "FloodReady: FLOOD WARNING near {p}. Avoid low roads and underpasses. Turn around, don't drown. Call 911 if in danger. Reply STOP to cancel.",
+           "watch": "FloodReady: flood watch-level conditions near {p}. Check your route before driving. Call 911 if in danger. Reply STOP to cancel."},
+    "es": {"warning": "FloodReady: ALERTA DE INUNDACION cerca de {p}. Evite calles bajas. Llame al 911 si esta en peligro. Responda STOP para cancelar.",
+           "watch": "FloodReady: condiciones de vigilancia de inundacion cerca de {p}. Revise su ruta. Llame al 911 si esta en peligro. Responda STOP para cancelar."},
+    "vi": {"warning": "FloodReady: CANH BAO LU gan {p}. Tranh duong thap. Goi 911 neu nguy hiem. Nhan STOP de huy.",
+           "watch": "FloodReady: dieu kien theo doi lu gan {p}. Kiem tra tuyen duong. Goi 911 neu nguy hiem. Nhan STOP de huy."},
+}
+
+
+def _send_sms(to: str, body: str) -> bool:
+    """Twilio REST send (stdlib). Returns True on success. Only call when twilio_configured()."""
+    import urllib.parse
+    import urllib.request
+    sid, tok, frm = os.environ["TWILIO_ACCOUNT_SID"], os.environ["TWILIO_AUTH_TOKEN"], os.environ["TWILIO_FROM"]
+    req = urllib.request.Request(f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json",
+                                 data=urllib.parse.urlencode({"To": to, "From": frm, "Body": body}).encode())
+    req.add_header("Authorization", "Basic " + base64.b64encode(f"{sid}:{tok}".encode()).decode())
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return 200 <= r.status < 300
+    except Exception as e:
+        log.warning("sms send failed: %s", type(e).__name__)
+        return False
+
+
+async def send_level_rises() -> int:
+    """Text opted-in numbers when their place's watch level rises. No-op without TWILIO_*. A failed send is retried next pass."""
+    if not twilio_configured():
+        return 0
+    from app.services.watch import RANK, evaluate
+    sent = 0
+    with _store("") as s:
+        Base.metadata.create_all(s.get_bind(), tables=[SmsAlertState.__table__])
+        for row in s.query(SmsOptIn).filter(SmsOptIn.opted_in.is_(True), SmsOptIn.stopped.is_(False)).all():
+            if row.lat is None or row.lon is None:
+                continue
+            ev = await evaluate({"id": row.phone, "label": row.label or "your area", "lat": row.lat, "lon": row.lon}, False)
+            st = s.get(SmsAlertState, row.phone) or SmsAlertState(phone=row.phone, level="ok")
+            level = ev["level"]
+            if RANK[level] > RANK.get(st.level or "ok", 0):
+                txt = ALERT_TXT.get(row.lang or "en", ALERT_TXT["en"])[level].format(p=row.label or "your area")
+                if not await asyncio.to_thread(_send_sms, row.phone, clip(txt)):
+                    continue  # not delivered: keep the old level so the next pass retries
+                sent += 1
+            st.level = level
+            s.add(st)
+            s.commit()
+    return sent
 
 
 # ---------- voice check-in ----------

@@ -45,7 +45,7 @@ React + Vite + TypeScript + Tailwind + Leaflet PWA with a service worker and Web
 - Keeping every user-facing fact tied to a source and avoiding invented statistics.
 
 ## Accomplishments
-- Strictly audited against the current code (`docs/cycles/cycle-24-coverage.md`, `cycle-28-coverage.md`): the app directly reduces **37 of 52** catalogued problems (71%), informs 13 and leaves 2 unaddressed. The rest are policy problems (dams, flood bond, development, insurance affordability) that it makes visible instead.
+- Audited problem by problem with live tests (`docs/problems/`): the app reduces harm for **33 of 52** catalogued problems (fully solves 5, partly solves 28), informs on 13, and 6 are beyond any app. The rest are policy problems (dams, flood bond, development, insurance affordability) that it makes visible instead.
 - Measured AI: `/ask` median 228 ms (from 811), -71% tokens, safety eval 87% on the full 99-case suite (5 languages, adversarial) and 40/40 on the quick suite; voice first audio 0.6-1.4 s.
 - Scale of data: 357,241 Harvey polygons, 2,093 high-water marks, 128 crossings, 1,338 strings x 5 languages, 173 backend tests, 21 demo checks.
 - Works end to end with zero API keys.

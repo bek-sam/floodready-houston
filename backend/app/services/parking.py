@@ -57,7 +57,7 @@ def verdict_for(reasons: list[dict], flood_alert: bool) -> dict:
             "detail": "That does not mean the spot is safe. Check the forecast and local alerts."}
 
 
-async def assess(lat: float, lon: float, address: str | None = None) -> dict:
+async def assess(lat: float, lon: float, address: str | None = None, simulate: bool = False) -> dict:
     risk, alerts = await asyncio.gather(get_risk(lat, lon), get_alerts(lat, lon))
     reasons = []
     zone = risk.get("fema_zone")
@@ -69,15 +69,30 @@ async def assess(lat: float, lon: float, address: str | None = None) -> dict:
     cross = [{"name": n, "distance_m": round(d), "risk": r} for d, n, r in crossings_near(lat, lon, CROSSING_M)]
     if cross:
         reasons.append({"code": "crossing", "params": {"n": len(cross), "m": CROSSING_M}, "text": f"{len(cross)} known flood-prone crossing(s) within {CROSSING_M} m"})
-    if risk.get("low_ground"):
-        reasons.append({"code": "low_ground", "params": {}, "text": "Lower than nearby gauges' reference ground (approximate)"})
+    info = []
+    if risk.get("reservoir_area"):
+        pool = None
+        try:
+            from app.services.reservoir import get_pool
+            pool = await get_pool(lat, lon)
+        except Exception:
+            pass
+        p = (pool or {}).get("pool") or {}
+        if simulate or p.get("status") in ("action", "minor", "moderate", "major"):
+            reasons.append({"code": "reservoir_pool", "params": {"stage": p.get("stage_ft"), "simulated": bool(simulate)},
+                            "text": "This spot is inside the Addicks/Barker reservoir pool area and the pool is "
+                                    + ("simulated at a storm level" if simulate else "at or above its action stage")})
+        else:
+            info.append({"code": "reservoir_area", "params": {},
+                         "text": "This spot is inside the Addicks/Barker reservoir pool area. It floods only when the pool rises; "
+                                 "check the pool level before heavy rain."})
     flood_alerts = [a for a in alerts.get("alerts", []) if is_flood_alert(a)]
     elev = risk.get("elevation_ft")
     hg = await higher_ground(lat, lon, elev) if (reasons or flood_alerts) else None
     v = verdict_for(reasons, bool(flood_alerts))
     out = {"lat": lat, "lon": lon, "address": address, "verdict": v["level"], "headline": v["headline"], "detail": v["detail"],
            "headline_code": v["headline_code"], "detail_code": v["detail_code"], "limits_code": "p30.park.limits",
-           "reasons": reasons,
+           "reasons": reasons, "info": info,
            "fema_zone": zone, "harvey_flooded": hv.get("flooded"), "elevation_ft": elev,
            "crossings_within_300m": cross,
            "active_flood_alerts": [{"event": a.get("event"), "headline": a.get("headline"), "expires": a.get("expires")} for a in flood_alerts],

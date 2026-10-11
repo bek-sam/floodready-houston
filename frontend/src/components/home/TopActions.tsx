@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Accessibility, BellRing, ClipboardList, FileText, HeartPulse, Mail, MessageCircleQuestion, Route, type LucideIcon } from 'lucide-react'
 import { useApp } from '../../ctx'
 import { easyT, useEasy } from '../easyread/easyRead'
-import type { Exposure, Level } from '../../lib/levels'
+import { LEVEL_RANK, type Exposure, type Level } from '../../lib/levels'
 import { ACTION_HREF, fill, medicalKind, topActions, type ActionId } from '../../lib/summary'
 import { KEYS, store, usePlace } from '../../state/place'
 import { ActionCard, Disclosure, LoadingText, Skeleton, toast } from '../ds'
@@ -11,6 +11,8 @@ const ICON: Record<ActionId, LucideIcon> = {
   drive: Route, alerts: BellRing, medical: HeartPulse, evac: Accessibility, insurance: FileText,
   renter: Mail, plan: ClipboardList, ask: MessageCircleQuestion,
 }
+
+const id_evacNow = (now: Level) => LEVEL_RANK[now] >= LEVEL_RANK.warning
 
 /** True when this browser already has a push subscription (alerts are on). */
 function useHasPush(): boolean | null {
@@ -47,7 +49,8 @@ export function TopActions({ placeLabel, now, exposure, ready }: { placeLabel: s
   const loading = !ready || hasPush === null
   const list = topActions({ now, exposure, household, hasPush: !!hasPush, hasPlan, done, placeSavedAt: place?.savedAt ?? null })
 
-  const title = (id: ActionId) => id === 'alerts' ? fill(t, 'act.alerts.t', { place: placeLabel })
+  const help = id_evacNow(now)
+  const title = (id: ActionId) => id === 'evac' && help ? t('p39.evac.t') : id === 'alerts' ? fill(t, 'act.alerts.t', { place: placeLabel })
     : id === 'medical' ? fill(t, 'act.medical.t', { what: '@act.medical.' + medicalKind(household) }) : t(`act.${id}.t`)
   const mark = (id: ActionId) => {
     const prev = done
@@ -74,7 +77,7 @@ export function TopActions({ placeLabel, now, exposure, ready }: { placeLabel: s
         ) : (
           <ul className="space-y-3">
             {list.active.map((id) => (
-              <li key={id}><ActionCard icon={ICON[id]} title={title(id)} why={t(`act.${id}.w`)} href={ACTION_HREF[id]} onDone={() => mark(id)} /></li>
+              <li key={id}><ActionCard icon={ICON[id]} title={title(id)} why={id === 'evac' && help ? t('p39.evac.w') : t(`act.${id}.w`)} href={ACTION_HREF[id]} onDone={() => mark(id)} /></li>
             ))}
           </ul>
         )}
@@ -82,7 +85,7 @@ export function TopActions({ placeLabel, now, exposure, ready }: { placeLabel: s
           <Disclosure title={fill(t, 'act.done', { n: list.done.length })}>
             <ul className="space-y-3">
               {list.done.map((id) => (
-                <li key={id}><ActionCard icon={ICON[id]} title={title(id)} why={t(`act.${id}.w`)} href={ACTION_HREF[id]} done onDone={() => unmark(id)} /></li>
+                <li key={id}><ActionCard icon={ICON[id]} title={title(id)} why={id === 'evac' && help ? t('p39.evac.w') : t(`act.${id}.w`)} href={ACTION_HREF[id]} done onDone={() => unmark(id)} /></li>
               ))}
             </ul>
           </Disclosure>

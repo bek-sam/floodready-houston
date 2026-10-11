@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T12:30:18+00:00",
+  "generated_at": "2026-10-11T13:05:54+00:00",
   "items": [
     {
       "id": "ai_eval",
@@ -31,9 +31,9 @@
     {
       "id": "tests",
       "label": "Backend tests",
-      "value": "219 passed",
-      "detail": "219 passed, 4 warnings in 9.52s",
-      "as_of": "2026-10-11 07:30",
+      "value": "228 passed",
+      "detail": "228 passed, 4 warnings in 9.37s",
+      "as_of": "2026-10-11 08:05",
       "source_path": "backend/tests",
       "source_url": null
     },
@@ -49,10 +49,10 @@
     {
       "id": "coverage",
       "label": "Flood problems addressed",
-      "value": "37/52 reduce, 13 inform, 2 not addressed",
-      "detail": "counted by hand per docs/cycles/cycle-24-coverage.md rules",
+      "value": "33/52 reduce, 13 inform, 6 not addressed",
+      "detail": "problem-by-problem audit with a live test per problem (5 fully, 28 partly)",
       "as_of": "2026-10-11",
-      "source_path": "docs/cycles/cycle-35-coverage.md",
+      "source_path": "docs/problems/README.md",
       "source_url": null
     }
   ]

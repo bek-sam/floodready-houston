@@ -61,3 +61,33 @@ def test_codes():
     assert v["headline_code"] == "p30.park.move.h" and v["detail_code"] == "p30.park.move.d"
     v = parking.verdict_for([], False)
     assert v["headline_code"] == "p30.park.ok.h" and v["detail_code"] == "p30.park.ok.d"
+
+
+def test_parking_reservoir_pool(monkeypatch):
+    from app.services import reservoir
+    base = {"fema_zone": "X", "sfha": False, "harvey": {"flooded": False}, "reservoir_area": True, "elevation_ft": 92.0}
+
+    async def risk(lat, lon):
+        return base
+
+    async def alerts(lat, lon):
+        return {"alerts": []}
+
+    async def hg(*a, **k):
+        return None
+    monkeypatch.setattr(parking, "get_risk", risk)
+    monkeypatch.setattr(parking, "get_alerts", alerts)
+    monkeypatch.setattr(parking, "higher_ground", hg)
+
+    async def pool_ok(lat, lon):
+        return {"pool": {"status": "normal", "stage_ft": 80}}
+
+    async def pool_hi(lat, lon):
+        return {"pool": {"status": "action", "stage_ft": 94}}
+    monkeypatch.setattr(reservoir, "get_pool", pool_ok)
+    out = asyncio.run(parking.assess(29.79, -95.64))
+    assert out["verdict"] == "no_flags" and out["info"][0]["code"] == "reservoir_area"
+    assert asyncio.run(parking.assess(29.79, -95.64, simulate=True))["verdict"] == "move"
+    monkeypatch.setattr(reservoir, "get_pool", pool_hi)
+    out = asyncio.run(parking.assess(29.79, -95.64))
+    assert out["verdict"] == "move" and out["reasons"][0]["code"] == "reservoir_pool"

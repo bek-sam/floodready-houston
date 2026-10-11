@@ -72,6 +72,7 @@ export default function ParkCard() {
           <p className="text-body font-semibold text-ink">{tr(res.headline_code, res.headline)}</p>
           <p className="text-body-sm text-ink">{tr(res.detail_code, res.detail)}</p>
           {res.reasons?.length > 0 && <ul className="mt-2 list-disc ps-5 text-body-sm text-ink">{res.reasons.map((r) => <li key={r.code}>{tr('p30.park.reason.' + r.code, r.text, r.params)}</li>)}</ul>}
+          {res.info && res.info.length > 0 && <ul className="mt-2 list-disc ps-5 text-body-sm text-muted">{res.info.map((r) => <li key={r.code}>{tr('p30.park.reason.' + r.code, r.text, r.params)}</li>)}</ul>}
           {move && (
             <div className="mt-3 flex flex-wrap gap-2">
               {res.higher_ground?.maps_url && /^https:\/\//.test(res.higher_ground.maps_url) && (

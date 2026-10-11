@@ -54,14 +54,17 @@ async def _claims(z: str):
 
 async def _policies(z: str):
     today = f"{date.today().isoformat()}T00:00:00.000Z"
-    d = await get_json(f"{BASE}/v3/NfipPolicies", {
-        "$filter": f"reportedZipCode eq '{z}' and policyEffectiveDate le '{today}' and policyTerminationDate ge '{today}'",
-        "$select": "reportedZipCode", "$top": 1, "$inlinecount": "allpages"}, ttl=TTL)
-    try:
-        c = d["metadata"]["count"]
-        return c if isinstance(c, int) and c > 0 else None
-    except Exception:
-        return None
+    for _ in range(2):  # one retry: OpenFEMA occasionally times out on count queries
+        d = await get_json(f"{BASE}/v3/NfipPolicies", {
+            "$filter": f"reportedZipCode eq '{z}' and policyEffectiveDate le '{today}' and policyTerminationDate ge '{today}'",
+            "$select": "reportedZipCode", "$top": 1, "$count": "true"}, ttl=TTL)
+        try:
+            c = d["metadata"]["count"]
+            if isinstance(c, int) and c > 0:
+                return c
+        except Exception:
+            pass
+    return None
 
 
 async def _premiums(z: str):
@@ -91,10 +94,13 @@ async def fetch_zip(z: str) -> dict | None:
         return None
     cnt = Counter(y for y in years if isinstance(y, int))
     by_year = [{"year": y, "count": cnt[y]} for y in sorted(cnt)]
+    policies, premiums = await _policies(z), await _premiums(z)
+    if policies is None and premiums and not premiums.get("truncated"):
+        policies = premiums["sample_size"]  # same in-force filter; sample is the full set when under the 10,000 page cap
     return {"zip": z,
             "claims": {"total": sum(cnt.values()), "since_2017": sum(c for y, c in cnt.items() if y >= 2017),
                        "by_year": by_year},
-            "policies_in_force": await _policies(z), "premiums": await _premiums(z), "source": SOURCE, "note": NOTE, "note_code": "zip.note",
+            "policies_in_force": policies, "premiums": premiums, "source": SOURCE, "note": NOTE, "note_code": "zip.note",
             "fetched_at": time.time()}
 
 
@@ -103,16 +109,16 @@ async def zip_insurance(z: str) -> dict:
     if hit and time.time() - hit["fetched_at"] < TTL:
         return _out(hit)
     snap = diskcache.get("zip_insurance", z)
-    if snap and snap.get("premiums") is not None and time.time() - snap.get("fetched_at", 0) < TTL:
+    if snap and snap.get("premiums") is not None and snap.get("policies_in_force") is not None and time.time() - snap.get("fetched_at", 0) < TTL:
         _mem[z] = snap
         return _out(snap)
     fresh = await fetch_zip(z)
     if fresh:
-        if fresh.get("premiums") is not None or fresh.get("policies_in_force") is not None:
+        if fresh.get("premiums") is not None and fresh.get("policies_in_force") is not None:
             _mem[z] = fresh
             diskcache.put("zip_insurance", z, fresh)
             return _out(fresh)
-        # policy calls transiently failed: short TTL, never poison the 24 h cache
+        # policy/premium calls partly failed: short TTL, never poison the 24 h cache (memory or disk)
         _mem[z] = {**fresh, "fetched_at": time.time() - TTL + SHORT_TTL}
         out = _out(fresh)
         out["warnings"] = ["Policy and premium data temporarily unavailable; claims shown."]

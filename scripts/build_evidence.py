@@ -71,13 +71,13 @@ def main():
                       "12 views x 2 widths x 2 themes; was 1 serious + moderate before fixes; reported in CHANGELOG cycle 31, raw JSON not kept",
                       "2026-10-11", rel))
     # coverage
-    rel = "docs/cycles/cycle-35-coverage.md"
+    rel = "docs/problems/README.md"
     t = read(rel)
     grab(r"Recount: (\d+) REDUCES", t, rel)  # fail loudly if the doc has no recount line
     # the doc appends a new recount after each build; the last one is current
     a, b, c, tot = re.findall(r"Recount: (\d+) REDUCES / (\d+) INFORMS / (\d+) NONE of (\d+)", t)[-1]
     items.append(item("coverage", "Flood problems addressed", f"{a}/{tot} reduce, {b} inform, {c} not addressed",
-                      "counted by hand per docs/cycles/cycle-24-coverage.md rules", "2026-10-11", rel))
+                      "problem-by-problem audit with a live test per problem (5 fully, 28 partly)", "2026-10-11", rel))
     OUT.write_text(json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "items": items}, indent=2) + "\n")
     print(f"wrote {OUT.relative_to(ROOT)} ({len(items)} items)")
 

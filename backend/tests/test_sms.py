@@ -33,7 +33,7 @@ def test_alerts_on_off_stores_optin(client):
     from app.services.sms import SmsOptIn
     assert "ZIP" in sim(client, "ALERTS ON", "+15550004")
     r = sim(client, "ALERTS ON 77096", "+15550004")
-    assert "ON" in r and "STOP" in r and "rates" in r
+    assert "saved" in r and "not sent" not in r and "none are sent yet" in r and "STOP" in r and "rates" in r
     with get_session() as s:
         assert s.get(SmsOptIn, "+15550004").opted_in is True
     assert "OFF" in sim(client, "ALERTS OFF", "+15550004")
@@ -93,3 +93,27 @@ def test_danger_texts_get_911_first():
         assert is_danger(body), body
     for body in ["77096", "HELP", "ALERTS ON 77096", "AYUDA 77096", "5300 N Braeswood Blvd"]:
         assert not is_danger(body), body
+
+
+def test_address_reply_suggests_own_place_not_77096(client):
+    r = sim(client, "5300 N Braeswood Blvd", "+15550009")
+    assert "ALERTS ON 77096" not in r or "77096" in r.split("ALERTS ON")[0]
+
+
+def test_alerts_on_sends_real_sms_only_when_configured(client, monkeypatch):
+    import asyncio
+    from app.services import sms
+    sent = []
+    monkeypatch.setattr(sms, "_send_sms", lambda to, body: sent.append(to) or True)
+    assert asyncio.run(sms.send_level_rises()) == 0 and not sent  # no TWILIO_* -> never sends
+    for k in ("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM"):
+        monkeypatch.setenv(k, "x")
+    assert "connected" not in sim(client, "ALERTS ON 77096", "+15550010")  # configured -> normal "ON" reply
+
+    async def ev(p, sim=False):
+        return {"level": "warning"}
+    from app.services import watch
+    monkeypatch.setattr(watch, "evaluate", ev)
+    assert asyncio.run(sms.send_level_rises()) >= 1 and "+15550010" in sent
+    n = len(sent)
+    assert asyncio.run(sms.send_level_rises()) == 0 and len(sent) == n  # no repeat at same level

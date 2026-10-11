@@ -38,7 +38,7 @@ export default function MedicalAccess() {
           </li>
         ))}
       </ul>
-      {on && m.data && <p className="mt-2 text-caption text-muted">{m.data.note} <SourceLink href={m.data.source} /></p>}
+      {on && m.data && <p className="mt-2 text-caption text-muted">{t('p39.med.note')} <SourceLink href={m.data.source} /></p>}
     </Card>
   )
 }

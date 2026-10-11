@@ -197,6 +197,15 @@ export default function Recover() {
       <PageHeader title={t('rec.title')} subtitle={t('p5.rec.sub')} forPlace />
 
       <Share911 />
+      <Card title={t('p39.safe.t')}>
+        <ul className="list-disc space-y-1 ps-5 text-body-sm text-ink">
+          {['l1', 'l2', 'l3', 'l4'].map((k) => <li key={k}>{t('p39.safe.' + k)}</li>)}
+        </ul>
+        <div className="flex flex-wrap gap-x-4">
+          <SourceLink href="https://nhess.copernicus.org/articles/18/1073/2018/nhess-18-1073-2018.pdf" label={t('p39.safe.src1')} />
+          <SourceLink href={KB.imelda} label={t('p39.safe.src2')} />
+        </div>
+      </Card>
       <DeclarationBanner />
       <RecoveryTracker />
       <Checklists />

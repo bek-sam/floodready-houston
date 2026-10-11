@@ -1,9 +1,9 @@
 import { api, type BuyoutArea, type ZipInsurance } from '../api'
 import { useApp } from '../ctx'
 import { useBk } from '../lib/bk'
-import { ErrorBox, LoadingText, SkeletonText, SourceLink } from './ds'
+import { Button, ErrorBox, LoadingText, SkeletonText, SourceLink } from './ds'
 import { useAsync } from './ui'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BuyoutContact } from './p35/P35'
 
 function TenantRights({ open }: { open: boolean }) {
@@ -65,7 +65,28 @@ export default function RentBuy({ label, zone, sfha, lat, lon }: { label: string
   const { t, lang } = useApp()
   const bk = useBk()
   const nf = (n: number) => n.toLocaleString(lang)
-  const zip = label.match(/,\s*[A-Za-z]{2}\s+(\d{5})(?:-\d{4})?\s*(?:,?\s*(?:USA|US))?\s*$/)?.[1] ?? label.match(/\b(\d{5})(?:-\d{4})?\s*$/)?.[1] ?? null
+  const labelZip = label.match(/,\s*[A-Za-z]{2}\s+(\d{5})(?:-\d{4})?\s*(?:,?\s*(?:USA|US))?\s*$/)?.[1] ?? label.match(/\b(\d{5})(?:-\d{4})?\s*$/)?.[1] ?? null
+  const [manual, setManual] = useState<string>(() => { try { return localStorage.getItem('zip:' + lat?.toFixed(3) + ',' + lon?.toFixed(3)) ?? '' } catch { return '' } })
+  const [rev, setRev] = useState<string | null>(null)
+  useEffect(() => { try { setManual(localStorage.getItem('zip:' + lat?.toFixed(3) + ',' + lon?.toFixed(3)) ?? '') } catch { setManual('') } }, [lat, lon])
+  useEffect(() => {
+    setRev(null)
+    if (labelZip || manual || lat == null || lon == null) return
+    let live = true
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&lat=${lat}&lon=${lon}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { const z = String(j?.address?.postcode ?? '').match(/^\d{5}/)?.[0]; if (live && z) setRev(z) })
+      .catch(() => { /* fall back to the ZIP input */ })
+    return () => { live = false }
+  }, [labelZip, manual, lat, lon])
+  const zip = labelZip ?? (/^\d{5}$/.test(manual) ? manual : null) ?? rev
+  const [draft, setDraft] = useState('')
+  const [bad, setBad] = useState(false)
+  const saveZip = () => {
+    if (!/^\d{5}$/.test(draft.trim())) { setBad(true); return }
+    setBad(false); setManual(draft.trim())
+    try { localStorage.setItem('zip:' + lat?.toFixed(3) + ',' + lon?.toFixed(3), draft.trim()) } catch { /* ignore */ }
+  }
   const ins = useAsync<ZipInsurance>(() => api.zipInsurance(zip!), [zip], !!zip)
   const d = ins.data
   const hasLoc = lat != null && lon != null
@@ -78,7 +99,18 @@ export default function RentBuy({ label, zone, sfha, lat, lon }: { label: string
   const rows = (Array.isArray(d?.claims?.by_year) ? d!.claims.by_year : []).filter((r) => r && typeof r.year === 'number').slice().sort((a, b) => a.year - b.year)
   return (
     <div className="space-y-3 text-body-sm text-ink">
-      {!zip && <p className="text-muted">{t('c5.rb.nozip')}</p>}
+      {!zip && (
+        <form className="space-y-2" onSubmit={(e) => { e.preventDefault(); saveZip() }}>
+          <p className="text-muted">{t('p39.zip.help')}</p>
+          <label className="block font-semibold" htmlFor="rb-zip">{t('p39.zip.label')}</label>
+          <div className="flex gap-2">
+            <input id="rb-zip" inputMode="numeric" pattern="\d{5}" maxLength={5} autoComplete="postal-code" value={draft} onChange={(e) => setDraft(e.target.value)}
+              className="min-h-11 w-28 rounded-md border border-line bg-surface px-3 text-ink" aria-invalid={bad || undefined} />
+            <Button type="submit" variant="secondary">{t('p39.zip.go')}</Button>
+          </div>
+          {bad && <p className="text-danger" role="alert">{t('p39.zip.bad')}</p>}
+        </form>
+      )}
       {ins.loading && <div aria-busy="true"><LoadingText /><SkeletonText lines={3} /></div>}
       {ins.error && <ErrorBox error={t('c5.rb.unavail')} onRetry={ins.reload} />}
       {d && (

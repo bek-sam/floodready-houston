@@ -36,8 +36,8 @@ We don't claim it's perfect. `harvey.py` uses the City of Houston's own Harvey i
 **8. How does Watch/push decide to alert?**
 `services/watch.py:evaluate` scores a place ok/watch/warning from NWS flood alerts, nearby gauge stage, crossings within 1 km and recent road reports. A 5-minute background loop pushes only when the level rises. It uses standard Web Push (VAPID), so iOS needs 16.4+ and install to Home Screen.
 
-**9. Why should we believe "37 of 52 problems"?**
-It's our own audit, not a measurement. `docs/cycles/CHANGELOG.md` shows it went 32 planned, then 21, 25, 27, 32 and 33 as we re-checked honestly; the cycle-24 strict recount (`docs/cycles/cycle-24-coverage.md`) found 33 / 17 / 2 and no change after the cycle 14-23 features; cycle 28 (`docs/cycles/cycle-28-coverage.md`) moved three problems to "reduces" (move-your-car parking/rain check, Addicks pool vs your ground, tenant relocation rights), giving 36 / 14 / 2; cycle 35 (`docs/cycles/cycle-35-coverage.md`) added the HCFCD buyout hotline + volunteer form (G1), giving 37 / 13 / 2. "Reduces" means a feature directly addresses the problem; the other problems are only "informed" or policy issues no app fixes. Each mapping is in `app-plan.md` so you can challenge it.
+**9. Why should we believe "33 of 52 problems"?**
+Because we tried to disprove it. On Oct 11 three reviewers checked every problem against the code and ran a live test for each: API calls and phone-size browser runs for real Houston addresses. Their verdict was strict. The app fully solves 5 problems and partly solves 28. It informs on 13. 6 are beyond any app (policy, funding, engineering). That stricter audit lowered our own earlier self-count of 37. Every verdict, test and bug is in `docs/problems/` (verify-AB/CD/EFG.md), and the bugs it found were fixed the same morning.
 
 ### Design and completion
 **10. Who is this for, and how did you test with real users?**
@@ -123,4 +123,4 @@ Stores the household profile (language, mobility, medical, pets, car) so plans a
 - **Translations are AI-reviewed, not native-reviewed** (vi/zh/ar headers say so), and no formal user testing was done.
 - **Gemini free-tier quota is shared and was exhausted once overnight**; rotation and fallbacks exist (Q27), and zh/ar can fall back to an English template body when rate-limited.
 - **SMS is a simulator** unless `TWILIO_*` is configured; no real messages are sent.
-- **The 37/52 count is a self-audit**, and not official guidance anywhere: in danger, call 911.
+- **The 33/52 count is a self-audit**, and not official guidance anywhere: in danger, call 911.

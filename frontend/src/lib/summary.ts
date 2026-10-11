@@ -224,17 +224,21 @@ export function isDone(id: ActionId, c: Pick<ActionCtx, 'done' | 'placeSavedAt' 
 export function topActions(c: ActionCtx): { active: ActionId[]; done: ActionId[] } {
   const h = c.household, m = h.medical
   const medical = m.dialysis || m.oxygen || m.powerDevice
+  const needsHelp = h.hasCar === false || h.mobility !== 'none' || medical || !!m.other.trim()
+  // In a warning, people who cannot drive themselves get "help to evacuate" first, not "check your route".
+  const warned = LEVEL_RANK[c.now] >= LEVEL_RANK.warning
   const rules: [ActionId, boolean][] = [
-    ['drive', LEVEL_RANK[c.now] >= LEVEL_RANK.watch],
+    ...(warned && needsHelp ? [['evac', true] as [ActionId, boolean]] : []),
+    ['drive', LEVEL_RANK[c.now] >= LEVEL_RANK.watch && !(warned && needsHelp && h.hasCar === false)],
     ['alerts', !c.hasPush],
     ['medical', medical],
-    ['evac', h.hasCar === false || h.mobility !== 'none' || medical || !!m.other.trim()],
+    ['evac', needsHelp],
     ['insurance', c.exposure === 'high' || c.exposure === 'elevated' || h.renter === true],
     ['renter', h.renter === true],
     ['plan', !c.hasPlan],
     ['ask', true],
   ]
-  const match = rules.filter(([, ok]) => ok).map(([id]) => id)
+  const match = [...new Set(rules.filter(([, ok]) => ok).map(([id]) => id))]
   const done = match.filter((id) => isDone(id, c))
   return { active: match.filter((id) => !done.includes(id)).slice(0, 3), done }
 }

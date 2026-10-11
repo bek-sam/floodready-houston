@@ -73,11 +73,11 @@ export function PlaceProfile({ r, loc }: { r: Risk; loc?: { lat: number; lon: nu
             ? <SourceLink href="https://open-meteo.com/en/docs/elevation-api" label="Open-Meteo" />
             : <SourceLink href={SRC.epqs} label="USGS" />)}
         </Row>
-        <Row k={t('prof.low')}>
+        {('low_ground' in r) && <Row k={t('prof.low')}>
           {r.low_ground === true ? t('home.lowGround') : r.low_ground === false ? t('home.notLow') : t('prof.unknown')}
           {r.low_ground == null && r.low_ground_note && <span className="block text-caption text-muted">{coded(bk, r as never, 'low_ground_note')}</span>}
           {r.low_ground === true && <SourceLink href={SRC.flat} label="Harris County MAAPnext" />}
-        </Row>
+        </Row>}
         <Row k={t('prof.reservoir')}>
           {typeof r.reservoir_area === 'string' && r.reservoir_area ? r.reservoir_area : yn(r.reservoir_area == null ? null : !!r.reservoir_area)}
           {!!r.reservoir_area && <SourceLink href={SRC.dams} label="Texas Tribune" />}

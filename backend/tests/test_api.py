@@ -80,7 +80,7 @@ def test_geocode(client):
 def test_risk(client):
     r = client.get("/api/risk", params={"lat": 29.76, "lon": -95.37}).json()
     assert r["fema_zone"] == "X" and r["sfha"] is False and r["elevation_ft"] == 42.0
-    assert r["low_ground"] is None and r["low_ground_note"] and r["jurisdiction"] == "City of Houston"
+    assert "low_ground" not in r and r["jurisdiction"] == "City of Houston"
     assert r["nearest_gauges"][0]["status"] == "normal" and r["facts"]
 
 
@@ -450,7 +450,87 @@ def test_route_report_hazard(client):
     r = client.post("/api/route-check", json=body).json()
     reps = [h for h in r["hazards"] if h.get("kind") == "report"]
     assert len(reps) == 1 and reps[0]["depth_in"] == 8
-    assert r["verdict"] == "avoid"
+    assert r["verdict"] == "caution"  # one report never means avoid
+    client.post("/api/reports", json={"lat": 29.7601, "lon": -95.365, "depth_in": 9})
+    r = client.post("/api/route-check", json=body).json()
+    assert r["verdict"] == "avoid"  # two distinct reports, deep
+
+
+def test_route_active_warning_never_safe(client, monkeypatch):
+    from app.services import route as rt
+    body = {"origin": {"lat": 29.76, "lon": -95.38}, "destination": {"lat": 29.76, "lon": -95.36}}
+    monkeypatch.setattr(rt, "load_crossings", lambda: [])
+    monkeypatch.setattr(rt, "recent_reports", lambda: [])
+    r = client.post("/api/route-check", json=body).json()
+    assert r["verdict"] == "safe" and "active_warnings" not in r
+
+    async def warn(coords):
+        return [{"event": "Flash Flood Warning", "headline": "h", "expires": None}]
+    monkeypatch.setattr(rt, "route_warnings", warn)
+    r = client.post("/api/route-check", json=body).json()
+    assert r["verdict"] == "caution" and r["message_code"] == "route.warning"
+    assert "Flash Flood Warning" in r["message"] and r["active_warnings"][0]["event"] == "Flash Flood Warning"
+
+
+def test_route_warnings_polygon_intersection(monkeypatch):
+    import asyncio
+    from app.services import alerts as al
+    sq = [[[-95.375, 29.75], [-95.365, 29.75], [-95.365, 29.77], [-95.375, 29.77], [-95.375, 29.75]]]
+
+    async def feed(url, params=None, ttl=300, headers=None):
+        mk = lambda ev, g: {"geometry": g, "properties": {"id": ev, "event": ev}}
+        return {"features": [mk("Flash Flood Warning", {"type": "Polygon", "coordinates": sq}),
+                             mk("Flood Watch", {"type": "Polygon", "coordinates": sq})]}
+    monkeypatch.setattr(al, "get_json", feed)
+    hit = asyncio.run(al.route_warnings([[-95.38, 29.76], [-95.37, 29.76], [-95.36, 29.76]]))
+    assert [h["event"] for h in hit] == ["Flash Flood Warning"]  # warnings only, not watches
+    assert asyncio.run(al.route_warnings([[-95.30, 29.90], [-95.29, 29.90]])) == []
+
+
+def test_watch_rejects_outside_region(client):
+    r = client.post("/api/watch", json={"label": "Greenville", "lat": 34.85, "lon": -82.4})
+    assert r.status_code == 422 and r.json()["detail"]["code"] == "watch.outOfRegion"
+
+
+def test_push_failed_send_retried_and_gone_removed(client, monkeypatch, tmp_path):
+    import asyncio
+    from app.services import push as P
+    monkeypatch.setattr(P, "VAPID_FILE", tmp_path / "v.json")
+    P._vapid_cache.clear()
+    results = iter(["error", "ok"])
+    monkeypatch.setattr(P, "send_one", lambda sub, payload: next(results))
+
+    async def fake_eval(p, sim=False):
+        return {"level": "warning"}
+    monkeypatch.setattr(P, "evaluate", fake_eval)
+    pl = client.post("/api/watch", json={"label": "Home", "lat": 29.76, "lon": -95.37}).json()
+    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://p/retry", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
+    assert [asyncio.run(P.check_all()), asyncio.run(P.check_all()), asyncio.run(P.check_all())] == [0, 1, 0]
+    monkeypatch.setattr(P, "send_one", lambda sub, payload: "gone")
+    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://p/gone", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
+    asyncio.run(P.check_all())
+    from app.db import PushSub, get_session
+    with get_session() as s:
+        assert s.query(PushSub).filter(PushSub.endpoint == "https://p/gone").count() == 0
+
+
+def test_zip_policies_fallback_and_no_partial_cache(monkeypatch):
+    import asyncio
+    from app.services import zipinsurance as zi
+    zi._mem.clear()
+    puts = []
+    monkeypatch.setattr(zi.diskcache, "get", lambda *a: None)
+    monkeypatch.setattr(zi.diskcache, "put", lambda *a: puts.append(a))
+
+    async def fake(url, params=None, ttl=300, headers=None):
+        if "NfipClaims" in url or "FimaNfipClaims" in url:
+            return {"NfipClaims": [{"yearOfLoss": 2017}]}
+        if params.get("$count"):
+            return None  # count query fails
+        return {"NfipPolicies": [{"totalInsurancePremiumOfThePolicy": 1000}] * 4980}
+    monkeypatch.setattr(zi, "get_json", fake)
+    r = asyncio.run(zi.zip_insurance("77586"))
+    assert r["policies_in_force"] == 4980 and r["premiums"]["sample_size"] == 4980 and puts
 
 
 # ---- Cycle 6: elevation fallback, flood-history, report kinds ----
@@ -514,7 +594,7 @@ def test_watch_community_reports(client, monkeypatch):
     monkeypatch.setattr(w, "get_alerts", no_alerts)
     monkeypatch.setattr(w, "nearest_gauges", no_gauges)
     monkeypatch.setattr(w, "crossings_near", lambda *a, **k: [])
-    lat, lon = 30.5, -97.5  # away from other tests' reports
+    lat, lon = 30.4, -96.4  # away from other tests' reports
 
     def lvl():
         pl = client.post("/api/watch", json={"label": "H", "lat": lat, "lon": lon}).json()

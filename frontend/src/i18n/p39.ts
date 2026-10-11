@@ -1,0 +1,98 @@
+// Gap-fix: evacuation-help action, post-flood electrical safety, medical note, other-city civic copy, ZIP input.
+// AI-reviewed translations, pending native-speaker review.
+type Dict = Record<string, string>
+export const en: Dict = {
+  "p39.evac.t": "Get help to evacuate now",
+  "p39.evac.w": "If you have no car, use medical equipment or have trouble moving, do not wait. Call 2-1-1 or register with STEAR for evacuation help. STEAR does not guarantee assistance. If you are in danger, Call 911.",
+  "p39.safe.t": "Electrical and floodwater safety",
+  "p39.safe.l1": "Stay away from downed power lines and from standing water near electrical equipment. Electrocution caused 4 Harvey deaths and one Imelda death.",
+  "p39.safe.l2": "Do not walk or wade into flood water, and do not enter a flooded room until the power is confirmed off. Infection is another post-flood hazard.",
+  "p39.safe.l3": "Do not drive through water. Plan for heat and power loss.",
+  "p39.safe.l4": "Downed line or shock injury: Call 911. Not official guidance.",
+  "p39.safe.src1": "NHESS 2018 (Harvey deaths)",
+  "p39.safe.src2": "Wikipedia: Imelda",
+  "p39.med.note": "Distances are straight-line. Confirm hours and storm closures by phone before you go.",
+  "p39.civic.title": "Report a problem to {city}",
+  "p39.civic.body": "This address is in {city}, not the City of Houston. Houston 311 does not cover it. Contact {city} first. For bayou or channel concerns, use the Harris County Flood Control District.",
+  "p39.civic.call": "Call {city}",
+  "p39.zip.label": "Your ZIP code",
+  "p39.zip.help": "We could not find a ZIP for this place. Enter one to see flood insurance claims.",
+  "p39.zip.go": "Show claims",
+  "p39.zip.bad": "Enter a 5-digit ZIP."
+}
+export const es: Dict = {
+  "p39.evac.t": "Pida ayuda para evacuar ahora",
+  "p39.evac.w": "Si no tiene auto, usa equipo médico o tiene dificultad para moverse, no espere. Llame al 2-1-1 o inscríbase en STEAR para recibir ayuda para evacuar. STEAR no garantiza la asistencia. Si está en peligro, llame al 911.",
+  "p39.safe.t": "Seguridad eléctrica y con el agua de inundación",
+  "p39.safe.l1": "Manténgase lejos de cables caídos y del agua estancada cerca de equipos eléctricos. La electrocución causó 4 muertes en Harvey y una en Imelda.",
+  "p39.safe.l2": "No camine ni entre en el agua de inundación, y no entre a un cuarto inundado hasta confirmar que no hay corriente. La infección es otro riesgo después de la inundación.",
+  "p39.safe.l3": "No maneje por el agua. Prepárese para el calor y los apagones.",
+  "p39.safe.l4": "Cable caído o descarga eléctrica: llame al 911. No es una guía oficial.",
+  "p39.safe.src1": "NHESS 2018 (muertes en Harvey)",
+  "p39.safe.src2": "Wikipedia: Imelda",
+  "p39.med.note": "Las distancias son en línea recta. Confirme el horario y los cierres por tormenta por teléfono antes de ir.",
+  "p39.civic.title": "Reporte un problema a {city}",
+  "p39.civic.body": "Esta dirección está en {city}, no en la Ciudad de Houston. El 311 de Houston no la cubre. Comuníquese primero con {city}. Para problemas de bayous o canales, use el Distrito de Control de Inundaciones del Condado de Harris.",
+  "p39.civic.call": "Llamar a {city}",
+  "p39.zip.label": "Su código postal",
+  "p39.zip.help": "No encontramos un código postal para este lugar. Escriba uno para ver los reclamos de seguro contra inundaciones.",
+  "p39.zip.go": "Ver reclamos",
+  "p39.zip.bad": "Escriba un código postal de 5 dígitos."
+}
+export const vi: Dict = {
+  "p39.evac.t": "Nhờ trợ giúp sơ tán ngay",
+  "p39.evac.w": "Nếu bạn không có xe, dùng thiết bị y tế hoặc khó đi lại, đừng chờ đợi. Gọi 2-1-1 hoặc đăng ký STEAR để được giúp sơ tán. STEAR không đảm bảo sẽ có hỗ trợ. Nếu bạn gặp nguy hiểm, hãy gọi 911.",
+  "p39.safe.t": "An toàn về điện và nước lũ",
+  "p39.safe.l1": "Tránh xa dây điện bị đứt và vùng nước đọng gần thiết bị điện. Điện giật gây ra 4 ca tử vong trong bão Harvey và một ca trong bão Imelda.",
+  "p39.safe.l2": "Đừng lội vào nước lũ, và đừng vào phòng bị ngập cho đến khi chắc chắn đã ngắt điện. Nhiễm trùng là một nguy cơ khác sau lũ.",
+  "p39.safe.l3": "Đừng lái xe qua nước. Chuẩn bị cho nắng nóng và mất điện.",
+  "p39.safe.l4": "Dây điện đứt hoặc bị điện giật: gọi 911. Không phải hướng dẫn chính thức.",
+  "p39.safe.src1": "NHESS 2018 (tử vong do Harvey)",
+  "p39.safe.src2": "Wikipedia: Imelda",
+  "p39.med.note": "Khoảng cách tính theo đường thẳng. Hãy gọi điện xác nhận giờ mở cửa và việc đóng cửa do bão trước khi đến.",
+  "p39.civic.title": "Báo vấn đề cho {city}",
+  "p39.civic.body": "Địa chỉ này thuộc {city}, không phải Thành phố Houston. Đường dây 311 của Houston không phục vụ nơi này. Hãy liên hệ {city} trước. Với vấn đề về lạch hoặc kênh, dùng Sở Kiểm soát Lũ Quận Harris.",
+  "p39.civic.call": "Gọi {city}",
+  "p39.zip.label": "Mã ZIP của bạn",
+  "p39.zip.help": "Chúng tôi không tìm thấy mã ZIP cho nơi này. Nhập mã để xem các yêu cầu bồi thường bảo hiểm lũ.",
+  "p39.zip.go": "Xem yêu cầu bồi thường",
+  "p39.zip.bad": "Nhập mã ZIP gồm 5 chữ số."
+}
+export const zh: Dict = {
+  "p39.evac.t": "立即申请撤离协助",
+  "p39.evac.w": "如果您没有车、使用医疗设备或行动不便，请不要等待。拨打 2-1-1 或登记 STEAR 以获得撤离协助。STEAR 不保证一定提供协助。如果您处于危险中，请拨打 911。",
+  "p39.safe.t": "用电与洪水安全",
+  "p39.safe.l1": "远离掉落的电线，以及电气设备附近的积水。触电在哈维飓风中造成 4 人死亡，在伊梅尔达风暴中造成 1 人死亡。",
+  "p39.safe.l2": "不要涉入洪水，在确认断电之前不要进入被淹的房间。感染是洪水过后的另一种危险。",
+  "p39.safe.l3": "不要开车穿过积水。为高温和停电做好准备。",
+  "p39.safe.l4": "电线掉落或触电受伤：请拨打 911。这不是官方指南。",
+  "p39.safe.src1": "NHESS 2018（哈维死亡情况）",
+  "p39.safe.src2": "维基百科：Imelda",
+  "p39.med.note": "距离为直线距离。出发前请电话确认营业时间和风暴期间的关闭情况。",
+  "p39.civic.title": "向{city}报告问题",
+  "p39.civic.body": "此地址属于{city}，不属于休斯顿市。休斯顿 311 不覆盖这里。请先联系{city}。如果是河道或排水渠问题，请联系哈里斯县防洪区。",
+  "p39.civic.call": "致电{city}",
+  "p39.zip.label": "您的邮政编码",
+  "p39.zip.help": "我们找不到此地点的邮政编码。请输入一个以查看洪水保险理赔情况。",
+  "p39.zip.go": "查看理赔",
+  "p39.zip.bad": "请输入 5 位邮政编码。"
+}
+export const ar: Dict = {
+  "p39.evac.t": "اطلب المساعدة على الإخلاء الآن",
+  "p39.evac.w": "إذا لم تكن لديك سيارة، أو تستخدم جهازًا طبيًا، أو تجد صعوبة في الحركة، فلا تنتظر. اتصل بـ 2-1-1 أو سجّل في STEAR للحصول على مساعدة في الإخلاء. لا يضمن STEAR تقديم المساعدة. إذا كنت في خطر، اتصل بـ 911.",
+  "p39.safe.t": "السلامة من الكهرباء ومياه الفيضان",
+  "p39.safe.l1": "ابتعد عن أسلاك الكهرباء المتساقطة وعن المياه الراكدة قرب المعدات الكهربائية. تسبّب الصعق الكهربائي في 4 وفيات في إعصار هارفي ووفاة واحدة في إيميلدا.",
+  "p39.safe.l2": "لا تخض في مياه الفيضان، ولا تدخل غرفة غارقة قبل التأكد من فصل الكهرباء. العدوى خطر آخر بعد الفيضان.",
+  "p39.safe.l3": "لا تقد سيارتك عبر المياه. استعد للحر وانقطاع الكهرباء.",
+  "p39.safe.l4": "سلك كهرباء ساقط أو إصابة بصعق: اتصل بـ 911. ليست إرشادات رسمية.",
+  "p39.safe.src1": "NHESS 2018 (وفيات هارفي)",
+  "p39.safe.src2": "ويكيبيديا: Imelda",
+  "p39.med.note": "المسافات بخط مستقيم. تأكد هاتفيًا من ساعات العمل وإغلاقات العواصف قبل الذهاب.",
+  "p39.civic.title": "بلّغ {city} عن مشكلة",
+  "p39.civic.body": "هذا العنوان يقع في {city} وليس في مدينة هيوستن. خدمة 311 في هيوستن لا تشمله. تواصل مع {city} أولًا. لمشكلات المجاري المائية أو القنوات، استخدم هيئة مكافحة الفيضانات في مقاطعة هاريس.",
+  "p39.civic.call": "اتصل بـ {city}",
+  "p39.zip.label": "الرمز البريدي",
+  "p39.zip.help": "لم نجد رمزًا بريديًا لهذا المكان. أدخل رمزًا لعرض مطالبات تأمين الفيضانات.",
+  "p39.zip.go": "عرض المطالبات",
+  "p39.zip.bad": "أدخل رمزًا بريديًا من 5 أرقام."
+}

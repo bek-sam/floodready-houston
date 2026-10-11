@@ -54,6 +54,10 @@ def test_short_name_and_more(monkeypatch):
     monkeypatch.setattr(route.diskcache, "get", lambda *a: None)
     monkeypatch.setattr(route.diskcache, "put", lambda *a: None)
     monkeypatch.setattr(route, "get_alerts", al)
+
+    async def nowarn(*a, **k):
+        return []
+    monkeypatch.setattr(route, "route_warnings", nowarn)
     monkeypatch.setattr(route, "nearest_gauges", ng)
     r = asyncio.run(route.check_route({"lat": 29.0, "lon": -95.1}, {"lat": 29.0, "lon": -94.9}))
     assert "Short 0" in r["message"] and "+2 more" in r["message"] and "LONG" not in r["message"]
