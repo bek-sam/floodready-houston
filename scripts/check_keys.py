@@ -76,6 +76,9 @@ def check_elevenlabs() -> None:
             d = r.json()
             left = d.get("character_limit", 0) - d.get("character_count", 0)
             report("ELEVENLABS", "OK", f"{left} characters remaining (tier {d.get('tier')})")
+        elif r.status_code == 401 and "missing_permissions" in r.text:
+            # a TTS-only key can't read the subscription; that's fine for the app
+            report("ELEVENLABS", "WARN", "key can't read usage (no user_read permission); TTS may still work - test POST /api/voice")
         else:
             report("ELEVENLABS", "FAIL", f"HTTP {r.status_code}: {scrub(r.text, key)[:120]}")
     except Exception as e:
