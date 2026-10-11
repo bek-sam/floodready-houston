@@ -15,7 +15,7 @@ export const es: Dict = {
   'p6.ev.taxday-2016.name': 'Inundación del Tax Day',
   'p6.ev.taxday-2016.summary': 'De 12 a 16 pulgadas de lluvia en 12 horas; unas 9,820 estructuras inundadas y 7 muertes en el condado de Harris.',
   'p6.ev.imelda-2019.name': 'Tormenta tropical Imelda',
-  'p6.ev.imelda-2019.summary': 'Unas 8,200 viviendas inundadas en 4 condados; 2 muertes en el condado de Harris y al menos 1,700 rescates.',
+  'p6.ev.imelda-2019.summary': 'Unas 8,200 viviendas inundadas en 4 condados; 2 muertes en el condado de Harris.',
   'p6.ev.june-2026.name': 'Inundación repentina de junio de 2026',
   'p6.ev.june-2026.summary': 'Inundaciones en el centro el 15 de junio de 2026: autos atrapados bajo puentes, UH-Downtown cerrado y declaración de desastre estatal.',
 }

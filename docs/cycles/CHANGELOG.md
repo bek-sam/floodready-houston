@@ -215,3 +215,8 @@
 - Fixed (lead): sw.js matches the cache with ignoreVary and only falls back to the shell for navigations.
 - New: #offline safety card (911/311/211, Turn Around Don't Drown, last-known FEMA zone/elevation/evac zone, household needs, family meeting place + contacts, kit reminders, Ready.gov sources, print) linked from the offline banner and Prepare; last plan saved with time and shown offline; shared OfflineNotice on Ask/Alerts/Drive (last update, what still works, card link); Alerts caches last status.
 - Verified: 219 tests, build, i18n 0 missing; offline cold reload of 11 pages in the prod build (home, offline, settings, prepare, ask, alerts, drive, recover, civic, compare, about) all render, 0 page errors.
+## Cycle 38 + problem catalogue — Sun Oct 11, ~8:15 AM
+- docs/problems/catalog.md: all problems redefined — 63 (52 original + 11 found during the build cycles), each with definition, evidence + source URLs, and "solvable by an app?"; 36 source URLs fetched today (~29 confirmed), failed/unverifiable claims listed.
+- Fact fixes from the catalogue: Imelda "at least 1,700 rescues" removed (not on the cited page) from replay events, Spanish string and offline snapshots; MAAPnext "cannot be used for insurance or regulatory decisions" now credited to maapnext.org (where it appears); Tax Day "3,600 homes" attributed to KPRC's report of the Rice modeling.
+- New (cycle 38): "Stay informed when the power or data goes out" on Prepare › Evacuate and the #offline card — AlertHouston sign-up + KTRH 740 / KUHF 88.7 / Spanish TV, CenterPoint outage tracker + 713-207-2222, METRO alerts + MetroLift 713-635-4000, TCEQ boil-water steps (verified sources only; schools and unverified stations skipped).
+- Verified: 219 tests, build, i18n 0 missing.

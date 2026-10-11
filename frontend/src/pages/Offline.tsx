@@ -1,5 +1,6 @@
 import { Phone, Printer } from 'lucide-react'
 import { useApp } from '../ctx'
+import StayInformed from '../components/p38/StayInformed'
 import { Button, Card, PageHeader, SourceLink } from '../components/ds'
 import { FAMILY_KEY, type Contact } from '../components/share/planShare'
 import { fmtAt, EVAC_CACHE, HOME_CACHE } from '../lib/offline'
@@ -73,6 +74,7 @@ export default function Offline() {
         <p className="text-body-sm text-ink">{t('p37.card.kit')}</p>
         <p className="text-caption text-muted">{t('p37.card.src')}: {SRC.map((s) => <SourceLink key={s.href} href={s.href} label={s.label} />)}</p>
       </div>
+      <div className="fr-noprint"><StayInformed /></div>
     </div>
   )
 }
