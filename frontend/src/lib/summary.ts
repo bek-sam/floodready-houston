@@ -138,7 +138,7 @@ export function exposure(i: SummaryInputs): ExposureResult {
 
 // ---------- Why chips (in the order of the rules table) ----------
 export type ChipKind =
-  | 'fema' | 'harvey' | 'harveyNo' | 'gaugeHist' | 'zipClaims' | 'lowGround' | 'reservoir'
+  | 'fema' | 'harvey' | 'harveyNo' | 'harveyNA' | 'gaugeHist' | 'zipClaims' | 'lowGround' | 'reservoir'
   | 'evac' | 'surge' | 'alert' | 'outlook' | 'gaugeNow' | 'unavailable'
 export interface Chip { id: string; kind: ChipKind; tone: Level | 'neutral'; vars: Record<string, string>; source?: string }
 
@@ -162,6 +162,8 @@ export function whyChips(i: SummaryInputs): Chip[] {
     if (r.fema_zone) out.push({ id: 'fema', kind: 'fema', tone: r.sfha ? 'danger' : 'neutral', vars: { zone: r.fema_zone }, source: r.sfha ? SRC.sfha : SRC.notSfha })
     if (r.harvey?.flooded === true) out.push({ id: 'harvey', kind: 'harvey', tone: 'danger', vars: {}, source: r.harvey.source })
     if (r.harvey?.flooded === false) out.push({ id: 'harveyNo', kind: 'harveyNo', tone: 'neutral', vars: {}, source: r.harvey.source })
+    // No coverage is not an all-clear: say so visibly.
+    if (r.harvey?.flooded == null) out.push({ id: 'harveyNA', kind: 'harveyNA', tone: 'watch', vars: {}, source: r.harvey?.source })
   }
   const hit = historyHit(i.hist.data)
   if (hit) out.push({ id: 'gaugeHist', kind: 'gaugeHist', tone: gaugeLevel(hit.status), vars: { event: hit.event, gauge: hit.gauge, status: '@gauge.' + hit.status, peak: hit.peak_ft != null ? String(hit.peak_ft) : '' }, source: NOAA_GAUGE(hit.gaugeId) })

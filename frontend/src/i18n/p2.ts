@@ -115,7 +115,7 @@ export const en: Dict = {
   'live.unavail': "We couldn't load this right now.",
   // Sparkline
   'spark.label': 'Water level, last 48 hours, {trend}. Now {now} ft.',
-  'spark.rising': 'rising', 'spark.falling': 'falling', 'spark.steady': 'steady', 'spark.none': 'No recent readings',
+  'spark.rising': 'rising', 'spark.falling': 'falling', 'spark.steady': 'steady', 'spark.none': 'No 48-hour trend available (current reading above)',
   // Details (§4.1)
   'det.title': 'Details',
   'det.profile': "Your place's flood profile",
@@ -245,7 +245,7 @@ export const es: Dict = {
   'live.you': 'Su lugar',
   'live.unavail': 'No pudimos cargar esto ahora.',
   'spark.label': 'Nivel del agua, últimas 48 horas, {trend}. Ahora {now} ft.',
-  'spark.rising': 'subiendo', 'spark.falling': 'bajando', 'spark.steady': 'estable', 'spark.none': 'Sin lecturas recientes',
+  'spark.rising': 'subiendo', 'spark.falling': 'bajando', 'spark.steady': 'estable', 'spark.none': 'Sin tendencia de 48 horas (lectura actual arriba)',
   'det.title': 'Detalles',
   'det.profile': 'Perfil de inundación de su lugar',
   'det.profileRules': 'reglas de {j}',

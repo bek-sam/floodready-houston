@@ -32,7 +32,7 @@ export function MyPlaceSheet({ open, onClose, onEditHousehold }: { open: boolean
         {showForm && (
           <section aria-labelledby="mp-change">
             <h3 id="mp-change" className="mb-3 text-h3">{place ? t('place.changeAddress') : t('place.set')}</h3>
-            <PlaceForm autoFocus onSaved={() => { setEditing(false); toast(t('place.saved')) }} />
+            <PlaceForm autoFocus onSaved={() => { close(); toast(t('place.saved')) }} />
             {editing && <Button variant="ghost" className="mt-2" full onClick={() => setEditing(false)}>{t('ds.cancel')}</Button>}
           </section>
         )}

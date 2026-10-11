@@ -9,11 +9,11 @@ import { fill, SRC, type Chip, type ChipKind, type SummaryInputs } from '../../l
 import { Skeleton, Sheet, SourceLink } from '../ds'
 
 const ICON: Record<ChipKind, LucideIcon> = {
-  fema: MapIcon, harvey: Waves, harveyNo: Waves, gaugeHist: History, zipClaims: FileText, lowGround: ArrowDownToLine,
+  fema: MapIcon, harvey: Waves, harveyNo: Waves, harveyNA: Waves, gaugeHist: History, zipClaims: FileText, lowGround: ArrowDownToLine,
   reservoir: Droplets, evac: LifeBuoy, surge: Waves, alert: BellRing, outlook: CloudRain, gaugeNow: Waves, unavailable: CloudOff,
 }
 const LABEL_KEY: Record<ChipKind, string> = {
-  fema: 'chip.fema', harvey: 'chip.harvey', harveyNo: 'chip.harveyNo', gaugeHist: 'chip.gaugeHist', zipClaims: 'chip.zipClaims',
+  fema: 'chip.fema', harvey: 'chip.harvey', harveyNo: 'chip.harveyNo', harveyNA: 'harvey.nodata', gaugeHist: 'chip.gaugeHist', zipClaims: 'chip.zipClaims',
   lowGround: 'chip.lowGround', evac: 'chip.evac', surge: 'chip.surge', reservoir: 'chip.reservoir', alert: 'chip.alert', outlook: 'chip.outlook', gaugeNow: 'chip.gaugeNow',
   unavailable: 'chip.unavailable',
 }
@@ -39,6 +39,7 @@ function Explain({ chip, inputs }: { chip: Chip; inputs: SummaryInputs }) {
     case 'fema': return <>{p(t(r?.sfha ? 'home.femaPlain.sfha' : 'home.femaPlain.low'))}{r?.zone_subtype && note(r.zone_subtype)}</>
     case 'harvey': return <>{p(t('ex.harvey'))}{note(bk(r?.harvey?.note_code, {}, r?.harvey?.note))}</>
     case 'harveyNo': return <>{p(t('ex.harveyNo'))}{note(bk(r?.harvey?.note_code, {}, r?.harvey?.note))}</>
+    case 'harveyNA': return <>{p(t('harvey.outside'))}</>
     case 'gaugeHist': return <>{p(fill(t, 'ex.gaugeHist', chip.vars))}{note(t('c6.hist.note'))}
       <p><a href="#replay" className="text-body-sm font-semibold text-brand underline underline-offset-2">{t('det.replayLink')}</a></p></>
     case 'zipClaims': return <>{p(fill(t, 'ex.zip', { ...chip.vars, n: Number(chip.vars.n).toLocaleString(lang), m: Number(chip.vars.m).toLocaleString(lang) }))}{note(bk(inputs.zip?.data?.note_code, {}, inputs.zip?.data?.note))}</>

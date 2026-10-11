@@ -236,3 +236,8 @@
 ## Demo hardening — Sun Oct 11, ~9:40 AM
 - Offline demo re-recorded: 138 snapshots (adds /declarations), 0 failed; no stale "1,700 rescues" left. Judge evidence regenerated (240 tests, 33/52).
 - demo_check 21/21 online and 21/21 in snapshot mode; 14-route sweep at 390 px in en and ar: 0 page/console errors, 0 overflow, 0 raw keys.
+## Demo rehearsal + fixes — Sun Oct 11, ~11:45 AM (post-freeze, fixes only)
+- Rehearsal of DEMO-DAY.md in a fresh browser at 1280 and 390 px (docs/cycles/rehearsal.md): risk, Drive avoid, replay + narrate, Spanish Ask (0.5 s, 911), SMS demo all PASS; 0 console/HTTP errors.
+- Fixed: "Storm mode" banner on a normal day (a Coastal Flood Advisory counted as a storm trigger → now only warnings/watches/emergencies; simulated requests never set it); My place sheet now closes on save; Seabrook shows a visible "No Harvey extent data" chip; "No recent readings" → "No 48-hour trend available"; voice hint wording in 5 languages. DEMO-DAY.md steps updated to the current UI (Set my place, Type/Talk, #alerts "Simulate storm alert", switch to Español).
+- Backend restarted without --reload for judging. Verified: 243 tests (one run had 2 transient failures during live cache warm-up; 2 reruns clean), build, i18n 0 missing, demo_check 21/21, storm_mode false.
+- Pitch deck (11 slides, speaker notes = script) opens with the problem and the research sources.

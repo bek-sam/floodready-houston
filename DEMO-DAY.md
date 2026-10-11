@@ -10,7 +10,7 @@ Hacking ends **1:00 PM** · judging 1:30–3:30 PM · closing 5 PM.
    `ssh root@IP 'bash -s' < deploy/server-setup.sh` and
    `VPS=root@IP DOMAIN=yourdomain ./deploy/deploy.sh` (needs `data/harvey/harvey.sqlite` locally; it prints the health check at the end).
 3. **GitHub**: tell Claude "approved — push" (repo must be public for prizes).
-4. **Phone push test**: open the deployed URL on your phone → (iPhone: Share → Add to Home Screen → open from Home Screen) → Watch → add a place → Enable push alerts → Simulate storm push.
+4. **Phone push test**: open the deployed URL on your phone → (iPhone: Share → Add to Home Screen → open from Home Screen) → Alerts (`#alerts`) → add a place → turn on "Alerts on this phone" → "Simulate storm alert".
 
 ## 30 minutes before judging
 ```
@@ -23,13 +23,14 @@ Then open `/#judge` on the projector — QR code now points at your real domain.
 
 ## 2-minute pitch (details in docs/devpost.md, Q&A in docs/judge-qa.md)
 0. Open `BASE/?demo=1` in a fresh tab (check: `/?demo=1#drive` shows sample route chips + Simulate storm).
-1. **My Risk** → `5300 N Braeswood Blvd, Houston, TX 77096` → "Flooded in Harvey (2017)", Zone AE, flood history (Harvey: major), ZIP 77096: 6,482 NFIP claims, median premium ~$1,501.
-2. **Drive Safe** (`BASE/?demo=1#drive`) → click demo route chip "Allen Parkway underpass" → turn on **Simulate storm** → Check route → **Avoid** with named crossings. The same switch (on Home, Alerts and Drive; one setting per tab) also turns Home into the storm view: "Simulated" tag, an alert labelled "SIMULATED — demo only", and caution routes say "Simulated storm: conditions are active". Turn it off before showing real data.
+1. **Home** → "Set my place" (or "Try a sample address") → `5300 N Braeswood Blvd, Houston, TX 77096` → summary: "Flooded in Harvey (2017)", Zone AE, ZIP 77096: 6,482 NFIP claims. Expand "Flood history here" (Harvey: major) and "Renting or buying here?" (median premium ~$1,501).
+2. **Drive Safe** (`BASE/?demo=1#drive`) → click demo route chip "Downtown: Allen Parkway underpass" → turn on the **Simulate storm** toggle on the Drive page → Check route → **Avoid** with named crossings. The same switch (on Home, Alerts and Drive; one setting per tab) also turns Home into the storm view: "Simulated" tag, an alert labelled "SIMULATED — demo only", and caution routes say "Simulated storm: conditions are active". Turn it off before showing real data.
 3. **Replay** → Hurricane Harvey → Play + **Narrate**.
-4. **Seabrook evacuation** → search `Seabrook, TX 77586` (test point 29.564, -95.025; warmed by `scripts/prewarm.py`) → summary shows **Evacuation Zone A** + storm-surge depth chips, the Galveston tide chip, and "No Harvey extent data" (Harvey layer covers only the City of Houston, so no false all-clear). Expect no out-of-region storm chip.
-5. **Voice mode** → Ask → **Voice** (Gemini Live, default) → say "Did my neighborhood flood before?" → spoken answer in about 1 s (measured 0.64-1.4 s) → interrupt mid-answer (barge-in) → follow-up in Spanish. If it stalls: Retry / "Switch to Standard". Typed Ask median is 228 ms.
-6. **Ask** (Spanish) → "¿Qué hago si mi calle se inunda?" → sourced safety steps, 911.
-7. **Watch** → Simulate storm push → phone buzzes. Optional: Judge-page SMS simulator (demo mode) → `ALERTS ON`.
+4. **Seabrook evacuation** → search `Seabrook, TX 77586` (test point 29.564, -95.025; warmed by `scripts/prewarm.py`) → summary shows **Evacuation Zone A** + "Up to 9+ ft storm surge (Cat 3+)" chip, a Galveston tide card, and (in "Your place's flood profile") "No Harvey extent data" (Harvey layer covers only the City of Houston, so no false all-clear). Expect no out-of-region storm chip.
+5. **Voice mode** → Ask → switch **Type / Talk** to Talk → tap the mic, then hold to talk (or hold space) → say "Did my neighborhood flood before?" → spoken answer in about 1 s (measured 0.64-1.4 s) → interrupt mid-answer (barge-in) → follow-up in Spanish. If it stalls: Retry / "Switch to typing". Typed Ask median is 228 ms.
+6. **Ask** (Spanish): switch language to Español (EN menu, top right) → "¿Qué hago si mi calle se inunda?" → sourced safety steps, 911.
+7. **Alerts** (`#alerts`) → turn on "Alerts on this phone" (allow notifications first) → "Simulate storm alert" → phone buzzes. Disabled until notifications are allowed. Optional: Judge-page SMS simulator (demo mode) → `ALERTS ON`.
+Note: the in-app Judge page lists 5 guided steps (Risk, Avoid, Replay, Spanish, Push); Seabrook and Voice are only in this script.
 Optional extras (30 s each): Ask → open "How I answered" under an answer (intent, sources, tools, model/template) · Recover → FEMA declaration banner, proof-of-loss, appeal, scam and floodwater cards · Prepare → dialysis centers with FEMA zone / Harvey badges · go offline → `#offline` safety card · Judge page → "Evidence (checked, dated)".
 Close: "Reduces harm for **33 of 52** documented Houston flood problems, 5 fully and 28 partly (problem-by-problem audit with live tests: `docs/problems/`); the other 19 are mostly policy problems we make visible and actionable."
 
