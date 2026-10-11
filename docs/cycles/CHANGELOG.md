@@ -134,3 +134,9 @@
 - INCIDENT: overnight evals exhausted Gemini free-tier daily quota for 3.5-flash-lite / 3.5-flash / flash-lite-latest (reset ~6 PM, after demo). Live voice model unaffected.
 - Fix: quota-aware key × model rotation (429/404 → mark exhausted with retry window in backend/.cache/quota.json, try next), GEMINI_API_KEYS multi-key support, embeddings 429 → BM25-only, /api/status shows active model. .env text models → gemini-3.1-flash-lite. Verified live: /ask generated_by=gemini (3.1-flash-lite), 164 tests.
 - Policy: no more live-Gemini evals before the demo.
+## Deploy readiness + Cycle 20 — Sun Oct 11, ~2:45 AM
+- Local git commit 7fc5d6a (358 files, secret-scanned; 52 MB harvey.sqlite git-ignored, rsynced by deploy.sh). NOT pushed (needs user approval).
+- Full prod stack tested locally via Docker + Caddy HTTPS: SPA, SW no-cache, SSE /ask/stream, WebSocket /api/live, push, harvey DB in container, no-reload uvicorn, clean restart. Added TLS_MODE, HSTS/nosniff/Referrer/CSP, flush_interval -1, timeouts, body limit; deploy.sh preflight checks + health curl. CSP verified: zero violations incl. 3D replay + Voice.
+- Cycle 20 features: /api/evac (Texas evacuation zones + NHC surge; Seabrook Zone A, Cat2–5 surge >3–9 ft), /api/hwm (2,093 USGS Harvey high-water marks; "not your exact address"), /api/coastal (NOAA Galveston tide anomaly +1.4 ft live, NHC active storms), go-bag checklist (print + wallet card; sourced to Ready.gov/CDC, "several days" wording), storm-season .ics reminders. 172 tests, build, browser screenshots, 0 page errors.
+- In progress: Harvey coverage limited to City of Houston (no false "not flooded" for other cities); evac zone + surge in Home summary.
+- Accuracy: Harvey miss outside City of Houston limits → null "no Harvey extent data" (layer not city-only, hits stay true); verified live: Seabrook null, Meyerland true, Greenspoint true, Downtown false. Evac zone + surge now in Home summary chips/levels. 173 tests, demo_check 21/21.

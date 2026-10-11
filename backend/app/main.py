@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from app.config import key_flags  # noqa: E402
 from app.db import init_db  # noqa: E402
 from app.ratelimit import RateLimitMiddleware  # noqa: E402
-from app.routers import alerts, civic, crossings, geocode, insurance, replay, reports, risk, route, watch, push, shelters, outlook, gauges, zipinsurance, medical, floodhistory, buyouts, el_agent, sms, status  # noqa: E402
+from app.routers import alerts, civic, crossings, geocode, insurance, replay, reports, risk, route, watch, push, shelters, outlook, gauges, zipinsurance, medical, floodhistory, buyouts, el_agent, sms, status, evac  # noqa: E402
 
 @asynccontextmanager
 async def lifespan(_):
@@ -56,10 +56,13 @@ async def health():
     return {"status": "ok", "keys": key_flags()}
 
 
-for m in (geocode, risk, alerts, crossings, route, replay, insurance, reports, civic, watch, push, shelters, outlook, gauges, zipinsurance, medical, floodhistory, buyouts, el_agent, sms, status):
+for m in (geocode, risk, alerts, crossings, route, replay, insurance, reports, civic, watch, push, shelters, outlook, gauges, zipinsurance, medical, floodhistory, buyouts, el_agent, sms, status, evac):
     api.include_router(m.router)
 from app.routers import harvey as _harvey_router  # noqa: E402
 api.include_router(_harvey_router.router)
+from app.routers import hwm as _hwm_router, coastal as _coastal_router  # noqa: E402
+api.include_router(_hwm_router.router)
+api.include_router(_coastal_router.router)
 
 try:
     from app.ai.router import router as ai_router  # type: ignore

@@ -5,6 +5,7 @@ import logging
 from app import config
 from app.services.data import haversine_m
 from app.services.harvey import harvey_at
+from app.services.risk import _juris, harvey_for_jurisdiction, jurisdiction_name
 from app.services.zipinsurance import valid_zip, zip_insurance
 
 log = logging.getLogger("floodhistory")
@@ -73,4 +74,9 @@ async def flood_history(lat: float, lon: float, zip_code: str | None = None) -> 
         except Exception as e:
             log.warning("zip lookup failed: %s", e)
     h = harvey_at(lat, lon)
+    if h.get("flooded") is False:
+        try:
+            h = harvey_for_jurisdiction(h, jurisdiction_name(await _juris(lat, lon)))
+        except Exception as e:
+            log.warning("jurisdiction lookup failed: %s", e)
     return {"harvey": {"flooded": h.get("flooded"), "source": h.get("source")}, "events": events, "zip": zip_out}

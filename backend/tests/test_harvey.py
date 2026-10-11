@@ -82,3 +82,15 @@ def test_extent_clips_to_bbox(fixture_db):
                 assert bb[0] - 1e-9 <= x <= bb[2] + 1e-9 and bb[1] - 1e-9 <= y <= bb[3] + 1e-9
     # window overlapping only the hole -> nothing
     assert harvey.extent_geojson([-95.46, 29.645, -95.44, 29.655])["features"] == []
+
+
+def test_miss_outside_houston_is_no_data():
+    from app.services.risk import harvey_for_jurisdiction as f
+    miss = {"flooded": False, "source": "s", "note": "x"}
+    assert f(miss, "Unincorporated (county)")["flooded"] is None
+    assert f(miss, "Pasadena (limited purpose area)")["flooded"] is None
+    assert "doesn't fully cover" in f(miss, "City of Pasadena")["note"]
+    assert f(miss, "City of Houston")["flooded"] is False
+    assert f(miss, "Unknown")["flooded"] is False
+    hit = {"flooded": True, "source": "s", "note": "y"}
+    assert f(hit, "City of Pasadena")["flooded"] is True

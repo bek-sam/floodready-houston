@@ -14,6 +14,7 @@ import { esFill, viFill, zhFill, arFill } from './i18n-fill'
 import { en as enP7, es as esP7 } from './i18n/p7'
 import { en as enP8, es as esP8, vi as viP8, zh as zhP8, ar as arP8 } from './i18n/p8'
 import { en as enP9, es as esP9 } from './i18n/p9'
+import { en as enP10, es as esP10 } from './i18n/p10'
 
 export const LANGS = [
   { code: 'en', label: 'English', speech: 'en-US' },
@@ -334,5 +335,5 @@ const ar: Dict = {
   'ask.disclaimer': 'إجابات الذكاء الاصطناعي ليست إرشادًا رسميًا. للطوارئ اتصل بـ 911.',
 }
 // Redesign phase dictionaries (src/i18n/p1..p6) override older keys.
-const dicts: Record<string, Dict> = { en: { ...en, ...en2, ...en3, ...en5, ...en11, ...enP1, ...enP2, ...enP3, ...enP4, ...enP5, ...enP5a, ...enP6, ...enP7, ...enP8, ...enP9 }, es: { ...es, ...es2, ...es3, ...es5, ...es11, ...esP1, ...esP2, ...esP3, ...esP4, ...esP5, ...esP5a, ...esP6, ...esP7, ...esFill, ...esP8, ...esP9 }, vi: { ...vi, ...vi2, ...vi3, ...viFill, ...viP8 }, zh: { ...zh, ...zh2, ...zh3, ...zhFill, ...zhP8 }, ar: { ...ar, ...ar2, ...ar3, ...arFill, ...arP8 } }
+const dicts: Record<string, Dict> = { en: { ...en, ...en2, ...en3, ...en5, ...en11, ...enP1, ...enP2, ...enP3, ...enP4, ...enP5, ...enP5a, ...enP6, ...enP7, ...enP8, ...enP9, ...enP10 }, es: { ...es, ...es2, ...es3, ...es5, ...es11, ...esP1, ...esP2, ...esP3, ...esP4, ...esP5, ...esP5a, ...esP6, ...esP7, ...esFill, ...esP8, ...esP9, ...esP10 }, vi: { ...vi, ...vi2, ...vi3, ...viFill, ...viP8 }, zh: { ...zh, ...zh2, ...zh3, ...zhFill, ...zhP8 }, ar: { ...ar, ...ar2, ...ar3, ...arFill, ...arP8 } }
 export const tr = (lang: string, key: string) => dicts[lang]?.[key] ?? dicts.en[key] ?? key

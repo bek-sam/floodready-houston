@@ -1,6 +1,6 @@
 // Home readiness summary rules (docs/ux/redesign-spec.md §4.3, §4.4). Pure functions, no React.
 // Inputs come only from /risk, /flood-history, /zip-insurance, /alerts and /outlook.
-import type { Alert, Alerts, FloodHistory, Gauge, Outlook, Risk, Status, ZipInsurance } from '../api'
+import type { Alert, Alerts, Evac, FloodHistory, Gauge, Outlook, Risk, Status, ZipInsurance } from '../api'
 import type { Household } from '../state/place'
 import { gaugeLevel, LEVEL_RANK, type Exposure, type Level } from './levels'
 
@@ -10,6 +10,8 @@ export interface SummaryInputs {
   risk: Src<Risk>; alerts: Src<Alerts>; outlook: Src<Outlook>; hist: Src<FloodHistory>
   /** null when the place has no ZIP. */
   zip: Src<ZipInsurance> | null
+  /** GET /api/evac result (null while loading or unavailable). */
+  evac?: Evac | null
 }
 /** i18n key + placeholder values (values may themselves be i18n keys when prefixed with "@"). */
 export interface Reason { key: string; vars?: Record<string, string> }
@@ -70,7 +72,7 @@ export function historyHit(h: FloodHistory | null): HistHit | null {
 
 export interface ExposureResult { exposure: Exposure; final: boolean; reason: Reason }
 
-export function exposure(i: SummaryInputs): ExposureResult {
+function baseExposure(i: SummaryInputs): ExposureResult {
   const { risk, hist } = i
   if (!risk.done) return { exposure: 'unknown', final: false, reason: { key: 'sum.checking' } }
   if (risk.failed || !risk.data) return { exposure: 'unknown', final: true, reason: { key: 'sum.exp.unknown' } }
@@ -87,10 +89,39 @@ export function exposure(i: SummaryInputs): ExposureResult {
   return { exposure: 'lower', final: true, reason: { key: 'sum.exp.lower' } }
 }
 
+/** Deepest NHC surge depth (ft) over all categories, from the API's range text ("Greater than 6 feet above ground"). */
+export interface SurgeInfo { maxFt: number; plus: boolean; minCat: number }
+export function surgeInfo(e: Evac | null | undefined): SurgeInfo | null {
+  if (!e?.surge) return null
+  let maxFt = 0, plus = false, minCat = 0
+  for (let n = 1; n <= 5; n++) {
+    const v = e.surge['cat' + n]
+    if (!v) continue
+    const nums = (v.match(/\d+(?:\.\d+)?/g) ?? []).map(Number)
+    if (!minCat) minCat = n
+    const top = nums.length ? Math.max(...nums) : 0
+    if (top > maxFt || (top === maxFt && /greater|more|over|above \d/i.test(v))) { maxFt = top; plus = /greater|more|over/i.test(v) }
+  }
+  return minCat && maxFt > 0 ? { maxFt, plus, minCat } : null
+}
+
+const EXP_RANK: Record<Exposure, number> = { unknown: 0, lower: 1, elevated: 2, high: 3 }
+
+/** "This place" level: base rules, then the hurricane evacuation zone raises it (never lowers). */
+export function exposure(i: SummaryInputs): ExposureResult {
+  const base = baseExposure(i)
+  const zone = i.evac?.zone
+  if (!zone || !base.final) return base
+  const sg = surgeInfo(i.evac)
+  const [level, key]: [Exposure, string] = zone === 'A' && sg && sg.maxFt >= 6 ? ['high', 'sum.exp.evacSurge'] : ['elevated', 'sum.exp.evac']
+  if (EXP_RANK[base.exposure] >= EXP_RANK[level]) return base
+  return { exposure: level, final: true, reason: { key, vars: { zone, ft: sg ? String(sg.maxFt) : '' } } }
+}
+
 // ---------- Why chips (in the order of the rules table) ----------
 export type ChipKind =
   | 'fema' | 'harvey' | 'harveyNo' | 'gaugeHist' | 'zipClaims' | 'lowGround' | 'reservoir'
-  | 'alert' | 'outlook' | 'gaugeNow' | 'unavailable'
+  | 'evac' | 'surge' | 'alert' | 'outlook' | 'gaugeNow' | 'unavailable'
 export interface Chip { id: string; kind: ChipKind; tone: Level | 'neutral'; vars: Record<string, string>; source?: string }
 
 export const NOAA_GAUGE = (id: string) => `https://water.noaa.gov/gauges/${encodeURIComponent(id.toLowerCase())}`
@@ -102,6 +133,8 @@ export const SRC = {
   nws: 'https://www.weather.gov/',
   epqs: 'https://epqs.nationalmap.gov/v1/docs',
   noaaGauges: 'https://water.noaa.gov/',
+  evac: 'https://www.readyharris.org/',
+  surge: 'https://www.nhc.noaa.gov/nationalsurge/',
 } as const
 
 export function whyChips(i: SummaryInputs): Chip[] {
@@ -118,6 +151,10 @@ export function whyChips(i: SummaryInputs): Chip[] {
   if (z && (z.claims?.since_2017 ?? 0) >= 1) out.push({ id: 'zip', kind: 'zipClaims', tone: 'neutral', vars: { zip: String(z.zip), n: String(z.claims.total ?? 0), m: String(z.claims.since_2017 ?? 0) }, source: z.source })
   if (r?.low_ground === true) out.push({ id: 'low', kind: 'lowGround', tone: 'watch', vars: {}, source: SRC.flat })
   if (r?.reservoir_area) out.push({ id: 'res', kind: 'reservoir', tone: 'watch', vars: {}, source: SRC.dams })
+  const ev = i.evac
+  if (ev?.zone) out.push({ id: 'evac', kind: 'evac', tone: 'watch', vars: { zone: ev.zone }, source: SRC.evac })
+  const sg = surgeInfo(ev)
+  if (ev?.zone && sg) out.push({ id: 'surge', kind: 'surge', tone: 'watch', vars: { ft: sg.maxFt + (sg.plus ? '+' : ''), cat: String(sg.minCat) }, source: SRC.surge })
   const flood = alertsOf(i.alerts.data).filter((a) => isFloodAlert(a.event))
   flood.slice(0, 2).forEach((a, n) => out.push({ id: 'alert' + n, kind: 'alert', tone: alertLevel(a.event), vars: { event: a.event }, source: SRC.nws }))
   const day1 = i.outlook.data?.day1

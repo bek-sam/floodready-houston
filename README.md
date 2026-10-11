@@ -76,15 +76,18 @@ cd backend && uv run python ../scripts/demo_check.py --front  # 21 automated dem
 | `DOMAIN` | Deploy only: your domain, passed to Caddy (not read from `.env`; set on the deploy command) |
 
 ## Deploy (Vultr + domain, ~15 minutes)
-1. Create a Vultr Cloud Compute instance (Ubuntu 24.04, 1 GB is enough). Point your domain's A record at its IP (no domain yet? use `1-2-3-4.sslip.io`).
-2. One-time server setup (Docker, compose, ufw 22/80/443):
+1. Create a Vultr Cloud Compute instance (Ubuntu 24.04, 1 GB is enough). Add a DNS **A record** `yourdomain.tld -> VPS IP` (no domain yet? use `1-2-3-4.sslip.io`, which needs no DNS step). Wait until `dig +short yourdomain.tld` returns the IP, otherwise Caddy cannot get a certificate.
+2. One-time server setup (Docker, compose, ufw 22/80/443/udp 443):
    `ssh root@IP 'bash -s' < deploy/server-setup.sh`
-3. Fill `.env` locally (copy `.env.example`).
+3. Fill `.env` locally (copy `.env.example`) and set `ALLOWED_ORIGINS=https://yourdomain.tld` (also `VAPID_SUBJECT=mailto:you@example.com`).
 4. From the repo root: `VPS=root@IP DOMAIN=yourdomain.tld ./deploy/deploy.sh`
-   (builds the frontend, rsyncs the repo, runs `docker compose up -d --build` remotely).
-5. Smoke test: `curl https://yourdomain.tld/api/health`, then open the site on a phone.
+   (builds the frontend, rsyncs the repo incl. `.env`, `frontend/dist` and `data/` with the git-ignored `data/harvey/harvey.sqlite`, runs `docker compose up -d --build`, then curls `/api/health`).
+5. Smoke test: `curl https://yourdomain.tld/api/health`, then open the site on a phone. Logs: `ssh root@IP 'cd /opt/floodready/deploy && DOMAIN=yourdomain.tld docker compose logs -f'`.
 
-Files: `deploy/Dockerfile.backend`, `deploy/Caddyfile`, `deploy/docker-compose.yml`. SQLite, push keys and caches persist in the `state` Docker volume; Caddy certificates in `caddy_data`.
+Tested locally (full stack over Caddy HTTPS, SPA routes, `/sw.js` no-cache, manifest type, `/api/*`, SSE `/api/ask/stream`, WebSocket `/api/live`, restart):
+`cd frontend && npm run build && cd ../deploy && DOMAIN=localhost TLS_MODE=internal HTTP_PORT=8088 HTTPS_PORT=8443 docker compose up -d --build`, then `curl -k https://localhost:8443/api/health`; stop with `docker compose down -v`. On the VPS leave `TLS_MODE` unset (automatic Let's Encrypt).
+
+Files: `deploy/Dockerfile.backend` (uvicorn, no `--reload`), `deploy/Caddyfile` (HTTPS, gzip/zstd, security headers + CSP, WebSocket/SSE proxy), `deploy/docker-compose.yml`. SQLite, push keys and caches persist in the `state` Docker volume; Caddy certificates in `caddy_data`.
 
 ## Data sources
 Full list with endpoints, limits and status: [`docs/sources.md`](docs/sources.md). Main ones:

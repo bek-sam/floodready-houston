@@ -10,6 +10,9 @@ import { SummaryHero } from '../components/home/SummaryHero'
 import { TopActions } from '../components/home/TopActions'
 import { LiveConditions } from '../components/home/LiveConditions'
 import { FloodHistoryList, PlaceProfile } from '../components/home/PlaceProfile'
+import EvacSurgeBody, { useEvac } from '../components/evac/EvacSurgeCard'
+import HwmBody, { hasMarks, useHwm } from '../components/hwm/HwmCard'
+import CoastalChip from '../components/coastal/CoastalChip'
 import RentBuy from '../components/RentBuy'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
 
@@ -148,11 +151,13 @@ export default function Home() {
   const { setDanger } = useShell()
   const loc = useMemo(() => (place ? { lat: place.lat, lon: place.lon } : null), [place?.lat, place?.lon]) // eslint-disable-line react-hooks/exhaustive-deps
   const d = useHomeData(loc, place?.zip ?? null, 'place')
-  const { inputs } = d
+  const evac = useEvac(loc)
+  const inputs = useMemo(() => ({ ...d.inputs, evac }), [d.inputs, evac])
   const now = rightNow(inputs)
   const exp = computeExposure(inputs)
   const name = place ? placeName(place.nickname, t) : ''
   const { sample } = useSample()
+  const hwm = useHwm(loc)
   // Judge step 1: make sure the demo place is loaded (the Judge page normally sets it before navigating).
   useEffect(() => { if (peekDemoGo(1)) { clearDemoGo(); if (!place) void sample() } }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -181,6 +186,7 @@ export default function Home() {
         <div className="md:col-span-5 md:col-start-8 md:row-span-3 md:row-start-1">
           <LiveConditions title={t('live.title')} loc={loc} risk={inputs.risk} alerts={inputs.alerts} outlook={inputs.outlook}
             updatedAt={d.updatedAt} onRetry={d.refresh} />
+          <CoastalChip />
         </div>
 
         <section aria-labelledby="det-title" className="space-y-3 md:col-span-7 md:col-start-1 md:row-start-2">
@@ -193,6 +199,12 @@ export default function Home() {
             preview={h ? (histN ? fill(t, 'det.historyPreview', { n: histN }) : t('det.historyNone')) : inputs.hist.failed ? t('live.unavail') : t('sum.checking')}>
             {h ? <FloodHistoryList h={h} /> : inputs.hist.failed ? <ErrorBox error={t('live.unavail')} onRetry={d.refresh} /> : <Busy />}
           </Disclosure>
+          {evac && (evac.zone || evac.surge) && (
+            <Disclosure id="evac" icon={<Waves size={20} />} title={t('p10.det.evac')} preview={t('p10.det.evacPrev')}><EvacSurgeBody d={evac} /></Disclosure>
+          )}
+          {hasMarks(hwm) && (
+            <Disclosure id="hwm" icon={<History size={20} />} title={t('p10.det.hwm')} preview={t('p10.det.hwmPrev')}><HwmBody d={hwm} /></Disclosure>
+          )}
           <Disclosure id="rentbuy" icon={<FileText size={20} />} title={t('det.rentbuy')}
             preview={place.zip ? fill(t, 'det.rentbuyPreview', { zip: place.zip }) : t('det.rentbuyPreviewNoZip')}>
             <RentBuy label={place.label} zone={r?.fema_zone} sfha={r?.sfha} lat={place.lat} lon={place.lon} />

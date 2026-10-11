@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  ArrowDownToLine, BellRing, CloudOff, CloudRain, Droplets, ExternalLink, FileText, History, Map as MapIcon, Waves, type LucideIcon,
+  ArrowDownToLine, BellRing, CloudOff, CloudRain, Droplets, ExternalLink, FileText, History, LifeBuoy, Map as MapIcon, Waves, type LucideIcon,
 } from 'lucide-react'
 import { useApp } from '../../ctx'
 import { LEVEL_CLASS } from '../../lib/levels'
@@ -9,16 +9,16 @@ import { Skeleton, Sheet, SourceLink } from '../ds'
 
 const ICON: Record<ChipKind, LucideIcon> = {
   fema: MapIcon, harvey: Waves, harveyNo: Waves, gaugeHist: History, zipClaims: FileText, lowGround: ArrowDownToLine,
-  reservoir: Droplets, alert: BellRing, outlook: CloudRain, gaugeNow: Waves, unavailable: CloudOff,
+  reservoir: Droplets, evac: LifeBuoy, surge: Waves, alert: BellRing, outlook: CloudRain, gaugeNow: Waves, unavailable: CloudOff,
 }
 const LABEL_KEY: Record<ChipKind, string> = {
   fema: 'chip.fema', harvey: 'chip.harvey', harveyNo: 'chip.harveyNo', gaugeHist: 'chip.gaugeHist', zipClaims: 'chip.zipClaims',
-  lowGround: 'chip.lowGround', reservoir: 'chip.reservoir', alert: 'chip.alert', outlook: 'chip.outlook', gaugeNow: 'chip.gaugeNow',
+  lowGround: 'chip.lowGround', evac: 'chip.evac', surge: 'chip.surge', reservoir: 'chip.reservoir', alert: 'chip.alert', outlook: 'chip.outlook', gaugeNow: 'chip.gaugeNow',
   unavailable: 'chip.unavailable',
 }
 /** Friendly source labels for links the generic host map does not cover. */
 const SOURCE_LABEL: Record<string, string> = {
-  [SRC.sfha]: '12 CFR 339 App. A', [SRC.flat]: 'Harris County MAAPnext', [SRC.dams]: 'Texas Tribune',
+  [SRC.sfha]: '12 CFR 339 App. A', [SRC.flat]: 'Harris County MAAPnext', [SRC.dams]: 'Texas Tribune', [SRC.evac]: 'ReadyHarris', [SRC.surge]: 'NOAA NHC storm surge maps',
 }
 
 function chipLabel(t: (k: string) => string, c: Chip, lang: string) {
@@ -40,6 +40,8 @@ function Explain({ chip, inputs }: { chip: Chip; inputs: SummaryInputs }) {
     case 'gaugeHist': return <>{p(fill(t, 'ex.gaugeHist', chip.vars))}{note(t('c6.hist.note'))}
       <p><a href="#replay" className="text-body-sm font-semibold text-brand underline underline-offset-2">{t('det.replayLink')}</a></p></>
     case 'zipClaims': return <>{p(fill(t, 'ex.zip', { ...chip.vars, n: Number(chip.vars.n).toLocaleString(lang), m: Number(chip.vars.m).toLocaleString(lang) }))}{note(inputs.zip?.data?.note)}</>
+    case 'evac': return <>{p(fill(t, 'ex.evac', chip.vars))}{note(t('p10.evac.note'))}</>
+    case 'surge': return <>{p(fill(t, 'ex.surge', chip.vars))}{note(t('p10.evac.note'))}</>
     case 'lowGround': return <>{p(t('home.lowGround'))}</>
     case 'reservoir': {
       const fact = (r?.facts ?? []).find((f) => f?.source === SRC.dams)

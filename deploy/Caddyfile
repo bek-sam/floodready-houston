@@ -1,9 +1,35 @@
-# DOMAIN comes from the environment (compose). Use e.g. floodready.tech or 1-2-3-4.sslip.io
+# DOMAIN and TLS_MODE come from the environment (compose).
+#   DOMAIN=floodready.tech (or 1-2-3-4.sslip.io), TLS_MODE unset  -> automatic Let's Encrypt HTTPS
+#   DOMAIN=localhost TLS_MODE=internal                            -> Caddy's local CA (local testing)
 {$DOMAIN} {
+	tls {$TLS_MODE:}
+
 	encode zstd gzip
 
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(self), microphone=(self), camera=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src * data: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob: data:; worker-src 'self' blob:; child-src 'self' blob:; media-src 'self' blob: data:; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+		-Server
+	}
+
+	# API, SSE (/api/ask/stream) and WebSocket (/api/live). Caddy proxies
+	# WebSocket upgrades automatically; flush_interval -1 disables buffering for SSE.
 	handle /api/* {
-		reverse_proxy backend:8000
+		request_body {
+			max_size 25MB
+		}
+		reverse_proxy backend:8000 {
+			flush_interval -1
+			transport http {
+				read_timeout 10m
+				response_header_timeout 2m
+				dial_timeout 10s
+			}
+			stream_close_delay 5m
+		}
 	}
 
 	handle {

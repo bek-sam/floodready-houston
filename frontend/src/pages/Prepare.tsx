@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { CalendarPlus, Check, ChevronLeft, ChevronRight, ExternalLink, Pencil } from 'lucide-react'
 import TenantLetter from '../components/TenantLetter'
 import MedicalAccess from '../components/MedicalAccess'
+import GoBag from '../components/gobag/GoBag'
+import SeasonReminders from '../components/season/SeasonReminders'
 import EvacuationHelp from '../components/prepare/EvacuationHelp'
 import { api, errText, type Countdown, type Plan, type When } from '../api'
 import { useApp } from '../ctx'
@@ -13,7 +15,7 @@ import { householdChips, store, toProfile, usePlace, useDemoMode } from '../stat
 
 const today = () => new Date().toISOString().slice(0, 10)
 const WHEN: When[] = ['now', 'storm_watch', 'storm', 'after']
-const TABS = ['plan', 'insurance', 'medical', 'renters', 'evacuate'] as const
+const TABS = ['plan', 'insurance', 'medical', 'renters', 'evacuate', 'gobag', 'season'] as const
 type Tab = (typeof TABS)[number]
 const DONE_KEY = 'floodready.planDone.v1'
 
@@ -98,7 +100,7 @@ export default function Prepare() {
       <PageHeader title={t('p5a.title')} forPlace />
       <div className="sticky top-0 z-10 -mx-4 mb-4 bg-bg px-4 md:-mx-0 md:px-0">
         <Tabs label={t('p5a.tabs')} idPrefix="prep" value={tab} onChange={pick}
-          items={TABS.map((v) => ({ value: v, label: t('p5a.tab.' + v) }))} />
+          items={TABS.map((v) => ({ value: v, label: t(v === 'gobag' || v === 'season' ? 'p10.tab.' + v : 'p5a.tab.' + v) }))} />
       </div>
 
       <div role="tabpanel" id={`prep-panel-${tab}`} aria-labelledby={`prep-tab-${tab}`} className="space-y-4">
@@ -199,6 +201,8 @@ export default function Prepare() {
         )}
 
         {tab === 'evacuate' && <div id="prepare-evacuate"><EvacuationHelp /></div>}
+        {tab === 'gobag' && <GoBag />}
+        {tab === 'season' && <SeasonReminders />}
       </div>
     </div>
   )

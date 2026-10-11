@@ -5,10 +5,10 @@ Hacking ends **1:00 PM** · judging 1:30–3:30 PM · closing 5 PM.
 ## Tonight / early morning (only you can do these)
 1. **Keys** → `cp .env.example .env`, fill `GEMINI_API_KEY`, `ELEVENLABS_API_KEY` (optional: `DATABASE_URL` from Tiger Data, `BACKBOARD_API_KEY`).
    Check: `cd backend && uv run python ../scripts/check_keys.py` → all OK.
-2. **Deploy** (needs Vultr VPS + domain A-record → VPS IP):
-   `ssh root@IP 'bash -s' < deploy/server-setup.sh` then
-   `VPS=root@IP DOMAIN=yourdomain ./deploy/deploy.sh`
-   Set `ALLOWED_ORIGINS=https://yourdomain` in `.env` before deploying.
+2. **Deploy** (needs Vultr VPS + DNS A-record `yourdomain -> VPS IP`, or use `IP-with-dashes.sslip.io`):
+   set `ALLOWED_ORIGINS=https://yourdomain` in `.env`, then
+   `ssh root@IP 'bash -s' < deploy/server-setup.sh` and
+   `VPS=root@IP DOMAIN=yourdomain ./deploy/deploy.sh` (needs `data/harvey/harvey.sqlite` locally; it prints the health check at the end).
 3. **GitHub**: tell Claude "approved — push" (repo must be public for prizes).
 4. **Phone push test**: open the deployed URL on your phone → (iPhone: Share → Add to Home Screen → open from Home Screen) → Watch → add a place → Enable push alerts → Simulate storm push.
 

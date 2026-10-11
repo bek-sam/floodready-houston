@@ -19,6 +19,8 @@ LOW_GROUND_MARGIN_FT = 5.0
 
 SRC_HARVEY = "https://communityimpact.com/news/2018/06/08/hurricane-harvey-damage-report-harris-county"
 SRC_FLAT = "https://maapnext.harriscountytx.gov/Understand-Your-Risk"
+HARVEY_OUTSIDE_NOTE = ("The City of Houston's Harvey flood map doesn't fully cover this city \u2014 no Harvey extent data here. "
+                       "Absence from it is not evidence this place stayed dry.")
 SRC_DAMS = "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/"
 SRC_MAPS = "https://reduceflooding.com/2026/02/12/fema-releases-new-draft-flood-maps-for-harris-county-and-houston/"
 SRC_RICE = "https://news.rice.edu/news/2026/10-years-after-tax-day-flood-rice-researchers-warn-hidden-risk"
@@ -84,6 +86,26 @@ async def _juris(lat, lon):
                                         "returnGeometry": "false", "f": "json"}, ttl=3600)
 
 
+def harvey_for_jurisdiction(hv: dict, jur: str) -> dict:
+    """The layer is the City of Houston's own estimate: a miss in another city is "no data", not "dry". A hit stays true."""
+    if hv.get("flooded") is False and jur != "Unknown" and not jur.startswith("City of Houston"):
+        return {**hv, "flooded": None, "note": HARVEY_OUTSIDE_NOTE}
+    return hv
+
+
+def jurisdiction_name(juris) -> str:
+    try:
+        feats = juris["features"]
+        full = [f["attributes"] for f in feats if f["attributes"].get("SERVICE_TY") == "FULL"]
+        if full:
+            return f"City of {full[0]['NAME'].title()}"
+        if feats:
+            return f"{feats[0]['attributes']['NAME'].title()} (limited purpose area)"
+        return "Unincorporated (county)"
+    except Exception:
+        return "Unknown"
+
+
 async def get_risk(lat: float, lon: float, simulate: bool = False) -> dict:
     fema, elev, juris, gauges = await asyncio.gather(
         _fema(lat, lon), _elev(lat, lon), _juris(lat, lon), nearest_gauges(lat, lon, 3, simulate),
@@ -132,9 +154,10 @@ async def get_risk(lat: float, lon: float, simulate: bool = False) -> dict:
     rs = await reservoir_status(lat, lon)
     reservoir = rs["in_area"]
     low, low_note = _low_ground(elevation, gauges)
+    hv = harvey_for_jurisdiction(harvey_at(lat, lon), jur)
     out = {"fema_zone": zone, "zone_subtype": subtype, "sfha": sfha, "elevation_ft": elevation, "elevation_source": elev_source,
            "low_ground": low, "low_ground_note": low_note, "nearest_gauges": gauges,
-           "reservoir_area": reservoir, "harvey": harvey_at(lat, lon), "jurisdiction": jur, "facts": build_facts(zone, sfha, reservoir)}
+           "reservoir_area": reservoir, "harvey": hv, "jurisdiction": jur, "facts": build_facts(zone, sfha, reservoir)}
     if warnings:
         out["warnings"] = warnings
     gl = [g for g in gauges if isinstance(g, dict)]

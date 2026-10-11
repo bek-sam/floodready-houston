@@ -131,6 +131,12 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Data freshness:** data endpoints add `meta:{as_of, source, freshness:"live"|"recent"|"cached"|"snapshot"|"historical", snapshot_date?, storm_mode}` (top-level `meta` on /crossings, /harvey/extent, /replay/{id}); gauges add `stale`, `provisional`, `spike`, `offline` (+`observed_at` in history); storm mode (flood alert or gauge ≥ action) caps live TTLs to 90–180 s; GET `/status` → `{sources:[{name,last_success,last_error,p50_ms,circuit}], snapshots, storm_mode, meta}`; frontend `Freshness`/`GaugeChips` in ds, `#status` page.
 
+**Cycle 20 additions (specs in docs/cycles/cycle-20-research.md):**
+- GET `/evac?lat&lon` → `{zone:"A"|"B"|"C"|null, zone_label, surge:{cat1..cat5 ft ranges or null}, sources, meta}` (Texas hurricane evacuation zip zones + NHC storm surge risk maps).
+- GET `/hwm?lat&lon&radius_mi=2` → `{marks:[{id, distance_mi, height_above_ground_ft, elevation_ft, site_desc, event, url}], nearest_depth_ft, source, meta}` (USGS STN Harvey high-water marks).
+- GET `/coastal` → `{tide:{station, observed_ft, predicted_ft, anomaly_ft, as_of}, active_storms:[{name, type, advisory_url}], meta}` (NOAA CO-OPS Galveston + NHC CurrentStorms).
+- Frontend: go-bag checklist (printable + wallet card) and storm-season .ics reminders — client-side only.
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)
