@@ -8,6 +8,7 @@ import SharePlanCard from '../components/share/SharePlanCard'
 import { PayLess } from '../components/p35/P35'
 import GoBag from '../components/gobag/GoBag'
 import SeasonReminders from '../components/season/SeasonReminders'
+import { UnhousedCard } from '../components/p41/P41Cards'
 import StayInformed from '../components/p38/StayInformed'
 import EvacuationHelp from '../components/prepare/EvacuationHelp'
 import { ApiError, api, errText, type Countdown, type Plan, type When } from '../api'
@@ -231,7 +232,7 @@ export default function Prepare() {
           </>
         )}
 
-        {tab === 'evacuate' && <div id="prepare-evacuate" className="space-y-6"><EvacuationHelp /><StayInformed /></div>}
+        {tab === 'evacuate' && <div id="prepare-evacuate" className="space-y-6"><EvacuationHelp /><StayInformed /><UnhousedCard /></div>}
         {tab === 'gobag' && <GoBag />}
         {tab === 'pets' && <PetsCard />}
         {tab === 'season' && <SeasonReminders />}

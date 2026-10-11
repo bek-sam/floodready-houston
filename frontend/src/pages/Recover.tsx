@@ -7,6 +7,7 @@ import { usePlace, placeName } from '../state/place'
 import { cssVar } from '../lib/levels'
 import { RecoveryTracker, Share911, WaitingForRescue } from '../components/RecoverExtras'
 import { Map } from '../components/maps'
+import { RecoverCards } from '../components/p41/P41Cards'
 import Report311 from '../components/civic311/Report311'
 import ClaimsHelper from '../components/claims/ClaimsHelper'
 import ReportSheet from '../components/ReportSheet'
@@ -208,6 +209,7 @@ export default function Recover() {
           <SourceLink href={KB.imelda} label={t('p39.safe.src2')} />
         </div>
       </Card>
+      <RecoverCards />
       <DeclarationBanner />
       <RecoveryTracker />
       <Checklists />

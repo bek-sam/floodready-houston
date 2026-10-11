@@ -57,3 +57,6 @@ Every bug in fix-plan.md was fixed and re-tested: backend 228 tests pass, the fr
 The fixes close the listed gaps but do not change any verdict category. The count stays at what was measured.
 
 Recount: 33 REDUCES / 13 INFORMS / 6 NONE of 52
+
+## New problems from the catalogue (not in the 52 count)
+After the audit, the screens also cover these catalogue `-new` problems with verified sources: E-new1 power-dependent residents (emPOWER card), E-new3 unhoused people (211 card), G-new3 scams (FEMA fraud hotline), G-new4 FEMA denials (appeal steps), G-new5 floodwater contamination (CDC steps), G-new6 proof-of-loss and SBA. G-new2 (flood-damaged cars) has no verifiable source today, so it stays out of the app.
