@@ -38,7 +38,7 @@ React + Vite + TypeScript + Tailwind + Leaflet PWA with a service worker and Web
 
 ## Accomplishments
 - A strict, problem-by-problem audit with a live test per problem (`docs/problems/`): the app reduces harm for **33 of 52** problems (fully solves 5, partly solves 28), informs on 13, and 6 are beyond any app. This replaced our earlier, more generous self-count of 37.
-- Measured, dated evidence on the in-app Judge page: 240 backend tests passing, AI eval 38/40 (95%), citation eval 15/15 with live Gemini, voice end of speech to first audio median 1.4 s (n=3, small sample), `demo_check` 21/21 online and in offline snapshot mode.
+- Measured, dated evidence on the in-app Judge page: 243 backend tests passing, AI eval 38/40 (95%), citation eval 15/15 with live Gemini, voice end of speech to first audio median 1.4 s (n=3, small sample), `demo_check` 21/21 online and in offline snapshot mode.
 - Accessibility: axe-core 0 violations across 48 combinations (12 views x 2 widths x 2 themes).
 - 14-route sweep at 390 px in English and Arabic: 0 errors, 0 overflow, 0 raw keys.
 
