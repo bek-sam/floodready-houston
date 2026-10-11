@@ -81,15 +81,19 @@ def _build(zst, zattrs, sres) -> dict:
     surge = {k: (v if s == "ok" else None) for k, (s, v) in sres.items()}
     in_surge = any(v for v in surge.values())
     zone = _zone_letter((zattrs or {}).get("Zone"))
-    notes = []
+    notes, note_codes = [], []
     if zst == "error":
+        note_codes.append("evac.n.unavail")
         notes.append("Evacuation-zone lookup unavailable right now; this is not a sign you are outside a zone.")
     elif zone is None:
+        note_codes.append("evac.n.nozone")
         notes.append("No Harris-area hurricane evacuation zone found at this point (outside coverage or not in a zone). "
                      "Check your county's evacuation map.")
     if not surge_ok:
+        note_codes.append("evac.n.surgeUnavail")
         notes.append("Storm-surge lookup unavailable right now; this is not a sign of no surge risk.")
     elif not in_surge:
+        note_codes.append("evac.n.nosurge")
         notes.append("No NHC storm-surge inundation mapped here. Rain and bayou flooding can still happen.")
     return {
         "zone": zone,
@@ -104,6 +108,9 @@ def _build(zst, zattrs, sres) -> dict:
         "guidance": GUIDANCE,
         "surge_note": SURGE_NOTE,
         "notes": notes,
+        "note_codes": note_codes,
+        "guidance_code": "evac.guidance",
+        "surge_note_code": "evac.surgeNote",
         "links": {"readyharris": "https://www.readyharris.org/", "hurricanes": "https://www.ready.gov/hurricanes"},
         "sources": ["Harris County GIS HurricaneEvac_Zones", "NOAA NHC National Storm Surge Risk Maps"],
     }

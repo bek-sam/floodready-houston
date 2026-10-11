@@ -1,3 +1,4 @@
+from app.services.codes import tag_warnings
 from app.services.arcgis import HCFCD, full_layer
 from app.services.data import haversine_m, load_json
 from app.services.officials import get_officials
@@ -30,7 +31,7 @@ async def get_civic(lat: float, lon: float) -> dict:
         d = {}
         warnings.append("civic data file not available yet")
     bond = dict(d.get("bond") or {})
-    bond.setdefault("facts", [])
+    bond["facts"] = [{**f, "code": f"civic.bond.{i}", "params": {}} for i, f in enumerate(bond.get("facts") or [])]
     bond["projects"] = await bond_projects(lat, lon)
     if not bond["projects"]:
         warnings.append("No HCFCD bond projects within 5 miles (or layer unavailable)")
@@ -38,9 +39,11 @@ async def get_civic(lat: float, lon: float) -> dict:
     rs = await reservoir_status(lat, lon)
     reservoir["in_area"] = rs["in_area"]
     reservoir["note"] = rs["note"]
-    reservoir.setdefault("facts", [])
-    out = {"bond": bond, "reservoir": reservoir, "responsibility": d.get("responsibility") or [],
+    reservoir["note_code"] = rs["note_code"]
+    reservoir["facts"] = [{**f, "code": f"civic.res.{i}", "params": {}} for i, f in enumerate(reservoir.get("facts") or [])]
+    out = {"bond": bond, "reservoir": reservoir, "responsibility": [{**r, "code": f"civic.resp.{i}"} for i, r in enumerate(d.get("responsibility") or [])],
            "officials": await get_officials(lat, lon)}
     if warnings:
         out["warnings"] = warnings
+        tag_warnings(out)
     return out

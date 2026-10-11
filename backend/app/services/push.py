@@ -16,7 +16,8 @@ from app.services.watch import RANK, evaluate
 log = logging.getLogger("push")
 VAPID_FILE = Path(__file__).resolve().parents[2] / ".vapid.json"
 INTERVAL_S = 300
-CALL = {"en": "Call 911 in an emergency.", "es": "Llame al 911 en una emergencia."}
+CALL = {"en": "Call 911 in an emergency.", "es": "Llame al 911 en una emergencia.",
+        "vi": "Gọi 911 khi có trường hợp khẩn cấp.", "zh": "紧急情况请拨打 911。", "ar": "اتصل بالرقم 911 في حالات الطوارئ."}
 TEXT = {
     "en": {"warning": ("Flood warning", "Flood warning for {label}: avoid low roads and underpasses."),
            "watch": ("Flood watch", "Flood watch for {label}: conditions are building. Check routes before driving."),
@@ -24,6 +25,15 @@ TEXT = {
     "es": {"warning": ("Alerta de inundacion", "Alerta de inundacion para {label}: evite calles bajas y pasos a desnivel."),
            "watch": ("Vigilancia de inundacion", "Vigilancia de inundacion para {label}: las condiciones empeoran. Revise su ruta antes de manejar."),
            "test": ("Prueba de FloodReady", "Las notificaciones funcionan.")},
+    "vi": {"warning": ("Cảnh báo lũ", "Cảnh báo lũ cho {label}: tránh đường thấp và hầm chui."),
+           "watch": ("Theo dõi lũ", "Theo dõi lũ cho {label}: tình hình đang xấu đi. Kiểm tra tuyến đường trước khi lái xe."),
+           "test": ("Thử nghiệm FloodReady", "Thông báo đang hoạt động.")},
+    "zh": {"warning": ("洪水警告", "{label} 洪水警告：请避开低洼道路和下穿通道。"),
+           "watch": ("洪水监视", "{label} 洪水监视：情况正在恶化。出行前请先查看路线。"),
+           "test": ("FloodReady 测试", "通知功能正常。")},
+    "ar": {"warning": ("تحذير من الفيضان", "تحذير من الفيضان في {label}: تجنب الطرق المنخفضة والأنفاق."),
+           "watch": ("مراقبة الفيضان", "مراقبة الفيضان في {label}: الأوضاع تتفاقم. تحقق من مسارك قبل القيادة."),
+           "test": ("اختبار FloodReady", "الإشعارات تعمل.")},
 }
 
 

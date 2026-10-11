@@ -4,6 +4,7 @@ import {
 } from 'lucide-react'
 import { useApp } from '../../ctx'
 import { LEVEL_CLASS } from '../../lib/levels'
+import { useBk } from '../../lib/bk'
 import { fill, SRC, type Chip, type ChipKind, type SummaryInputs } from '../../lib/summary'
 import { Skeleton, Sheet, SourceLink } from '../ds'
 
@@ -30,28 +31,29 @@ function chipLabel(t: (k: string) => string, c: Chip, lang: string) {
 /** Plain explanation for a chip, from API fields and existing sourced copy only. */
 function Explain({ chip, inputs }: { chip: Chip; inputs: SummaryInputs }) {
   const { t, lang } = useApp()
+  const bk = useBk()
   const r = inputs.risk.data
   const p = (s?: string | null) => (s ? <p className="text-body-sm text-ink">{s}</p> : null)
   const note = (s?: string | null) => (s ? <p className="text-caption text-muted">{s}</p> : null)
   switch (chip.kind) {
     case 'fema': return <>{p(t(r?.sfha ? 'home.femaPlain.sfha' : 'home.femaPlain.low'))}{r?.zone_subtype && note(r.zone_subtype)}</>
-    case 'harvey': return <>{p(t('ex.harvey'))}{note(r?.harvey?.note)}</>
-    case 'harveyNo': return <>{p(t('ex.harveyNo'))}{note(r?.harvey?.note)}</>
+    case 'harvey': return <>{p(t('ex.harvey'))}{note(bk(r?.harvey?.note_code, {}, r?.harvey?.note))}</>
+    case 'harveyNo': return <>{p(t('ex.harveyNo'))}{note(bk(r?.harvey?.note_code, {}, r?.harvey?.note))}</>
     case 'gaugeHist': return <>{p(fill(t, 'ex.gaugeHist', chip.vars))}{note(t('c6.hist.note'))}
       <p><a href="#replay" className="text-body-sm font-semibold text-brand underline underline-offset-2">{t('det.replayLink')}</a></p></>
-    case 'zipClaims': return <>{p(fill(t, 'ex.zip', { ...chip.vars, n: Number(chip.vars.n).toLocaleString(lang), m: Number(chip.vars.m).toLocaleString(lang) }))}{note(inputs.zip?.data?.note)}</>
+    case 'zipClaims': return <>{p(fill(t, 'ex.zip', { ...chip.vars, n: Number(chip.vars.n).toLocaleString(lang), m: Number(chip.vars.m).toLocaleString(lang) }))}{note(bk(inputs.zip?.data?.note_code, {}, inputs.zip?.data?.note))}</>
     case 'evac': return <>{p(fill(t, 'ex.evac', chip.vars))}{note(t('p10.evac.note'))}</>
     case 'surge': return <>{p(fill(t, 'ex.surge', chip.vars))}{note(t('p10.evac.note'))}</>
     case 'lowGround': return <>{p(t('home.lowGround'))}</>
     case 'reservoir': {
       const fact = (r?.facts ?? []).find((f) => f?.source === SRC.dams)
-      return <>{p(fact?.text ?? t('home.c3'))}</>
+      return <>{p(fact ? bk(fact.code, fact.params, fact.text) : t('home.c3'))}</>
     }
     case 'alert': {
       const a = (inputs.alerts.data?.alerts ?? []).find((x) => x.event === chip.vars.event)
       return <>{p(fill(t, 'ex.alert', chip.vars))}{a?.headline && note(a.headline)}</>
     }
-    case 'outlook': return <>{p(fill(t, 'ex.outlook', chip.vars))}{note(inputs.outlook.data?.note)}</>
+    case 'outlook': return <>{p(fill(t, 'ex.outlook', chip.vars))}{note(bk(inputs.outlook.data?.note_code, {}, inputs.outlook.data?.note))}</>
     case 'gaugeNow': return <>{p(fill(t, 'ex.gaugeNow', chip.vars))}</>
     default: return <>{p(t('ex.unavailable'))}</>
   }

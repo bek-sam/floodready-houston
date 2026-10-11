@@ -8,6 +8,7 @@ import SeasonReminders from '../components/season/SeasonReminders'
 import EvacuationHelp from '../components/prepare/EvacuationHelp'
 import { api, errText, type Countdown, type Plan, type When } from '../api'
 import { useApp } from '../ctx'
+import { useBk } from '../lib/bk'
 import { Button, Card, Checkbox, ErrorBox, Field, Input, PageHeader, SkeletonText, SourceLink, StatTile, Stepper, Tabs } from '../components/ds'
 import { Warnings } from '../components/ui'
 import { parseHash } from '../components/shell/nav'
@@ -41,6 +42,7 @@ function fmtDate(iso: string, lang: string) {
 
 export default function Prepare() {
   const { t, lang } = useApp()
+  const bk = useBk()
   const { place, household } = usePlace()
   const { demo } = useDemoMode()
   const { openHouseholdSheet } = useShell()
@@ -145,7 +147,7 @@ export default function Prepare() {
                   <Button variant="secondary" iconEnd={ChevronRight} disabled={stage === WHEN.length - 1} onClick={() => setStage(stage + 1)}>{t('p5a.plan.next')}</Button>
                 </div>
                 <div className="mt-4 space-y-1">
-                  <Warnings items={plan.warnings} />
+                  <Warnings items={plan.warnings} codes={plan.warning_codes} />
                   <p className="text-caption text-muted">{t('p5a.plan.footer')}{demo && <> {t('p5a.plan.by')}: {plan.generated_by}.</>}</p>
                 </div>
               </Card>
@@ -178,7 +180,7 @@ export default function Prepare() {
               {cd && (
                 <div className="mt-4 space-y-3">
                   <StatTile label={t('p5a.ins.starts')} value={fmtDate(cd.effective_date, lang)} sub={t('p5a.ins.wait').replace('{n}', String(cd.days_wait)).replace('{d}', cd.season_end)} icon={Check} />
-                  <p className="text-body-sm text-ink">{cd.message}</p>
+                  <p className="text-body-sm text-ink">{bk(cd.message_code, cd.message_params, cd.message)}</p>
                   <div className="flex flex-wrap items-center gap-3">
                     <Button variant="secondary" icon={CalendarPlus} onClick={() => downloadIcs(cd)}>{t('p5a.ins.cal')}</Button>
                     <SourceLink href={cd.source} />

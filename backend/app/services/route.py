@@ -1,5 +1,6 @@
 """Route safety check: OSRM route + crossings near it + live conditions."""
 from app.services import diskcache
+from app.services.codes import reason_code, tag_warnings
 from app.services.alerts import get_alerts, is_flood_alert
 from app.services.data import haversine_m, load_json
 from app.services.gauges import nearest_gauges
@@ -79,8 +80,10 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
         if _min_dist_m(lat, lon, coords) <= BUFFER_M:
             p = f.get("properties", {})
             reasons = p.get("reasons") or []
+            rtxt = reasons[0] if reasons else "Known flood-prone crossing"
+            rc = reason_code(rtxt)
             hazards.append({"crossing_id": p.get("id"), "name": p.get("name"), "lat": lat, "lon": lon,
-                            "reason": reasons[0] if reasons else "Known flood-prone crossing"})
+                            "reason": rtxt, "reason_code": rc[0] if rc else None, "reason_params": rc[1] if rc else {}})
             high = high or p.get("risk") == "high"
 
     # community reports from the last 24h within 100 m of the route
@@ -90,6 +93,10 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
             hazards.append({"kind": "report", "crossing_id": None, "name": "Community report", "lat": rep["lat"],
                             "lon": rep["lon"], "depth_in": depth, "report_kind": rep.get("kind"),
                             "reported_at": rep.get("created_at"),
+                            "name_code": "route.rep.name",
+                            "reason_code": ("route.rep.dn" if rep.get("note") else "route.rep.d") if depth is not None
+                            else ("route.rep.n" if rep.get("note") else "route.rep"),
+                            "reason_params": {"depth": f"{depth:g}" if depth is not None else "", "note": rep.get("note") or ""},
                             "reason": "Community report" + (f": about {depth:g} in of water" if depth is not None else "")
                             + (f" ({rep['note']})" if rep.get("note") else "")})
             if depth is not None and depth >= HIGH_DEPTH_IN:
@@ -98,48 +105,54 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
 
     # live conditions near the route midpoint
     mid = coords[len(coords) // 2]
-    active, conds = simulate, []
+    active, conds, cond_codes = simulate, [], []
     if simulate:
         conds.append("simulated storm")
+        cond_codes.append({"code": "route.c.sim", "params": {}})
     al = await get_alerts(mid[1], mid[0])
     fl = [a for a in al["alerts"] if is_flood_alert(a)]
     if fl:
         active = True
         conds.append(fl[0]["event"])
+        cond_codes.append({"code": "route.c.event", "params": {"event": fl[0]["event"]}})
     if al.get("warnings"):
         warnings += al["warnings"]
     if deep_report is not None:  # a fresh deep-water report is itself evidence of active flooding
         active = True
         conds.append(f"community report of {deep_report:g} in of water")
+        cond_codes.append({"code": "route.c.report", "params": {"depth": f"{deep_report:g}"}})
     if hazards:
         for g in await nearest_gauges(mid[1], mid[0], 3, simulate):
             if g["status"] in ("action", "minor", "moderate", "major"):
                 active = True
                 conds.append(f"{g['name']} gauge at {g['status']} stage")
+                cond_codes.append({"code": "route.c.gauge", "params": {"name": g["name"], "status": g["status"]}})
                 break
 
     if hazards and high and active:
-        verdict = "avoid"
+        verdict, mcode, mparams = "avoid", "route.avoid", {"n": len(hazards)}
         msg = (f"Avoid this route. It passes {len(hazards)} flood-prone crossing(s) "
                f"({', '.join(h['name'] or 'unnamed' for h in hazards[:3])}) and conditions are active ({'; '.join(conds)}). "
                "Turn around, don't drown. Call 911 if you are in danger.")
     elif hazards:
-        verdict = "caution"
+        verdict, mcode, mparams = "caution", "route.caution", {"n": len(hazards)}
         msg = (f"Use caution. This route crosses {len(hazards)} known flood-prone spot(s) "
                f"({', '.join(h['name'] or 'unnamed' for h in hazards[:3])}). No active flood conditions detected right now, "
                "but check alerts before you go in rain.")
     elif fallback:
-        verdict = "caution"
+        verdict, mcode, mparams = "caution", "route.fallback", {}
         msg = "Route unavailable, check manually. We could not get a real driving route, so no flood check was possible. Never drive through floodwater."
     else:
-        verdict = "safe"
+        verdict, mcode, mparams = "safe", "route.safe", {}
         msg = "No known flood-prone crossings on this route — conditions can change fast; never drive into water."
     n_rep = sum(1 for h in hazards if h.get("kind") == "report")
     if n_rep:
         msg += f" {n_rep} community report{'s' if n_rep != 1 else ''} on this route in the last 24 hours."
-    out = {"route": line, "hazards": hazards, "verdict": verdict, "message": msg, "report_count": n_rep}
+    out = {"route": line, "hazards": hazards, "verdict": verdict, "message": msg, "report_count": n_rep,
+           "message_code": mcode, "message_params": mparams, "conditions": cond_codes}
     if warnings:
         out["warnings"] = warnings
+        tag_warnings(out)
     return out
 
 

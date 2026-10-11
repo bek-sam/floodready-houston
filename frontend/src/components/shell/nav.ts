@@ -1,4 +1,4 @@
-import { BellRing, BookOpen, History, House, Landmark, LifeBuoy, MessageCircleQuestion, Presentation, Route, Settings, ShieldCheck, type LucideIcon } from 'lucide-react'
+import { BellRing, BookOpen, History, House, Landmark, LifeBuoy, Scale, MessageCircleQuestion, Presentation, Route, Settings, ShieldCheck, type LucideIcon } from 'lucide-react'
 
 export interface NavItem { id: string; icon: LucideIcon }
 /** Primary destinations (mobile bottom bar: exactly 5). */
@@ -8,7 +8,7 @@ export const PRIMARY: NavItem[] = [
 ]
 /** Secondary destinations ("More"). Judge only shows in demo mode. */
 export const SECONDARY: NavItem[] = [
-  { id: 'replay', icon: History }, { id: 'recover', icon: LifeBuoy }, { id: 'civic', icon: Landmark },
+  { id: 'replay', icon: History }, { id: 'recover', icon: LifeBuoy }, { id: 'civic', icon: Landmark }, { id: 'compare', icon: Scale },
   { id: 'settings', icon: Settings }, { id: 'about', icon: BookOpen },
 ]
 export const JUDGE: NavItem = { id: 'judge', icon: Presentation }

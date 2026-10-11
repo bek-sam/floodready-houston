@@ -1,4 +1,5 @@
 """WPC Excessive Rainfall Day 1 outlook at a point."""
+from app.services.codes import tag_warnings
 from app.services.http import get_json
 
 SOURCE = "https://mapservices.weather.noaa.gov/vector/rest/services/hazards/wpc_precip_hazards/MapServer"
@@ -12,8 +13,8 @@ async def get_outlook(lat: float, lon: float) -> dict:
         "spatialRel": "esriSpatialRelIntersects", "outFields": "outlook", "returnGeometry": "false", "f": "json"}, ttl=600)
     note = "WPC Excessive Rainfall Outlook, Day 1. Not official guidance for your address; check weather.gov."
     if not isinstance(d, dict) or "features" not in d:
-        return {"day1": None, "source": SOURCE, "note": note,
-                "warnings": ["Rainfall outlook unavailable right now; check weather.gov"]}
+        return tag_warnings({"day1": None, "source": SOURCE, "note": note, "note_code": "outlook.note",
+                             "warnings": ["Rainfall outlook unavailable right now; check weather.gov"]})
     best = "None"
     for f in d["features"]:
         text = ((f.get("attributes") or {}).get("outlook") or "").lower()
@@ -21,4 +22,4 @@ async def get_outlook(lat: float, lon: float) -> dict:
             if text.startswith(c.lower()) and RANK.index(c) > RANK.index(best):
                 best = c
     label = "No excessive rainfall risk expected" if best == "None" else f"{best} risk of excessive rainfall"
-    return {"day1": {"category": best, "label": label}, "source": SOURCE, "note": note}
+    return {"day1": {"category": best, "label": label}, "source": SOURCE, "note": note, "note_code": "outlook.note"}

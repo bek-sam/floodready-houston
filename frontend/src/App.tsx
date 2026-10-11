@@ -29,6 +29,7 @@ const PAGES = {
   about: lazy(() => import('./pages/About')),
   status: lazy(() => import('./pages/Status')),
   judge: lazy(() => import('./pages/Judge')),
+  compare: lazy(() => import('./pages/Compare')),
 } as const
 type Route = keyof typeof PAGES
 const Welcome = lazy(() => import('./pages/Welcome'))

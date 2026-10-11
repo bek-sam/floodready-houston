@@ -30,7 +30,8 @@ def _p(s):
 
 def _tide(obs, pred) -> dict:
     t = {"station": f"{STATION_NAME} ({STATION})", "observed_ft": None, "predicted_ft": None,
-         "anomaly_ft": None, "as_of": None, "stale": None, "datum": "MLLW", "note": "Unavailable"}
+         "anomaly_ft": None, "as_of": None, "stale": None, "datum": "MLLW", "note": "Unavailable",
+         "note_code": "coastal.unavail", "params": {}}
     rows = (obs or {}).get("data") or []
     if not rows:
         return t
@@ -55,8 +56,10 @@ def _tide(obs, pred) -> dict:
         t["anomaly_ft"] = round(o - best[1], 2)
         a = t["anomaly_ft"]
         t["note"] = f"Galveston tide: {abs(a):.1f} ft {'above' if a >= 0 else 'below'} forecast"
+        t["note_code"], t["params"] = ("coastal.above" if a >= 0 else "coastal.below"), {"ft": f"{abs(a):.1f}"}
     else:
         t["note"] = "Observed level available; matching prediction unavailable"
+        t["note_code"] = "coastal.nopred"
     return t
 
 

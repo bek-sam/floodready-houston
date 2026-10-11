@@ -11,6 +11,7 @@ import { useAsync, Warnings } from '../components/ui'
 import { Button, Card, DemoPanel, Disclosure, ErrorBox, Freshness, IconButton, PageHeader, RiskBadge, Skeleton, SourceLink, Switch, inputCls } from '../components/ds'
 import { cssVar, verdictLabelKey, verdictLevel } from '../lib/levels'
 import { parseHash } from '../components/shell/nav'
+import { hazardReason, routeMessage, useBk } from '../lib/bk'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
 import { placeName, store, streetOf, usePlace, useDemoMode } from '../state/place'
 
@@ -23,6 +24,8 @@ interface Saved { res: RouteCheck; from: string; to: string }
 
 export default function Drive() {
   const { t, lang } = useApp()
+  const bk = useBk()
+  const rsn = (p: { reason_codes?: ({ code: string; params?: Record<string, unknown> } | null)[] }, i: number, r: string) => bk(p.reason_codes?.[i]?.code, p.reason_codes?.[i]?.params, r)
   const { place } = usePlace()
   const { demo, setDemo } = useDemoMode()
   const crossings = useAsync(() => api.crossings(), [])
@@ -112,7 +115,7 @@ export default function Drive() {
     if (speaking) { stopSpeaking(); setSpeaking(false); return }
     if (!shown) return
     setSpeaking(true)
-    speak(`${t(failed ? 'verdict.unknown' : verdictLabelKey(shown.verdict))}. ${failed ? t('p3.drive.failed') : shown.message}`, lang, () => setSpeaking(false))
+    speak(`${t(failed ? 'verdict.unknown' : verdictLabelKey(shown.verdict))}. ${failed ? t('p3.drive.failed') : routeMessage(bk, t, shown)}`, lang, () => setSpeaking(false))
   }
 
   const cHigh = cssVar('--danger'), cMed = cssVar('--watch'), cRoute = cssVar('--water'), cRing = '#ffffff'
@@ -180,8 +183,8 @@ export default function Drive() {
             {!failed && <div className="mt-2"><Freshness meta={shown.meta} /></div>}
             {simulated && !showingCache && <p className="mt-2 text-caption font-semibold text-watch">{t('p3.drive.simNote')}</p>}
             {sampleTag && <p className="mt-2 text-caption font-semibold text-watch">{t('p3.drive.sample')}</p>}
-            <p className="mt-3 text-h3 font-normal text-ink">{failed ? t('p3.drive.failed') : shown.message}</p>
-            <div className="mt-2"><Warnings items={shown.warnings} /></div>
+            <p className="mt-3 text-h3 font-normal text-ink">{failed ? t('p3.drive.failed') : routeMessage(bk, t, shown)}</p>
+            <div className="mt-2"><Warnings items={shown.warnings} codes={shown.warning_codes} /></div>
             <h3 className="mt-4 text-h3 text-ink">{t('p3.drive.hazards')}</h3>
             {hazards.length === 0 ? <p className="mt-1 text-body-sm text-muted">{t('p3.drive.noHazards')}</p> : (
               <ul className="mt-2 divide-y divide-line">
@@ -189,10 +192,10 @@ export default function Drive() {
                   <li key={i} className="flex items-start gap-3 py-3">
                     {h.kind === 'report' ? <Megaphone aria-hidden size={20} className="mt-0.5 shrink-0 text-watch" /> : <TriangleAlert aria-hidden size={20} className="mt-0.5 shrink-0 text-danger" />}
                     <div className="min-w-0">
-                      <p className="text-base font-semibold text-ink">{h.name}
+                      <p className="text-base font-semibold text-ink">{h.name_code ? bk(h.name_code, {}, h.name) : h.name}
                         {h.kind === 'report' && <span className="ms-2 rounded-sm border border-dashed border-ui px-1.5 text-caption font-medium text-muted">{t('p3.drive.reportTag')}</span>}
                       </p>
-                      <p className="text-body-sm text-ink">{h.reason}{h.kind === 'report' && <span className="text-muted"> {t('p3.drive.unverified')}</span>}</p>
+                      <p className="text-body-sm text-ink">{hazardReason(bk, h)}{h.kind === 'report' && <span className="text-muted"> {t('p3.drive.unverified')}</span>}</p>
                       {h.kind !== 'report' && Number.isFinite(h.lat) && Number.isFinite(h.lon) && <button type="button" className="text-body-sm text-brand underline" onClick={() => setPoster({ name: h.name, lat: h.lat, lon: h.lon })}>{t('poster.act')}</button>}
                       {h.kind !== 'report' && (crossings.data?.features ?? []).find((f) => f?.properties?.id === h.crossing_id)?.properties?.sources?.slice(0, 1).map((s) => <SourceLink key={s} href={s} />)}
                     </div>
@@ -220,7 +223,7 @@ export default function Drive() {
             pathOptions={{ color: cRing, weight: 1.5, fillColor: p.risk === 'high' ? cHigh : cMed, fillOpacity: 0.9 }}>
             <Popup>
               <b>{p.name}</b> ({p.risk})
-              <ul className="list-disc ps-4">{(p.reasons ?? []).map((r, i) => <li key={i}>{r}</li>)}</ul>
+              <ul className="list-disc ps-4">{(p.reasons ?? []).map((r, i) => <li key={i}>{rsn(p, i, r)}</li>)}</ul>
               {(p.sources ?? []).map((s) => <div key={s}><SourceLink href={s} /></div>)}
             </Popup>
           </CircleMarker>
@@ -237,7 +240,7 @@ export default function Drive() {
       {pts.length > 0 && (
         <Disclosure id="crossings" title={t('p3.drive.crossingsList').replace('{n}', String(pts.length))}>
           <ul className="list-disc space-y-1 ps-5 text-body-sm">
-            {pts.map(({ p }) => <li key={p.id}><b>{p.name}</b>: {t('p3.drive.crossingRisk').replace('{risk}', t('p3.drive.risk.' + p.risk))}{(p.reasons ?? []).length > 0 && <> ({(p.reasons ?? []).join('; ')})</>}</li>)}
+            {pts.map(({ p }) => <li key={p.id}><b>{p.name}</b>: {t('p3.drive.crossingRisk').replace('{risk}', t('p3.drive.risk.' + p.risk))}{(p.reasons ?? []).length > 0 && <> ({(p.reasons ?? []).map((r, i) => rsn(p, i, r)).join('; ')})</>}</li>)}
           </ul>
         </Disclosure>
       )}

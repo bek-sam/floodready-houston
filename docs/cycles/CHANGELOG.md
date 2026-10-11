@@ -148,3 +148,7 @@
 - Easy-read mode (Settings; larger type, simpler strings on Top actions / Live conditions / Alerts); 311 card by jurisdiction (verified: Houston 311 portal, 311 / 713-837-0311; HCFCD service request + 346-286-4000; "311 is not for emergencies"); flood-damage photo helper (IndexedDB, room-by-room, HTML report export, delete all, never uploaded); "What changed since your last visit" digest banner.
 - i18n: fill2.ts adds 267 keys each for vi/zh/ar; scripts/i18n_coverage.mjs → 0 missing of 1,164 in all 5 languages. Rain-outlook sublabel now localized (was English from backend) with WPC thresholds (lead fix).
 - Verified: build, browser shots (Recover, Civic, Pets, Home easy-read, Home Vietnamese), 0 page errors, 0 raw keys.
+## Cycle 23 — Sun Oct 11, ~4:30 AM (language equity + community)
+- Backend user-visible strings now carry code/params (warnings: warning_codes); UI renders t(code) in 5 languages (frontend/src/i18n/p12.ts) — risk/harvey/facts/jurisdiction, evac, hwm, coastal, route verdicts, watch/push, civic, shelters, insurance, outlook, zip, buyout. Only proper names / USGS site descriptions remain English.
+- Neighbor check-in (buddy system, up to 5 people, call/SMS links, marked-safe; name+phone on device only, rounded coordinates for alerts — disclosed in 5 languages) and Compare places page (#compare: FEMA zone, Harvey, evac, gauge peak, ZIP claims/premium, crossings; every cell sourced).
+- Verified: 173 tests, build, i18n 0 missing, demo_check 21/21, vi/es screenshots c23-*.jpg.

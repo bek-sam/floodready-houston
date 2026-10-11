@@ -1,12 +1,13 @@
 from app import freshness
+from app.services.codes import tag_warnings
 from app.services.http import get_json
 
 
 async def get_alerts(lat: float, lon: float) -> dict:
     d = await get_json("https://api.weather.gov/alerts/active", {"point": f"{lat:.4f},{lon:.4f}"}, ttl=120)
     if d is None:
-        return {"alerts": [], "warnings": ["NWS alerts unavailable right now; check weather.gov"],
-                "meta": freshness.meta("https://api.weather.gov/alerts/active", "cached", as_of=None)}
+        return tag_warnings({"alerts": [], "warnings": ["NWS alerts unavailable right now; check weather.gov"],
+                             "meta": freshness.meta("https://api.weather.gov/alerts/active", "cached", as_of=None)})
     alerts = []
     for f in d.get("features", []):
         p = f.get("properties", {})

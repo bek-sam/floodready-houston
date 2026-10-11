@@ -15,15 +15,17 @@ export interface SourceHealth {
   circuit: 'closed' | 'half_open' | 'open' | 'unknown' | 'unconfigured' | 'not_used'
 }
 export interface StatusReport { sources: SourceHealth[]; snapshots: Record<string, string | null>; storm_mode: boolean; meta: Meta }
-export interface Fact { text: string; source: string }
-export interface Warned { warnings?: string[] }
+export interface Coded { code?: string; params?: Record<string, unknown> }
+export interface Fact extends Coded { text: string; source: string }
+export interface Warned { warnings?: string[]; warning_codes?: string[] }
 export interface Geocode extends Warned { lat: number | null; lon: number | null; matched_address: string | null; place?: string }
-export interface Harvey { flooded: boolean | null; source?: string; note?: string }
+export interface Harvey { flooded: boolean | null; source?: string; note?: string; note_code?: string }
 export interface Risk extends Warned {
   meta?: Meta
   harvey?: Harvey | null
   fema_zone: string | null; zone_subtype: string | null; sfha: boolean | null
-  elevation_ft: number | null; elevation_source?: 'usgs_epqs' | 'open_meteo_approx'; low_ground: boolean | null; low_ground_note?: string | null
+  elevation_ft: number | null; elevation_source?: 'usgs_epqs' | 'open_meteo_approx'; low_ground: boolean | null; low_ground_note?: string | null; low_ground_note_code?: string; low_ground_note_params?: Record<string, unknown>
+  jurisdiction_code?: string; jurisdiction_params?: Record<string, unknown>
   nearest_gauges: Gauge[]; reservoir_area: string | boolean | null; jurisdiction: string | null
   facts: Fact[]
 }
@@ -35,7 +37,7 @@ export interface FloodHistory extends Warned {
 export interface Alert { event: string; severity: string; headline: string; description: string; expires: string | null }
 export interface Alerts extends Warned { alerts: Alert[]; meta?: Meta }
 
-export interface CrossingProps { id: string; name: string; risk: 'high' | 'medium'; reasons: string[]; sources: string[] }
+export interface CrossingProps { id: string; name: string; risk: 'high' | 'medium'; reasons: string[]; reason_codes?: ({ code: string; params?: Record<string, unknown> } | null)[]; sources: string[] }
 export interface CrossingFeature {
   type: 'Feature'; properties: CrossingProps
   geometry: { type: 'Point'; coordinates: [number, number] } | { type: string; coordinates: unknown }
@@ -43,10 +45,11 @@ export interface CrossingFeature {
 export interface Crossings { type: 'FeatureCollection'; features: CrossingFeature[] }
 
 export interface LatLon { lat: number; lon: number }
-export interface Hazard { kind?: string; crossing_id: string; name: string; lat: number; lon: number; reason: string }
+export interface Hazard { kind?: string; crossing_id: string; name: string; lat: number; lon: number; reason: string; reason_code?: string | null; reason_params?: Record<string, unknown>; name_code?: string }
 export interface RouteCheck extends Warned {
   route: { type: 'LineString'; coordinates: [number, number][] } | null
   hazards: Hazard[]; verdict: 'safe' | 'caution' | 'avoid'; message: string; meta?: Meta
+  message_code?: string; message_params?: Record<string, unknown>; conditions?: { code: string; params?: Record<string, unknown> }[]; report_count?: number
 }
 
 export interface ReplayEvent { id: string; name: string; start: string; end: string; summary: string; source: string }
@@ -60,7 +63,7 @@ export interface History { id: string; name: string; readings: { t: string; stag
 
 export interface Countdown {
   purchase_date: string; effective_date: string; days_wait: number; season_end: string
-  covered_before_season_end: boolean; message: string; source: string
+  covered_before_season_end: boolean; message: string; message_code?: string; message_params?: Record<string, unknown>; source: string
 }
 export interface Profile {
   id?: string; language: string; age_group: string; mobility: string
@@ -73,17 +76,17 @@ export interface Report { id?: string; lat: number; lon: number; kind: string; d
 export interface BondProject { name: string; status?: string; budgeted?: number | null; spent?: number | null; distance_mi?: number | null; url?: string }
 export interface Civic extends Warned {
   bond: { facts: Fact[]; projects: BondProject[] }
-  reservoir: { in_area: boolean; facts: Fact[] }
-  responsibility: { issue: string; agency: string; contact: string }[]
+  reservoir: { in_area: boolean; facts: Fact[]; note?: string; note_code?: string }
+  responsibility: { issue: string; agency: string; contact: string; code?: string }[]
   officials?: { commissioner?: Official | null; council?: Official | null; floodplain_admin?: Official | null } | null
 }
 export interface Official { name?: string; title?: string; office?: string; phone?: string; email?: string; url?: string; district?: string; precinct?: string | number; entity?: string }
-export interface BuyoutArea { in_buyout_area: boolean | null; area_name?: string | null; source?: string; note?: string }
+export interface BuyoutArea { in_buyout_area: boolean | null; area_name?: string | null; source?: string; note?: string; note_code?: string; params?: Record<string, unknown> }
 
 export interface WatchPlace { id: string; label: string; lat: number; lon: number; lang: string }
 export type WatchLevel = 'ok' | 'watch' | 'warning'
 export interface WatchStatus {
-  id: string; label: string; level: WatchLevel; reasons: string[]; alerts: Alert[]; gauges: Gauge[]
+  id: string; label: string; level: WatchLevel; reasons: string[]; reason_codes?: { code: string; params?: Record<string, unknown> }[]; message_code?: string; message_params?: Record<string, unknown>; alerts: Alert[]; gauges: Gauge[]
   crossings_nearby: number; message: string; meta?: Meta
 }
 export interface Shelter {
@@ -91,17 +94,17 @@ export interface Shelter {
   capacity: number | null; occupancy: number | null; pet_friendly: boolean
   lat: number; lon: number; distance_mi: number | null
 }
-export interface Shelters extends Warned { shelters: Shelter[]; any_open: boolean; historical?: boolean; data_as_of?: string; source: string; note: string }
+export interface Shelters extends Warned { shelters: Shelter[]; any_open: boolean; historical?: boolean; data_as_of?: string; source: string; note: string; note_code?: string }
 export interface Outlook extends Warned {
   day1: { category: 'None' | 'Marginal' | 'Slight' | 'Moderate' | 'High'; label: string } | null
-  source: string; note: string
+  source: string; note: string; note_code?: string
 }
 export interface DemoRoute { label: string; origin: LatLon; destination: LatLon }
 
 export interface ZipInsurance extends Warned {
   zip: string
   claims: { total: number; since_2017: number; by_year: { year: number; count: number }[] }
-  policies_in_force: number | null; source: string; note: string
+  policies_in_force: number | null; source: string; note: string; note_code?: string
   premiums?: { median_annual: number | null; p25: number | null; p75: number | null; sample_size?: number; source?: string; as_of?: string } | null
 }
 export interface MedFacility { name: string; address: string; phone: string | null; lat: number; lon: number; distance_mi: number }
@@ -234,7 +237,7 @@ export const api = {
   },
 }
 
-export interface Evac { zone: 'A' | 'B' | 'C' | null; zone_status?: 'in_zone' | 'not_in_zone' | 'unavailable' | 'found' | 'none' | string; surge_status?: string; notes?: string[] | string | null; zone_label?: string | null; surge?: Record<string, string | null> | null; sources?: string[]; meta?: Meta }
+export interface Evac { zone: 'A' | 'B' | 'C' | null; zone_status?: 'in_zone' | 'not_in_zone' | 'unavailable' | 'found' | 'none' | string; surge_status?: string; notes?: string[] | string | null; zone_label?: string | null; surge?: Record<string, string | null> | null; surge_ranges?: Record<string, { min_ft: number | null; max_ft: number | null; label: string } | null> | null; sources?: string[]; meta?: Meta }
 export interface HwmMark { dry?: boolean; id: string | number; distance_mi: number; height_above_ground_ft: number | null; elevation_ft: number | null; site_desc: string | null; event: string | null; url: string | null }
 export interface Hwm { marks: HwmMark[]; wet_marks?: HwmMark[]; dry_marks?: HwmMark[]; nearest_depth_ft: number | null; source?: string; meta?: Meta }
 export interface Coastal {

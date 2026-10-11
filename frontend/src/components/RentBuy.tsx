@@ -1,5 +1,6 @@
 import { api, type BuyoutArea, type ZipInsurance } from '../api'
 import { useApp } from '../ctx'
+import { useBk } from '../lib/bk'
 import { ErrorBox, LoadingText, SkeletonText, SourceLink } from './ds'
 import { useAsync } from './ui'
 
@@ -42,6 +43,7 @@ function ClaimsBars({ rows, title }: { rows: { year: number; count: number }[]; 
 
 export default function RentBuy({ label, zone, sfha, lat, lon }: { label: string; zone?: string | null; sfha?: boolean | null; lat?: number; lon?: number }) {
   const { t, lang } = useApp()
+  const bk = useBk()
   const nf = (n: number) => n.toLocaleString(lang)
   const zip = label.match(/,\s*[A-Za-z]{2}\s+(\d{5})(?:-\d{4})?\s*(?:,?\s*(?:USA|US))?\s*$/)?.[1] ?? label.match(/\b(\d{5})(?:-\d{4})?\s*$/)?.[1] ?? null
   const ins = useAsync<ZipInsurance>(() => api.zipInsurance(zip!), [zip], !!zip)
@@ -64,14 +66,14 @@ export default function RentBuy({ label, zone, sfha, lat, lon }: { label: string
           <p className="font-semibold">{t('c5.rb.claims').replace('{zip}', String(d.zip ?? zip ?? '')).replace('{n}', nf(total)).replace('{m}', nf(since))}</p>
           {typeof d.policies_in_force === 'number' && <p>{t('c5.rb.policies').replace('{n}', nf(d.policies_in_force))}</p>}
           {rows.length > 0 && <ClaimsBars rows={rows} title={t('c5.rb.byYear')} />}
-          {(Array.isArray(d.warnings) ? d.warnings : []).map((w, i) => <p key={i} className="text-caption text-muted">{w}</p>)}
-          <p className="text-caption text-muted">{d.note}{d.source && <SourceLink href={d.source} label="OpenFEMA NFIP" />}</p>
+          {(Array.isArray(d.warnings) ? d.warnings : []).map((w, i) => <p key={i} className="text-caption text-muted">{bk(d.warning_codes?.[i], {}, w)}</p>)}
+          <p className="text-caption text-muted">{bk(d.note_code, {}, d.note)}{d.source && <SourceLink href={d.source} label="OpenFEMA NFIP" />}</p>
         </>
       )}
       {b && b.in_buyout_area === false && <p className="text-muted">{t('c11.buyout.out')}</p>}
       {b && b.in_buyout_area === true && (
         <p className="rounded-md bg-watch-tint px-3 py-2 font-semibold" role="status">
-          {t('c11.buyout.in').replace('{name}', b.area_name ?? '')} {b.note && <span className="font-normal text-muted">{b.note}</span>}
+          {t('c11.buyout.in').replace('{name}', b.area_name ?? '')} {b.note && <span className="font-normal text-muted">{bk(b.note_code, b.params, b.note)}</span>}
           <SourceLink href={b.source} />
         </p>
       )}

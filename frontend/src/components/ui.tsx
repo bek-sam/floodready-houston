@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Info } from 'lucide-react'
 import { errText, type Status } from '../api'
 import { useApp } from '../ctx'
+import { useBk, warningTexts } from '../lib/bk'
 import { Button, Card as DsCard, ErrorBox as DsErrorBox, Field as DsField, LoadingText, SkeletonText, SourceLink, StatusBadge, inputCls as dsInputCls } from './ds'
 
 export function Card({ title, children, className = '' }: { title?: ReactNode; children: ReactNode; className?: string }) {
@@ -73,11 +74,12 @@ export function mapColor(s: Status): string {
 }
 
 /** Subtle note for backend `warnings: []` (partial/fallback data). */
-export function Warnings({ items }: { items?: string[] }) {
+export function Warnings({ items, codes }: { items?: string[]; codes?: string[] }) {
+  const bk = useBk()
   if (!Array.isArray(items) || !items.length) return null
   return (
     <p className="flex items-start gap-1.5 text-caption text-muted">
-      <Info aria-hidden size={14} className="mt-0.5 shrink-0" />{items.join(' · ')}
+      <Info aria-hidden size={14} className="mt-0.5 shrink-0" />{warningTexts(bk, items, codes).join(' · ')}
     </p>
   )
 }

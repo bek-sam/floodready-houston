@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { Waves } from 'lucide-react'
 import { apiC20, type Coastal } from '../../api'
 import { useApp } from '../../ctx'
+import { useBk } from '../../lib/bk'
 import { Freshness } from '../ds'
 
 /** Galveston tide anomaly + active NHC storms. Renders nothing when /coastal has no data. */
 export default function CoastalChip() {
   const { t } = useApp()
+  const bk = useBk()
   const [d, setD] = useState<Coastal | null>(null)
   useEffect(() => { let live = true; apiC20.coastal().then((c) => { if (live) setD(c) }); return () => { live = false } }, [])
   const a = d?.tide?.anomaly_ft
@@ -19,7 +21,7 @@ export default function CoastalChip() {
       <p className="flex flex-wrap items-center gap-2"><Waves aria-hidden size={16} className="text-water" /><span className="font-semibold">{txt}</span><Freshness meta={d.meta} /></p>
       {storms.map((s) => (
         <p key={s.name} className="text-caption text-muted">
-          {t('p10.storm').replace('{name}', s.name).replace('{type}', s.type || '')}
+          {t('p10.storm').replace('{name}', s.name).replace('{type}', bk('storm.' + s.type, {}, s.type) || '')}
           {s.advisory_url && /^https?:/.test(s.advisory_url) && <> · <a className="text-brand underline" href={s.advisory_url} target="_blank" rel="noreferrer">{t('p10.nhc')}</a></>}
         </p>
       ))}

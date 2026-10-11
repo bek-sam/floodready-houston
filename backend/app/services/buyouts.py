@@ -37,7 +37,7 @@ async def buyout_area(lat: float, lon: float) -> dict:
     rows = await _areas()
     if not rows:
         return {"in_buyout_area": None, "area_name": None, "source": SOURCE,
-                "note": "Buyout area data is unavailable right now. Unknown, not a 'no'."}
+                "note": "Buyout area data is unavailable right now. Unknown, not a 'no'.", "note_code": "buyout.unavail", "params": {}}
     best, mi = None, 1e9
     for r in rows:
         m = haversine_m(lat, lon, r["lat"], r["lon"]) / 1609.34
@@ -45,6 +45,8 @@ async def buyout_area(lat: float, lon: float) -> dict:
             best, mi = r, m
     if best and mi <= RADIUS_MI:
         return {"in_buyout_area": True, "area_name": best["name"], "source": SOURCE,
-                "note": f"Within {RADIUS_MI} mi of an HCFCD buyout area ({best['name']}). Buyouts are voluntary; contact HCFCD to ask about eligibility."}
+                "note": f"Within {RADIUS_MI} mi of an HCFCD buyout area ({best['name']}). Buyouts are voluntary; contact HCFCD to ask about eligibility.",
+                "note_code": "buyout.in", "params": {"r": RADIUS_MI, "name": best["name"]}}
     return {"in_buyout_area": False, "area_name": None, "source": SOURCE,
-            "note": f"No HCFCD buyout area within {RADIUS_MI} mi (area layer is point-based, so this is approximate)."}
+            "note": f"No HCFCD buyout area within {RADIUS_MI} mi (area layer is point-based, so this is approximate).",
+            "note_code": "buyout.out", "params": {"r": RADIUS_MI}}

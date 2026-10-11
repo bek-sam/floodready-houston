@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { FloodHistory, Risk } from '../../api'
 import { useApp } from '../../ctx'
 import { fill, NOAA_GAUGE, SRC } from '../../lib/summary'
+import { coded, useBk } from '../../lib/bk'
 import { SourceLink, StatusBadge } from '../ds'
 
 function Row({ k, children }: { k: string; children: ReactNode }) {
@@ -16,6 +17,7 @@ function Row({ k, children }: { k: string; children: ReactNode }) {
 /** "Your place's flood profile": key facts as a key-value list + what the FEMA map misses. */
 export function PlaceProfile({ r }: { r: Risk }) {
   const { t } = useApp()
+  const bk = useBk()
   const approx = r.elevation_source === 'open_meteo_approx'
   const facts = (Array.isArray(r.facts) ? r.facts : []).filter((f) => f && f.text)
   const yn = (v: boolean | null | undefined) => (v === true ? t('prof.yes') : v === false ? t('prof.no') : t('prof.unknown'))
@@ -30,7 +32,7 @@ export function PlaceProfile({ r }: { r: Risk }) {
         </Row>
         <Row k={t('prof.harvey')}>
           {r.harvey?.flooded === true ? t('prof.harveyIn') : r.harvey?.flooded === false ? t('prof.harveyOut') : t('prof.harveyNone')}
-          {r.harvey?.note && <span className="mt-1 block text-caption text-muted">{r.harvey.note}</span>}
+          {r.harvey?.note && <span className="mt-1 block text-caption text-muted">{bk(r.harvey.note_code, {}, r.harvey.note)}</span>}
           <SourceLink href={r.harvey?.source} />
         </Row>
         <Row k={t('prof.elev')}>
@@ -42,20 +44,20 @@ export function PlaceProfile({ r }: { r: Risk }) {
         </Row>
         <Row k={t('prof.low')}>
           {r.low_ground === true ? t('home.lowGround') : r.low_ground === false ? t('home.notLow') : t('prof.unknown')}
-          {r.low_ground == null && r.low_ground_note && <span className="block text-caption text-muted">{r.low_ground_note}</span>}
+          {r.low_ground == null && r.low_ground_note && <span className="block text-caption text-muted">{coded(bk, r as never, 'low_ground_note')}</span>}
           {r.low_ground === true && <SourceLink href={SRC.flat} label="Harris County MAAPnext" />}
         </Row>
         <Row k={t('prof.reservoir')}>
           {typeof r.reservoir_area === 'string' && r.reservoir_area ? r.reservoir_area : yn(r.reservoir_area == null ? null : !!r.reservoir_area)}
           {!!r.reservoir_area && <SourceLink href={SRC.dams} label="Texas Tribune" />}
         </Row>
-        <Row k={t('prof.jurisdiction')}>{r.jurisdiction ?? '—'}</Row>
+        <Row k={t('prof.jurisdiction')}>{bk(r.jurisdiction_code, r.jurisdiction_params, r.jurisdiction ?? '—')}</Row>
       </dl>
       {facts.length > 0 && (
         <section>
           <h4 className="text-h3 text-ink">{t('prof.misses')}</h4>
           <ul className="mt-2 space-y-3">
-            {facts.map((f, i) => <li key={i} className="text-body-sm text-ink">{f.text}<SourceLink href={f.source} /></li>)}
+            {facts.map((f, i) => <li key={i} className="text-body-sm text-ink">{bk(f.code, f.params, f.text)}<SourceLink href={f.source} /></li>)}
           </ul>
         </section>
       )}

@@ -23,10 +23,10 @@ export function zoneState(d: Evac): ZoneState {
   if (d.zone_status === 'in_zone') return 'in'
   return 'out'
 }
-export const surgeText = (v: unknown): string | null => {
+export const surgeText = (v: unknown, tt?: (k: string) => string): string | null => {
   if (!v) return null
   if (typeof v === 'object') { const o = v as { label?: string; min_ft?: number | null; max_ft?: number | null }
-    return o.label || (o.max_ft == null ? (o.min_ft != null ? `${o.min_ft}+ ft` : null) : `${o.min_ft ?? 0}-${o.max_ft} ft`) }
+    return (o.min_ft === 0 && o.max_ft != null && o.label?.startsWith('under') ? (tt ? tt('evac.r.under') : 'under {n} ft').replace('{n}', String(o.max_ft)) : o.label) || (o.max_ft == null ? (o.min_ft != null ? `${o.min_ft}+ ft` : null) : `${o.min_ft ?? 0}-${o.max_ft} ft`) }
   return String(v)
 }
 /** Home disclosure should render only when there is something real to say. */
@@ -37,7 +37,7 @@ export default function EvacSurgeBody({ d }: { d: Evac }) {
   const { t } = useApp()
   const zs = zoneState(d)
   const unavailable = zs === 'unavailable' || d.surge_status === 'unavailable'
-  const cats = [1, 2, 3, 4, 5].map((n) => [n, surgeText(d.surge?.['cat' + n])] as const)
+  const cats = [1, 2, 3, 4, 5].map((n) => [n, surgeText(d.surge_ranges?.['cat' + n] ?? d.surge?.['cat' + n], t)] as const)
   const anySurge = cats.some(([, v]) => v)
   return (
     <div className="space-y-3 text-body-sm text-ink">

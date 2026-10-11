@@ -3,6 +3,7 @@ import asyncio
 
 from app import freshness
 from app.services.harvey import harvey_at
+from app.services.codes import tag_warnings
 from app.services.gauges import nearest_gauges
 from app.services.http import get_json
 
@@ -37,35 +38,36 @@ async def reservoir_status(lat: float, lon: float) -> dict:
                                 "spatialRel": "esriSpatialRelIntersects", "returnCountOnly": "true", "f": "json"}, ttl=3600)
     barker = (d or {}).get("count", 0) > 0 if isinstance(d, dict) else False
     addicks = in_addicks_box(lat, lon)
-    note = "Barker: Fort Bend County inundation map (107 ft pool). Addicks: approximate area only."
+    note, code = "Barker: Fort Bend County inundation map (107 ft pool). Addicks: approximate area only.", "res.note"
     if d is None:
-        note = "Barker inundation service unavailable. Addicks: approximate area only."
-    return {"in_area": barker or addicks, "barker": barker, "addicks_approx": addicks, "note": note}
+        note, code = "Barker inundation service unavailable. Addicks: approximate area only.", "res.noteDown"
+    return {"in_area": barker or addicks, "barker": barker, "addicks_approx": addicks, "note": note, "note_code": code}
 
 
 def _low_ground(elev, gauges):
     """Compare ground elevation with the minor-flood ELEVATION of the nearest gauge that has a known datum.
     Needs gauge['datum_ft'] (ft above sea level). Returns (value, note); None if no datum is available."""
     if elev is None:
-        return None, "Elevation unavailable"
+        return None, "Elevation unavailable", "lg.noelev", {}
     for g in gauges:
         datum, minor = g.get("datum_ft"), (g.get("flood_stages") or {}).get("minor")
         if datum is not None and minor is not None:
-            return elev <= datum + minor + LOW_GROUND_MARGIN_FT, f"Compared with {g['name']} minor flood stage elevation ({datum + minor:.0f} ft)"
-    return None, "Unknown: no gauge datum available to compare ground elevation with flood-stage elevation"
+            return (elev <= datum + minor + LOW_GROUND_MARGIN_FT, f"Compared with {g['name']} minor flood stage elevation ({datum + minor:.0f} ft)",
+                    "lg.compare", {"name": g["name"], "ft": f"{datum + minor:.0f}"})
+    return None, "Unknown: no gauge datum available to compare ground elevation with flood-stage elevation", "lg.nodatum", {}
 
 
 def build_facts(zone, sfha, reservoir) -> list[dict]:
     facts = []
     if zone and not sfha:
-        facts.append({"text": f"Zone {zone} is outside the mapped high-risk floodplain, but nearly half of Harvey-flooded homes in Harris County were outside the 100- and 500-year floodplains.", "source": SRC_HARVEY})
+        facts.append({"text": f"Zone {zone} is outside the mapped high-risk floodplain, but nearly half of Harvey-flooded homes in Harris County were outside the 100- and 500-year floodplains.", "source": SRC_HARVEY, "code": "fact.zoneOut", "params": {"zone": zone}})
     elif sfha:
-        facts.append({"text": "This location is in a FEMA Special Flood Hazard Area; flood insurance is typically required with a federally backed mortgage.", "source": SRC_MAPS})
-    facts.append({"text": "Harvey flooded 154,170 Harris County homes and only 36% were insured.", "source": SRC_HARVEY})
-    facts.append({"text": "Flat, clay-soil terrain means you don't have to live near a bayou to flood.", "source": SRC_FLAT})
-    facts.append({"text": "Draft FEMA maps use rainfall rates more than 30% higher than the 2007 maps still in effect.", "source": SRC_MAPS})
+        facts.append({"text": "This location is in a FEMA Special Flood Hazard Area; flood insurance is typically required with a federally backed mortgage.", "source": SRC_MAPS, "code": "fact.sfha", "params": {}})
+    facts.append({"text": "Harvey flooded 154,170 Harris County homes and only 36% were insured.", "source": SRC_HARVEY, "code": "fact.harveyIns", "params": {}})
+    facts.append({"text": "Flat, clay-soil terrain means you don't have to live near a bayou to flood.", "source": SRC_FLAT, "code": "fact.flat", "params": {}})
+    facts.append({"text": "Draft FEMA maps use rainfall rates more than 30% higher than the 2007 maps still in effect.", "source": SRC_MAPS, "code": "fact.maps", "params": {}})
     if reservoir:
-        facts.append({"text": "You are near the Addicks/Barker reservoirs (1940s dams rated extremely high risk); Harvey releases flooded homes downstream.", "source": SRC_DAMS})
+        facts.append({"text": "You are near the Addicks/Barker reservoirs (1940s dams rated extremely high risk); Harvey releases flooded homes downstream.", "source": SRC_DAMS, "code": "fact.dams", "params": {}})
     return facts
 
 
@@ -89,7 +91,7 @@ async def _juris(lat, lon):
 def harvey_for_jurisdiction(hv: dict, jur: str) -> dict:
     """The layer is the City of Houston's own estimate: a miss in another city is "no data", not "dry". A hit stays true."""
     if hv.get("flooded") is False and jur != "Unknown" and not jur.startswith("City of Houston"):
-        return {**hv, "flooded": None, "note": HARVEY_OUTSIDE_NOTE}
+        return {**hv, "flooded": None, "note": HARVEY_OUTSIDE_NOTE, "note_code": "harvey.outside"}
     return hv
 
 
@@ -139,27 +141,30 @@ async def get_risk(lat: float, lon: float, simulate: bool = False) -> dict:
         gauges, _ = [], warnings.append("Gauge data unavailable")
     elif not gauges:
         warnings.append("No gauge data file found")
-    jur = "Unknown"
+    jur, jur_code, jur_params = "Unknown", "jur.unknown", {}
     try:
         feats = juris["features"]
         full = [f["attributes"] for f in feats if f["attributes"].get("SERVICE_TY") == "FULL"]
         if full:
             jur = f"City of {full[0]['NAME'].title()}"
+            jur_code, jur_params = "jur.city", {"name": full[0]["NAME"].title()}
         elif feats:
             jur = f"{feats[0]['attributes']['NAME'].title()} (limited purpose area)"
+            jur_code, jur_params = "jur.limited", {"name": feats[0]["attributes"]["NAME"].title()}
         else:
-            jur = "Unincorporated (county)"
+            jur, jur_code = "Unincorporated (county)", "jur.uninc"
     except Exception:
         warnings.append("Jurisdiction lookup failed")
     rs = await reservoir_status(lat, lon)
     reservoir = rs["in_area"]
-    low, low_note = _low_ground(elevation, gauges)
+    low, low_note, low_code, low_params = _low_ground(elevation, gauges)
     hv = harvey_for_jurisdiction(harvey_at(lat, lon), jur)
     out = {"fema_zone": zone, "zone_subtype": subtype, "sfha": sfha, "elevation_ft": elevation, "elevation_source": elev_source,
-           "low_ground": low, "low_ground_note": low_note, "nearest_gauges": gauges,
-           "reservoir_area": reservoir, "harvey": hv, "jurisdiction": jur, "facts": build_facts(zone, sfha, reservoir)}
+           "low_ground": low, "low_ground_note": low_note, "low_ground_note_code": low_code, "low_ground_note_params": low_params, "nearest_gauges": gauges,
+           "reservoir_area": reservoir, "harvey": hv, "jurisdiction": jur, "jurisdiction_code": jur_code, "jurisdiction_params": jur_params, "facts": build_facts(zone, sfha, reservoir)}
     if warnings:
         out["warnings"] = warnings
+        tag_warnings(out)
     gl = [g for g in gauges if isinstance(g, dict)]
     storm = any(g.get("status") in ("action", "minor", "moderate", "major") for g in gl)
     obs = [g["observed_at"] for g in gl if g.get("observed_at") and g["observed_at"] != "simulated"]

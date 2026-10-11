@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BellRing, Megaphone, MapPinned, MoreHorizontal, Plus, RefreshCw, Route, Volume2 } from 'lucide-react'
 import { ApiError, api, errText, type WatchLevel, type WatchPlace, type WatchStatus } from '../api'
 import { useApp } from '../ctx'
+import { useBk } from '../lib/bk'
 import { easyT, useEasy } from '../components/easyread/easyRead'
 import AlertsSwitch, { usePush } from '../components/AlertsSwitch'
+import BuddySection from '../components/buddy/BuddySection'
 import ReportSheet from '../components/ReportSheet'
 import { speak } from '../components/speak'
 import { Button, Card, DemoPanel, EmptyState, ErrorBox, Field, Freshness, GaugeChips, IconButton, PageHeader, RiskBadge, Segmented, Sheet, Skeleton, StatusBadge, Switch, inputCls, toast } from '../components/ds'
@@ -46,6 +48,8 @@ export default function Watch() {
   const [menu, setMenu] = useState<WatchPlace | null>(null)
   const prev = useRef<Record<string, WatchLevel>>({})
   const langRef = useRef(lang); langRef.current = lang
+  const bk = useBk(); const bkRef = useRef(bk); bkRef.current = bk
+  const msgOf = (s: WatchStatus, b = bk) => b(s.message_code, s.message_params, s.message)
 
   // My place is always watched: register it once with the server and remember its id.
   useEffect(() => {
@@ -79,10 +83,10 @@ export default function Watch() {
         const before = prev.current[s.id]
         if (before !== undefined && RANK[s.level] > RANK[before] && s.level !== 'ok') {
           const title = t(s.level === 'warning' ? 'p3.announce.warn' : 'p3.announce.watch').replace('{name}', s.label)
-          try { if (!pushSub.current && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body: s.message }) } catch { /* ignore */ }
-          setAnnounce(`${title}. ${s.message}`)
+          try { if (!pushSub.current && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body: msgOf(s, bkRef.current) }) } catch { /* ignore */ }
+          setAnnounce(`${title}. ${msgOf(s, bkRef.current)}`)
           toast({ message: title, tone: s.level === 'warning' ? 'error' : 'default' })
-          speak(`${title}. ${s.message}`, langRef.current)
+          speak(`${title}. ${msgOf(s, bkRef.current)}`, langRef.current)
         }
         prev.current[s.id] = s.level
       }
@@ -166,10 +170,10 @@ export default function Watch() {
                 {s && (
                   <div className="mt-3 space-y-2">
                     <Freshness meta={s.meta} />
-                    <p className="text-base text-ink">{s.message}</p>
+                    <p className="text-base text-ink">{msgOf(s)}</p>
                     {(s.reasons ?? []).length > 0 && (
                       <div><p className="text-caption font-semibold text-muted">{t('p3.places.why')}</p>
-                        <ul className="list-disc ps-5 text-body-sm text-ink">{(s.reasons ?? []).map((r, i) => <li key={i}>{r}</li>)}</ul></div>
+                        <ul className="list-disc ps-5 text-body-sm text-ink">{(s.reasons ?? []).map((r, i) => <li key={i}>{bk(s.reason_codes?.[i]?.code, s.reason_codes?.[i]?.params, r)}</li>)}</ul></div>
                     )}
                     <p className="text-caption text-muted">{t('p3.places.nearby').replace('{n}', String(s.crossings_nearby ?? 0)).replace('{m}', String((s.alerts ?? []).length))}</p>
                     <div className="flex flex-wrap gap-2">
@@ -178,7 +182,7 @@ export default function Watch() {
                   </div>
                 )}
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Button variant="secondary" size="sm" icon={Volume2} disabled={!s} onClick={() => s && speak(`${nameOf(p)}. ${s.message}`, lang)}>{t('p3.places.read')}</Button>
+                  <Button variant="secondary" size="sm" icon={Volume2} disabled={!s} onClick={() => s && speak(`${nameOf(p)}. ${msgOf(s)}`, lang)}>{t('p3.places.read')}</Button>
                   <Button variant="secondary" size="sm" icon={Route} onClick={() => checkRoute(p)}>{t('p3.places.route')}</Button>
                   {!isMine && <IconButton icon={MoreHorizontal} label={t('p3.places.more')} onClick={() => setMenu(p)} />}
                 </div>
@@ -201,6 +205,7 @@ export default function Watch() {
         {menu && <Button variant="secondary" full onClick={() => remove(menu)}>{t('p3.places.remove')}</Button>}
       </Sheet>
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} />
+      <BuddySection />
     </div>
   )
 }

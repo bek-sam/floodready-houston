@@ -1,6 +1,7 @@
 // "Who's responsible" (#civic): officials, flood bond projects and reservoirs.
 import { api } from '../api'
 import { useApp } from '../ctx'
+import { useBk } from '../lib/bk'
 import { usePlace, placeName } from '../state/place'
 import Report311 from '../components/civic311/Report311'
 import WhoToContact from '../components/WhoToContact'
@@ -11,6 +12,7 @@ const money = (n?: number | null) => (typeof n !== 'number' ? '—' : n >= 1e6 ?
 
 export default function Civic() {
   const { t } = useApp()
+  const bk = useBk()
   const { place } = usePlace()
   const civic = useAsync(() => api.civic(place), [place?.lat, place?.lon])
   const name = place ? placeName(place.nickname, t) : 'Houston'
@@ -26,20 +28,20 @@ export default function Civic() {
       {civic.error && <ErrorBox error={civic.error} onRetry={civic.reload} />}
       {c && (
         <>
-          <Warnings items={c.warnings} />
+          <Warnings items={c.warnings} codes={c.warning_codes} />
           <WhoToContact civic={c} />
           <Report311 civic={c} />
           <Card title={t('p5.civic.who')}>
             {resp.length === 0 && <p className="text-body-sm text-muted">{t('rec.na')}</p>}
             <ul className="divide-y divide-line text-body-sm">
               {resp.map((r, i) => (
-                <li key={i} className="py-2 first:pt-0"><p className="font-semibold text-ink">{r.issue}</p><p>{r.agency}</p><p className="text-muted">{r.contact}</p></li>
+                <li key={i} className="py-2 first:pt-0"><p className="font-semibold text-ink">{bk(r.code && r.code.replace('civic.resp', 'civic.resp'), {}, r.issue)}</p><p>{bk(r.code ? r.code.replace('civic.resp', 'civic.agency') : null, {}, r.agency)}</p><p className="text-muted">{r.contact}</p></li>
               ))}
             </ul>
           </Card>
           <Card title={t('p5.civic.bond').replace('{name}', name)}>
             {bondFacts.length === 0 && bondProjects.length === 0 && <p className="text-body-sm text-muted">{t('rec.na')}</p>}
-            <ul className="space-y-2 text-body-sm">{bondFacts.map((f, i) => <li key={i}><p>{f.text}</p><SourceLink href={f.source} /></li>)}</ul>
+            <ul className="space-y-2 text-body-sm">{bondFacts.map((f, i) => <li key={i}><p>{bk(f.code, f.params, f.text)}</p><SourceLink href={f.source} /></li>)}</ul>
             {bondProjects.length > 0 && (
               <ul className="mt-3 divide-y divide-line">
                 {bondProjects.map((p, i) => {
@@ -68,7 +70,7 @@ export default function Civic() {
           </Card>
           <Card title={t('p5.civic.reservoir')}>
             <RiskBadge level={c.reservoir?.in_area ? 'warning' : 'normal'} label={c.reservoir?.in_area ? t('rec.inReservoir') : t('rec.notReservoir')} />
-            <ul className="mt-3 space-y-2 text-body-sm">{(c.reservoir?.facts ?? []).map((f, i) => <li key={i}><p>{f.text}</p><SourceLink href={f.source} /></li>)}</ul>
+            <ul className="mt-3 space-y-2 text-body-sm">{(c.reservoir?.facts ?? []).map((f, i) => <li key={i}><p>{bk(f.code, f.params, f.text)}</p><SourceLink href={f.source} /></li>)}</ul>
           </Card>
         </>
       )}

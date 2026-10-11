@@ -6,7 +6,7 @@ import zlib
 from app.config import DATA_DIR
 
 SOURCE = "https://geogimsms.houstontx.gov/arcgis/rest/services/TDO/StormDrainage_Study/MapServer/4"
-NO_DATA = {"flooded": None, "source": SOURCE, "note": "No Harvey extent data for this location"}
+NO_DATA = {"flooded": None, "source": SOURCE, "note": "No Harvey extent data for this location", "note_code": "harvey.nodata"}
 _idx = {"loaded": False, "polys": [], "bbox": None, "mtime": None}
 
 
@@ -63,10 +63,12 @@ def harvey_at_legacy(lat: float, lon: float) -> dict:
         if b[0] <= lon <= b[2] and b[1] <= lat <= b[3] and _in_ring(lon, lat, poly[0]) \
                 and not any(_in_ring(lon, lat, h) for h in poly[1:]):
             return {"flooded": True, "source": SOURCE,
-                    "note": "This location is inside the City of Houston's estimated Harvey inundation extent (riverine only)."}
+                    "note": "This location is inside the City of Houston's estimated Harvey inundation extent (riverine only).",
+                    "note_code": "harvey.hit"}
     return {"flooded": False, "source": SOURCE,
             "note": ("Not inside our simplified copy of the City's estimated Harvey riverine extent — this is not proof it stayed dry. "
-                    "About half of Harvey-flooded homes were outside mapped floodplains, and street flooding isn't in this map.")}
+                    "About half of Harvey-flooded homes were outside mapped floodplains, and street flooding isn't in this map."),
+            "note_code": "harvey.miss"}
 
 
 # ---- citywide SQLite + R*Tree index (scripts/fetch_harvey_citywide.py) ----
@@ -124,14 +126,14 @@ def harvey_at(lat: float, lon: float) -> dict:
     try:
         bb = coverage(con)
         if not bb or not (bb[0] <= lon <= bb[2] and bb[1] <= lat <= bb[3]):
-            return {"flooded": None, "source": CITY_SOURCE, "note": OUT_NOTE}
+            return {"flooded": None, "source": CITY_SOURCE, "note": OUT_NOTE, "note_code": "harvey.out"}
         rows = con.execute(
             "SELECT p.geom FROM poly_idx i JOIN polys p ON p.id=i.id "
             "WHERE i.minx<=? AND i.maxx>=? AND i.miny<=? AND i.maxy>=?", (lon, lon, lat, lat))
         for (blob,) in rows:
             if _inside(lon, lat, json.loads(zlib.decompress(blob))):
-                return {"flooded": True, "source": CITY_SOURCE, "note": HIT_NOTE}
-        return {"flooded": False, "source": CITY_SOURCE, "note": MISS_NOTE}
+                return {"flooded": True, "source": CITY_SOURCE, "note": HIT_NOTE, "note_code": "harvey.hit"}
+        return {"flooded": False, "source": CITY_SOURCE, "note": MISS_NOTE, "note_code": "harvey.miss"}
     except sqlite3.Error:
         return harvey_at_legacy(lat, lon)
     finally:

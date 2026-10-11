@@ -26,6 +26,12 @@ def _wet(m) -> bool:
     return isinstance(h, (int, float)) and h > 0
 
 
+def _note_code(h, mi):
+    if not h or h <= 0:
+        return "hwm.dry", {"mi": f"{mi:.1f}"}
+    return "hwm.wet", {"h": f"{h:.1f}", "mi": f"{mi:.1f}"}
+
+
 def _note(h: float, mi: float) -> str:
     d = f"{mi:.1f} mi away"
     if not h or h <= 0:
@@ -47,18 +53,22 @@ def nearby(lat: float, lon: float, radius_mi: float = 2.0, limit: int = 5) -> di
               "elevation_ft": m.get("elev"), "site_desc": m.get("desc"), "event": EVENT,
               "quality": m.get("q"), "survey_date": m.get("date"), "wet": _wet(m),
               "url": f"https://stn.wim.usgs.gov/STNServices/HWMs/{m['id']}.json",
-              "note": _note(m["h"], mi)} for mi, m in out[:limit]]
+              "note": _note(m["h"], mi), "note_code": _note_code(m["h"], mi)[0],
+              "params": _note_code(m["h"], mi)[1]} for mi, m in out[:limit]]
     wet_n = sum(1 for _, m in out if _wet(m))
     first_wet = next(((mi, m) for mi, m in out if _wet(m)), None)
     if first_wet:
         mi, m = first_wet
-        depth, note = m["h"], f"Nearest surveyed high-water mark with water above ground: {m['h']:.1f} ft, {mi:.1f} mi away (Harvey). Not your exact address."
+        depth, ncode, nparams = m["h"], "hwm.near.wet", {"h": f"{m['h']:.1f}", "mi": f"{mi:.1f}"}
+        note = f"Nearest surveyed high-water mark with water above ground: {m['h']:.1f} ft, {mi:.1f} mi away (Harvey). Not your exact address."
     elif out:
+        ncode, nparams = "hwm.near.dry", {"r": f"{radius_mi:g}", "n": len(out)}
         depth, note = None, (f"No surveyed Harvey high-water mark with water above ground within {radius_mi:g} mi "
                              f"({len(out)} dry or depth-not-recorded). That does not mean the area stayed dry.")
     else:
+        ncode, nparams = "hwm.near.none", {"r": f"{radius_mi:g}"}
         depth, note = None, f"No surveyed Harvey high-water mark within {radius_mi:g} mi. That does not mean the area stayed dry."
-    return {"marks": marks, "nearest_depth_ft": depth, "nearest_note": note,
+    return {"marks": marks, "nearest_depth_ft": depth, "nearest_note": note, "nearest_note_code": ncode, "nearest_note_params": nparams,
             "wet_marks": wet_n, "dry_marks": len(out) - wet_n,
             "source": "USGS Short-Term Network (STN), Harvey event 180",
             "snapshot_date": snap.get("snapshot_date")}

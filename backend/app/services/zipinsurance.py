@@ -7,6 +7,7 @@ from collections import Counter
 from datetime import date
 
 from app.services import diskcache
+from app.services.codes import tag_warnings
 from app.services.http import get_json
 
 log = logging.getLogger("zipinsurance")
@@ -89,7 +90,7 @@ async def fetch_zip(z: str) -> dict | None:
     return {"zip": z,
             "claims": {"total": sum(cnt.values()), "since_2017": sum(c for y, c in cnt.items() if y >= 2017),
                        "by_year": by_year},
-            "policies_in_force": await _policies(z), "premiums": await _premiums(z), "source": SOURCE, "note": NOTE,
+            "policies_in_force": await _policies(z), "premiums": await _premiums(z), "source": SOURCE, "note": NOTE, "note_code": "zip.note",
             "fetched_at": time.time()}
 
 
@@ -109,9 +110,11 @@ async def zip_insurance(z: str) -> dict:
     if snap:  # stale disk snapshot beats nothing
         out = _out(snap)
         out["warnings"] = ["OpenFEMA unavailable; showing a saved snapshot"]
+        tag_warnings(out)
         return out
-    return {"zip": z, "claims": {"total": 0, "since_2017": 0, "by_year": []}, "policies_in_force": None,
-            "premiums": None, "source": SOURCE, "note": NOTE, "warnings": ["OpenFEMA unavailable; no claims data. Zero here means unknown, not safe."]}
+    return tag_warnings({"zip": z, "claims": {"total": 0, "since_2017": 0, "by_year": []}, "policies_in_force": None,
+                         "premiums": None, "source": SOURCE, "note": NOTE, "note_code": "zip.note",
+                         "warnings": ["OpenFEMA unavailable; no claims data. Zero here means unknown, not safe."]})
 
 
 async def preseed():

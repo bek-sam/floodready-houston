@@ -92,7 +92,7 @@ function Shelters({ loc, name, hasPlace }: { loc: { lat: number; lon: number }; 
       {sh.error != null && <ErrorBox error={t('rec.shelterDown')} onRetry={sh.reload} />}
       {d && (
         <>
-          <Warnings items={d.warnings} />
+          <Warnings items={d.warnings} codes={d.warning_codes} />
           {(d.shelters ?? []).length === 0 && <p className="text-body-sm text-muted">{t('rec.noShelters')}</p>}
           <ul className="divide-y divide-line">
             {(d.shelters ?? []).map((s, i) => (

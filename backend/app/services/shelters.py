@@ -1,5 +1,6 @@
 """Shelter directory from the public ArcGIS Evacuation_Shelters layer (snapshot fallback)."""
 from app.services import arcgis
+from app.services.codes import tag_warnings
 from app.services.data import haversine_m, load_json
 
 SOURCE = "https://services.arcgis.com/NummVBqZSIJKUeVR/arcgis/rest/services/Evacuation_Shelters/FeatureServer/0"
@@ -39,7 +40,8 @@ async def get_shelters(lat: float, lon: float, pet_friendly: bool = False, limit
         items = [s for s in items if s["pet_friendly"]]
     items.sort(key=lambda s: s["distance_mi"])
     out = {"shelters": items[:max(limit, 0)], "any_open": False, "historical": HISTORICAL,
-           "data_as_of": DATA_AS_OF, "source": SOURCE, "note": NOTE}
+           "data_as_of": DATA_AS_OF, "source": SOURCE, "note": NOTE, "note_code": "shelters.note"}
     if warnings:
         out["warnings"] = warnings
+        tag_warnings(out)
     return out
