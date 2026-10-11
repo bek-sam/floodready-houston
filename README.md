@@ -127,10 +127,9 @@ Full list with endpoints, limits and status: [`docs/sources.md`](docs/sources.md
 - **Google Gemini**: in-product (trip/household plans, Ask assistant, embeddings for RAG).
 - **ElevenLabs**: in-product multilingual text-to-speech for voice alerts.
 - **Backboard**: in-product household memory.
-- **Lovable**: optional, for early UI drafts (state here if used).
 AI answers inside the app are labelled "not official guidance" and cite sources.
 
 ## Team and credits
-- Team: _TODO: names, roles_
+- Team: solo build by [@bek-sam](https://github.com/bek-sam), with an AI agent team (Claude Code).
 - Built at CodeRED Orion, University of Houston, October 2026.
 - Thanks to USGS, NOAA, NWS, FEMA, City of Houston, HCFCD, Rice University researchers, and OpenStreetMap contributors.
