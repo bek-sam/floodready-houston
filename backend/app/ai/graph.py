@@ -149,6 +149,16 @@ INTENT_RULES = [
     ("zip_insurance", r"(insurance|seguro)[^.?!]*\b(common|here|zip|area|neighbou?rs?|neighbou?rhood|many|comun\w*|com[uú]n|aqu[ií]|zona|c[oó]digo postal)\b|"
                       r"\bclaims?\b[^.?!]*\b(zip|area|here|neighbou?rhood|code)\b|\b(zip|c[oó]digo postal)\b[^.?!]*(claims?|insurance|seguro|reclamos?)|\breclamos?\b|\bnfip claims\b"),
     ("medical_site", r"\b(dialysis|di[aá]lisis)\b|\b(medical|health) (center|centre|facilit\w+|clinic)s?\b|centro (m[eé]dico|de salud)|cl[ií]nica"),
+    ("reservoir_pool", r"\b(addicks|barker)\b|reservoir|reservorio|represa|embalse"),
+    ("declarations", r"declaration|disaster (assistance|aid)|fema (aid|assistance|help)|federal (disaster )?(aid|assistance)|"
+                     r"declaraci[oó]n de desastre|ayuda (de )?fema|asistencia (por |de )?desastre|declaratoria"),
+    ("rain", r"how much (rain|did it rain)|rain(fall)? (fell|total|so far|in the last|last night|yesterday)|\brained\b|\brainfall\b|"
+             r"will it rain|chance of rain|cu[aá]nta lluvia|cu[aá]nto llovi[oó]|\bllovi[oó]\b|va a llover|lluvia (cay[oó]|acumulada|de ayer)|[uú]ltimas 24 horas"),
+    ("power_dependent", r"outage|power (out|cut|loss|failure)|oxygen|ventilator|cpap|power[- ]dependent|medical (device|equipment)|"
+                        r"apag[oó]n|sin (luz|electricidad|energ[ií]a)|ox[ií]geno|ventilador|dispositivo m[eé]dico"),
+    ("parking", r"where (should|can|do) i park|park (my|the) (car|vehicle|truck)|move my (car|vehicle|truck)|"
+                r"d[oó]nde (estacion|parque)\w*|estacionar|(mover|mueva) mi (carro|auto|coche|veh[ií]culo)"),
+    ("nri", r"national risk index|\bnri\b|social vulnerability|[ií]ndice nacional de riesgo"),
     ("emergency", r"\b(911|emergency|trapped|rescue|drowning|help me|rising water|emergencia|atrapad\w+|ayuda)\b"),
     ("street_flood", None),  # see _is_street_flood (multilingual)
     ("shelter", r"\b(shelters?|evacuat\w*|where (can|do) i (go|stay)|place to stay|pet[- ]friendly|refugios?|albergues?|evacuar|d[oó]nde puedo ir)\b"),
@@ -269,7 +279,16 @@ def _fallback_tools(s: State) -> list[tuple[str, dict]]:
             calls.append(("get_zip_insurance", {"zip": z}))
     if "medical_site" in it and here:
         calls.append(("get_medical", {**here, "kind": "dialysis", "limit": 3}))
-    calls.sort(key=lambda c: c[0] not in ("get_flood_history", "get_zip_insurance", "get_medical"))  # asked-for tools first
+    for intent, name in (("reservoir_pool", "get_reservoir_pool"), ("rain", "get_rain"), ("parking", "get_parking"), ("nri", "get_nri")):
+        if intent in it and here:
+            calls.append((name, here))
+    if "declarations" in it:
+        calls.append(("get_declarations", {}))
+    if "power_dependent" in it and zip_in_text(_qtext(s)):
+        calls.append(("get_power_dependent", {"zip": zip_in_text(_qtext(s))}))
+    asked = ("get_flood_history", "get_zip_insurance", "get_medical", "get_reservoir_pool", "get_declarations", "get_rain",
+             "get_nri", "get_power_dependent", "get_parking")
+    calls.sort(key=lambda c: c[0] not in asked)  # asked-for tools first
     if "insurance" in it and "zip_insurance" not in it:
         calls.append(("insurance_countdown", {"purchase_date": ""}))
     return calls[:MAX_TOOL_CALLS]
@@ -420,6 +439,50 @@ def _cue_steps(question: str, cite: Cites) -> list[str]:
     return steps
 
 
+def _lead_new(res: dict, cite: Cites, es: bool) -> list[str]:
+    """Template sentences for the cycle-40 tools (reservoir, declarations, rain, power devices, parking, NRI)."""
+    ok = lambda k: isinstance(res.get(k), dict) and "error" not in res[k]  # noqa: E731
+    out = []
+    if ok("get_reservoir_pool"):
+        r = res["get_reservoir_pool"]
+        p = r.get("pool") or {}
+        if p.get("stage_ft") is not None:
+            out.append((f"El nivel del embalse Addicks es {p['stage_ft']} ft (estado: {p.get('status')})" if es
+                        else f"The Addicks reservoir pool is at {p['stage_ft']} ft (status: {p.get('status')})") + cite(str(r.get("source", ""))) + ".")
+        else:
+            out.append(("No pude obtener el nivel del embalse Addicks ahora." if es else "I could not get the live Addicks pool level right now.")
+                       + cite(str(r.get("source", ""))))
+    if ok("get_declarations"):
+        r = res["get_declarations"]
+        lt = r.get("latest") or {}
+        if lt.get("title"):
+            out.append((f"La declaración de desastre FEMA más reciente en el condado de Harris: {lt['title']} ({lt.get('declaration_date')})" if es
+                        else f"The latest FEMA disaster declaration for Harris County: {lt['title']} ({lt.get('declaration_date')})")
+                       + (("; hay asistencia individual activa" if es else "; Individual Assistance is active") if r.get("active_ia") else "")
+                       + cite(str(r.get("source", ""))) + ".")
+    if ok("get_rain"):
+        r = res["get_rain"]
+        pa = r.get("past") or {}
+        if pa.get("last24_in") is not None:
+            out.append((f"Modelo estimado: {pa['last24_in']} pulgadas de lluvia en las últimas 24 horas" if es
+                        else f"Model-estimated rain in the last 24 hours: {pa['last24_in']} in") + cite(str(r.get("source", ""))) + ".")
+    if ok("get_power_dependent"):
+        r = res["get_power_dependent"]
+        if r.get("available"):
+            out.append(f"emPOWER ZIP {r.get('zip')}: {r.get('power_dependent_devices')} Medicare users with power-dependent devices"
+                       + cite(str(r.get("source", ""))) + ". Ask your utility about a critical-care designation; it does not guarantee power.")
+    if ok("get_parking"):
+        r = res["get_parking"]
+        if r.get("headline"):
+            out.append(str(r["headline"]).rstrip(".") + cite(str(r.get("source", ""))) + ".")
+    if ok("get_nri"):
+        r = res["get_nri"]
+        if r.get("available"):
+            out.append(f"FEMA National Risk Index inland flood rating for this tract: {(r.get('inland_flood') or {}).get('rating')}"
+                       + cite(str(r.get("source", ""))) + ".")
+    return out
+
+
 def _lead(s: State, cite: Cites) -> list[str]:
     """Sentences built from tool results (lead of the template answer)."""
     res, parts = s.get("tool_results", {}), []
@@ -466,6 +529,7 @@ def _lead(s: State, cite: Cites) -> list[str]:
                          + ". " + str(med.get("note", "")) + cite(str(med.get("source", ""))))
         else:
             parts.append(str(med.get("note", "")) + cite(str(med.get("source", ""))))
+    parts += _lead_new(res, cite, es)
     risk = res.get("get_risk")
     if isinstance(risk, dict) and "error" not in risk:
         z = risk.get("fema_zone")

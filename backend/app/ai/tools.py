@@ -103,6 +103,49 @@ async def get_medical(lat: float, lon: float, kind: str = "dialysis", limit: int
     return await _call("medical", "nearby", lat, lon, kind, limit)
 
 
+def _src(r, url):
+    """Make sure a tool result carries an http source URL (some services use a text label)."""
+    if isinstance(r, dict) and "error" not in r and not str(r.get("source", "")).startswith("http"):
+        return {**r, "source": url}
+    return r
+
+
+@tool
+async def get_reservoir_pool(lat: float, lon: float) -> dict:
+    """Live Addicks reservoir pool level (NOAA gauge ADDT2) vs flood stages and this spot's ground elevation."""
+    return await _call("reservoir", "get_pool", lat, lon)
+
+
+@tool
+async def get_declarations() -> dict:
+    """FEMA disaster declarations for Harris County TX: latest, recent, and whether Individual Assistance is active."""
+    return await _call("declarations", "status")
+
+
+@tool
+async def get_rain(lat: float, lon: float) -> dict:
+    """Rain that fell in the last 24/72 hours (model-estimated) plus the next-24h forecast total and chance of rain."""
+    return _src(await _call("rain24", "get_rain24", lat, lon), "https://www.weather.gov")
+
+
+@tool
+async def get_nri(lat: float, lon: float) -> dict:
+    """FEMA National Risk Index for the census tract: inland flood, expected loss, resilience, social vulnerability."""
+    return await _call("nri", "get_nri", lat, lon)
+
+
+@tool
+async def get_power_dependent(zip: str) -> dict:
+    """HHS emPOWER counts of Medicare residents using power-dependent devices/oxygen in a ZIP, plus the PUC critical-care form."""
+    return await _call("empower", "get_empower", zip)
+
+
+@tool
+async def get_parking(lat: float, lon: float) -> dict:
+    """Should I move my car? Parking flood check at a point: verdict move|no_flags with reasons and higher ground."""
+    return _src(await _call("parking", "assess", lat, lon), "https://msc.fema.gov/portal/home")
+
+
 @tool
 def search_knowledge(query: str) -> list:
     """Search the sourced flood knowledge base. Returns [{text, source, score}]."""
@@ -110,13 +153,16 @@ def search_knowledge(query: str) -> list:
 
 
 ALL_TOOLS = [get_risk, get_alerts, check_route, insurance_countdown, get_civic, get_shelters, get_flood_history, get_zip_insurance,
-             get_medical, search_knowledge]
+             get_medical, get_reservoir_pool, get_declarations, get_rain, get_nri, get_power_dependent, get_parking,
+             search_knowledge]
 TOOLS_BY_NAME = {t.name: t for t in ALL_TOOLS}
 
 
 # Short TTL cache for read-only service tools (seconds). Errors and "warnings" results are never cached.
 TOOL_TTL = {"get_risk": 600, "get_alerts": 120, "get_flood_history": 3600, "get_zip_insurance": 6 * 3600,
-            "get_civic": 3600, "get_shelters": 3600, "get_medical": 3600, "insurance_countdown": 600}
+            "get_civic": 3600, "get_shelters": 3600, "get_medical": 3600, "insurance_countdown": 600,
+            "get_reservoir_pool": 300, "get_declarations": 6 * 3600, "get_rain": 900, "get_nri": 24 * 3600,
+            "get_power_dependent": 24 * 3600, "get_parking": 300}
 _tool_cache: dict[str, tuple[float, object]] = {}
 _inflight: dict[str, asyncio.Future] = {}
 
@@ -146,6 +192,12 @@ TOOL_SOURCE = {
     "get_flood_history": "https://water.noaa.gov",
     "get_zip_insurance": "https://www.fema.gov/about/openfema/data-sets",
     "get_medical": "https://data.cms.gov/provider-data/dataset/23ew-n7w9",
+    "get_reservoir_pool": "https://water.noaa.gov/gauges/ADDT2",
+    "get_declarations": "https://www.fema.gov/about/openfema/data-sets",
+    "get_rain": "https://open-meteo.com/en/docs",
+    "get_nri": "https://hazards.fema.gov/nri/",
+    "get_power_dependent": "https://empowerprogram.hhs.gov/empowermap",
+    "get_parking": "https://msc.fema.gov/portal/home",
 }
 
 

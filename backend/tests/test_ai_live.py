@@ -45,7 +45,8 @@ def test_models_and_prompt(monkeypatch):
     assert "SESSION CONTEXT" in p and "zone AE" in p and "switch" in p and "Never invent numbers" in p
     assert "Let me check" in live.system_prompt("en", non_blocking=False)
     assert {d.name for d in live.tool_declarations()} == {
-        "get_risk", "get_flood_history", "get_zip_insurance", "get_alerts", "get_medical", "check_route", "search_knowledge"}
+        "get_risk", "get_flood_history", "get_zip_insurance", "get_alerts", "get_medical", "check_route", "search_knowledge",
+        "get_reservoir_pool", "get_declarations", "get_rain", "get_nri", "get_power_dependent", "get_parking"}
 
 
 def test_execute_tool_unknown():

@@ -7,7 +7,8 @@ from . import citations, graph
 from .grounding import sanitize_untrusted, wrap_untrusted
 
 NWS_SRC = "https://www.weather.gov/documentation/services-web-api"
-LOC_TOOLS = {"get_risk", "get_alerts", "get_civic", "get_shelters", "get_flood_history", "get_medical", "check_route"}
+LOC_TOOLS = {"get_risk", "get_alerts", "get_civic", "get_shelters", "get_flood_history", "get_medical", "check_route",
+             "get_reservoir_pool", "get_rain", "get_nri", "get_parking"}
 DANGER = {"emergency", "street_flood"}
 
 WAIT_RE = re.compile(r"wait|how long|when (does|will|do)[^?]*(start|begin|effective|kick in|covered)|take effect|30[- ]?day|"
@@ -237,7 +238,33 @@ def _compact(name: str, r) -> dict | list:
                 "shelters": [_pick(x, ["name", "distance_mi", "pet_friendly", "status_2017"]) for x in (r.get("shelters") or [])[:3]]}
     if name == "get_medical":
         return {**_pick(r, ["note", "source"]),
-                "facilities": [_pick(x, ["name", "phone", "distance_mi"]) for x in (r.get("facilities") or [])[:3]]}
+                "facilities": [_pick(x, ["name", "phone", "distance_mi", "fema_zone", "sfha", "harvey_flooded"])
+                               for x in (r.get("facilities") or [])[:3]]}
+    if name == "get_reservoir_pool":
+        return {**_pick(r, ["available", "relevant", "ground_elevation_ft", "pool_below_ground_ft", "harvey_above_ground_ft",
+                            "message", "warnings", "source"]),
+                "pool": _pick(r.get("pool") or {}, ["stage_ft", "status", "observed_at", "action_ft", "minor_ft", "harvey_crest_ft"])}
+    if name == "get_declarations":
+        return {**_pick(r, ["available", "active_ia", "warnings", "note", "source"]),
+                "latest": _pick(r.get("latest") or {}, ["title", "incident_type", "declaration_date", "ia_program", "url"]),
+                "recent": [_pick(x, ["title", "declaration_date", "ia_program"]) for x in (r.get("recent") or [])[1:4]]}
+    if name == "get_rain":
+        return {**_pick(r, ["available", "total_inches", "wettest_window", "max_pop_pct", "warnings", "source"]),
+                "past": _pick(r.get("past") or {}, ["available", "last24_in", "last72_in", "peak_hour"]),
+                "action": (r.get("action") or {}).get("text")}
+    if name == "get_nri":
+        return _pick(r, ["available", "inland_flood", "expected_loss_rating", "resilience", "social_vulnerability",
+                         "overall_risk", "note", "warnings", "source"])
+    if name == "get_power_dependent":
+        return {**_pick(r, ["zip", "available", "medicare_benes", "power_dependent_devices", "oxygen", "dialysis",
+                            "note", "warnings", "source"]),
+                "puc": _pick(r.get("puc") or {}, ["url"])}
+    if name == "get_parking":
+        return {**_pick(r, ["verdict", "headline", "fema_zone", "harvey_flooded", "elevation_ft", "warnings", "source"]),
+                "reasons": [x.get("text") for x in (r.get("reasons") or [])[:3] if isinstance(x, dict)],
+                "crossings": [_pick(x, ["name", "distance_m"]) for x in (r.get("crossings_within_300m") or [])[:2]],
+                "alerts": [a.get("event") for a in (r.get("active_flood_alerts") or [])[:2] if isinstance(a, dict)],
+                "higher_ground": r.get("higher_ground")}
     if name == "get_civic":
         b = r.get("bond") or {}
         return {"bond_facts": [_pick(f, ["text", "source"]) for f in (b.get("facts") or [])[:2]],

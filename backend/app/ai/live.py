@@ -53,7 +53,10 @@ TOOL_LABELS = {
     "get_risk": "Checking flood risk", "get_flood_history": "Looking up flood history",
     "get_zip_insurance": "Checking insurance claims", "get_alerts": "Checking weather alerts",
     "get_medical": "Finding medical facilities", "check_route": "Checking the route",
-    "search_knowledge": "Searching flood guides",
+    "search_knowledge": "Searching flood guides", "get_reservoir_pool": "Checking the reservoir pool",
+    "get_declarations": "Checking FEMA declarations", "get_rain": "Checking recent rainfall",
+    "get_nri": "Checking FEMA risk index", "get_power_dependent": "Checking power-dependent residents",
+    "get_parking": "Checking parking flood risk",
 }
 URGENT_TOOLS = {"get_alerts", "check_route"}  # results interrupt filler speech
 
@@ -355,6 +358,17 @@ def tool_declarations(non_blocking: bool = False) -> list[types.FunctionDeclarat
             parameters=_obj({"origin_lat": _n("Origin latitude"), "origin_lon": _n("Origin longitude"),
                              "dest_lat": _n("Destination latitude"), "dest_lon": _n("Destination longitude")},
                             ["origin_lat", "origin_lon", "dest_lat", "dest_lon"]), **b),
+        types.FunctionDeclaration(name="get_reservoir_pool", description="Live Addicks reservoir pool level vs flood stages.",
+                                  parameters=_obj(latlon, ["lat", "lon"]), **b),
+        types.FunctionDeclaration(name="get_declarations", description="FEMA disaster declarations / aid status for Harris County.", **b),
+        types.FunctionDeclaration(name="get_rain", description="Rain that fell in the last 24-72 hours and the next-24h forecast.",
+                                  parameters=_obj(latlon, ["lat", "lon"]), **b),
+        types.FunctionDeclaration(name="get_nri", description="FEMA National Risk Index for the census tract (flood, resilience).",
+                                  parameters=_obj(latlon, ["lat", "lon"]), **b),
+        types.FunctionDeclaration(name="get_power_dependent", description="Power-dependent device and oxygen users in a ZIP (emPOWER).",
+                                  parameters=_obj({"zip": S(type=T.STRING, description="5-digit ZIP")}, ["zip"]), **b),
+        types.FunctionDeclaration(name="get_parking", description="Should I move my car? Parking flood check at a location.",
+                                  parameters=_obj(latlon, ["lat", "lon"]), **b),
         types.FunctionDeclaration(name="search_knowledge", description="Search sourced flood knowledge cards.",
                                   parameters=_obj({"query": S(type=T.STRING, description="Search query")}, ["query"]), **b),
     ]
