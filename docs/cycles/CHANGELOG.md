@@ -183,3 +183,8 @@
 - Audit of cycle 25-29 screens in es/vi/zh/ar at 390 px (docs/cycles/cycle-30-research.md): 0 page errors, 0 raw keys, RTL mostly correct; safety wording (911, turn around, insurance exceptions) correct.
 - Fixed: parking-check result was all English incl. "Call 911" → backend codes + params, 5-language strings (p30.ts); widget rain line localized; Arabic addresses no longer scrambled (<bdi>/Unicode isolates in place chip, For: line, settings, wallet card, widget, parking card — last one lead fix); storm names localized in summary chips; Addicks pool units localized; dates via toLocaleDateString.
 - Verified: 202 tests, build, i18n 0 missing, es/ar parking result with 0 English leftovers, widget fully Spanish, 0 page errors.
+## Cycle 31 — Sun Oct 11, ~7:15 AM (accessibility + performance)
+- axe-core 4.10.2 audit, 12 views × 390/1280 × light/dark: was 1 serious (About dark-mode contrast 2.21:1) + moderate region/heading-order on most views → now 0 violations of any impact in all 48 combinations. EmergencyStrip in a labelled <aside>, onboarding header landmark, Card/EmptyState titles default to h2 (no visual change).
+- Keyboard: focus visible everywhere, no traps, sheets return focus on Esc, skip link reachable (main not auto-focused on first load).
+- Performance: Home ≈0.85 s warm / 1.6 s cold to h1; 11 Home API calls all ≤52 ms warm; routes already lazy-loaded (main 775 kB / 254 kB gzip; Replay3D and ElevenLabs agent chunks lazy).
+- Verified: build, i18n 0 missing, 13-route sweep at 390 px: 0 page/console errors, 0 horizontal overflow.

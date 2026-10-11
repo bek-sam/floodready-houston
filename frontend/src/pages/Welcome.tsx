@@ -32,12 +32,12 @@ export default function Welcome({ onDone }: { onDone: () => void }) {
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <div className="flex h-14 items-center justify-between">
+        <header className="flex h-14 items-center justify-between">
           <Lockup size={32} />
           <button type="button" onClick={() => finish(step === 2)} className="min-h-11 rounded-md px-3 text-body-sm font-semibold text-brand underline-offset-2 hover:underline">
             {t('welcome.skip')}
           </button>
-        </div>
+        </header>
         <Stepper steps={steps} current={step} className="mb-6 mt-2" />
 
         <main className="flex-1 pb-6">

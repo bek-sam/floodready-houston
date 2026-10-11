@@ -11,7 +11,7 @@ export function DemoPanel({ title, children, className = '', id }: { title?: Rea
   return (
     <section id={id} className={`rounded-lg border-[1.5px] border-dashed border-watch bg-watch-tint p-4 ${className}`}>
       <p className="mb-2 flex items-center gap-1.5 text-overline uppercase text-watch"><FlaskConical aria-hidden size={14} />{t('demo.panel')}</p>
-      {title && <h3 className="mb-2 text-h3 text-ink">{title}</h3>}
+      {title && <h2 className="mb-2 text-h3 text-ink">{title}</h2>}
       {children}
     </section>
   )

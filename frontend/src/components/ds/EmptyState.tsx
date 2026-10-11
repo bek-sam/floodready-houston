@@ -10,7 +10,7 @@ export function EmptyState({ icon: Icon, title, body, action, secondary, classNa
       <span className="mb-3 flex size-16 items-center justify-center rounded-full bg-surface-2 text-brand">
         <Icon aria-hidden size={32} />
       </span>
-      <h3 className="text-h3 text-ink">{title}</h3>
+      <h2 className="text-h3 text-ink">{title}</h2>
       {body && <p className="mt-1 max-w-[40ch] text-body-sm text-muted">{body}</p>}
       {action && <div className="mt-4">{action}</div>}
       {secondary && <div className="mt-2">{secondary}</div>}

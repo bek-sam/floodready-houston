@@ -4,7 +4,7 @@ import { LEVEL_CLASS, type Level } from '../../lib/levels'
 export type CardTone = 'default' | 'inset' | Level
 
 /** Card: bg-surface, border-line, radius-lg, shadow-card. `tone=<level>` adds a 4px top border in that color. */
-export function Card({ title, subtitle, action, tone = 'default', padding = 'md', as: As = 'section', className = '', id, children, titleAs: H = 'h3', ...rest }: {
+export function Card({ title, subtitle, action, tone = 'default', padding = 'md', as: As = 'section', className = '', id, children, titleAs: H = 'h2', ...rest }: {
   title?: ReactNode; subtitle?: ReactNode; action?: ReactNode; tone?: CardTone; padding?: 'md' | 'lg'
   as?: ElementType; titleAs?: ElementType; className?: string; id?: string; children?: ReactNode
   'aria-labelledby'?: string; 'aria-busy'?: boolean

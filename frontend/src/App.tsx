@@ -157,7 +157,7 @@ function Shell() {
             <div className="md:flex">
               <Sidebar route={route} logoProps={logoProps} />
               <div className="flex min-h-dvh min-w-0 flex-1 flex-col">
-                <EmergencyStrip dangerEvent={danger} placeName={nick} />
+                <aside aria-label={t('strip.call')}><EmergencyStrip dangerEvent={danger} placeName={nick} /></aside>
                 <Header onPlace={() => setSheet('place')} onLang={() => setSheet('lang')} onMore={() => setSheet('more')} onInstall={install} logoProps={logoProps} />
                 {!online && <OfflineBanner />}
                 <SnapshotBanner />

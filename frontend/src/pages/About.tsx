@@ -28,7 +28,7 @@ export default function About() {
       </Card>
       <Card title={t('p29.demo.h')}>
         <p className="mb-3 text-body-sm text-muted">{t('p29.demo.d')}</p>
-        <a className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand px-4 font-semibold text-white no-underline" href="/?demo=1#drive">{t('p29.demo.btn')} <ArrowRight aria-hidden size={16} /></a>
+        <a className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand px-4 font-semibold text-white no-underline dark:text-bg" href="/?demo=1#drive">{t('p29.demo.btn')} <ArrowRight aria-hidden size={16} /></a>
       </Card>
       <Card title={t('about.notOfficialTitle')} tone="watch">
         <p className="text-body">{t('about.notOfficial')}</p>
