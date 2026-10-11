@@ -1,0 +1,15 @@
+{
+  "source": "https://geogimsms.houstontx.gov/arcgis/rest/services/TDO/StormDrainage_Study/MapServer/4",
+  "layer_objects": 350000,
+  "features_stored": 350000,
+  "polygons_stored": 357241,
+  "coverage_bbox": [
+    -95.96085357666016,
+    29.49689483642578,
+    -94.9085922241211,
+    30.17066764831543
+  ],
+  "maxAllowableOffset": 5e-05,
+  "complete": true,
+  "fetched_at": "2026-10-11T04:52:21Z"
+}

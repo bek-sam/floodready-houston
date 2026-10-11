@@ -1,0 +1,470 @@
+[
+ {
+  "id": "ADDT2",
+  "usgs_id": "08073000",
+  "name": "Langham Creek at Addicks Reservoir",
+  "lat": 29.791111111111,
+  "lon": -95.623333333333,
+  "flood_stages": {
+   "action": 93,
+   "minor": 96,
+   "moderate": null,
+   "major": null
+  }
+ },
+ {
+  "id": "BAKT2",
+  "usgs_id": "08072500",
+  "name": "Buffalo Bayou at Barker Reservoir",
+  "lat": 29.769722222222,
+  "lon": -95.646944444444,
+  "flood_stages": {
+   "action": 90.2,
+   "minor": 93.2,
+   "moderate": null,
+   "major": null
+  }
+ },
+ {
+  "id": "BBAT2",
+  "usgs_id": "08072730",
+  "name": "Bear Creek at Barker",
+  "lat": 29.8305555555556,
+  "lon": -95.6866666666667,
+  "flood_stages": {
+   "action": 108,
+   "minor": 111,
+   "moderate": 112,
+   "major": 113.5
+  }
+ },
+ {
+  "id": "BBST2",
+  "usgs_id": "08074000",
+  "name": "Buffalo Bayou at Shepherd Drive",
+  "lat": 29.76,
+  "lon": -95.408333333333,
+  "flood_stages": {
+   "action": 17,
+   "minor": 28,
+   "moderate": 29.5,
+   "major": 32
+  }
+ },
+ {
+  "id": "CCGT2",
+  "usgs_id": "08068800",
+  "name": "Cypress Creek near Cypress",
+  "lat": 29.973333333333,
+  "lon": -95.598333333333,
+  "flood_stages": {
+   "action": 119,
+   "minor": 122,
+   "moderate": 124,
+   "major": 125
+  }
+ },
+ {
+  "id": "GBHT2",
+  "usgs_id": "08076000",
+  "name": "Greens Bayou at Houston",
+  "lat": 29.918055555556,
+  "lon": -95.306666666667,
+  "flood_stages": {
+   "action": 52,
+   "minor": 55,
+   "moderate": 56.5,
+   "major": 59.5
+  }
+ },
+ {
+  "id": "GBLT2",
+  "usgs_id": "08076700",
+  "name": "Greens Bayou near Houston",
+  "lat": 29.836944444444,
+  "lon": -95.233055555556,
+  "flood_stages": {
+   "action": 27,
+   "minor": 30,
+   "moderate": 32,
+   "major": 33
+  }
+ },
+ {
+  "id": "GMKT2",
+  "usgs_id": "08067520",
+  "name": "Goose Creek near McNair",
+  "lat": 29.8014,
+  "lon": -95.0047,
+  "flood_stages": {
+   "action": 23,
+   "minor": 26,
+   "moderate": 27,
+   "major": 28
+  }
+ },
+ {
+  "id": "GSST2",
+  "usgs_id": "08074810",
+  "name": "Brays Bayou at Gessner Drive",
+  "lat": 29.6725,
+  "lon": -95.528055555556,
+  "flood_stages": {
+   "action": 54,
+   "minor": 57,
+   "moderate": 58,
+   "major": 59
+  }
+ },
+ {
+  "id": "HBMT2",
+  "usgs_id": "08075000",
+  "name": "Brays Bayou at Houston",
+  "lat": 29.696944444444,
+  "lon": -95.411944444444,
+  "flood_stages": {
+   "action": 38,
+   "minor": 41,
+   "moderate": 42,
+   "major": 43
+  }
+ },
+ {
+  "id": "HCCT2",
+  "usgs_id": "08077600",
+  "name": "Clear Creek at Friendswood",
+  "lat": 29.517222222222,
+  "lon": -95.178333333333,
+  "flood_stages": {
+   "action": 7,
+   "minor": 12,
+   "moderate": 16,
+   "major": 21
+  }
+ },
+ {
+  "id": "HCDT2",
+  "usgs_id": "08067500",
+  "name": "Cedar Bayou near Crosby",
+  "lat": 29.9725,
+  "lon": -94.985555555556,
+  "flood_stages": {
+   "action": 50.4,
+   "minor": 53.4,
+   "moderate": null,
+   "major": null
+  }
+ },
+ {
+  "id": "HFFT2",
+  "usgs_id": "08071250",
+  "name": "Luce Bayou near Huffman",
+  "lat": 30.109444444444,
+  "lon": -95.059722222222,
+  "flood_stages": {
+   "action": 67.5,
+   "minor": 70.5,
+   "moderate": null,
+   "major": null
+  }
+ },
+ {
+  "id": "HGBT2",
+  "usgs_id": "08075900",
+  "name": "Greens Bayou near Houston",
+  "lat": 29.956666666667,
+  "lon": -95.417777777778,
+  "flood_stages": {
+   "action": 81.8,
+   "minor": 84.8,
+   "moderate": 86.6,
+   "major": 87.7
+  }
+ },
+ {
+  "id": "HGTT2",
+  "usgs_id": "08074500",
+  "name": "White Oak Bayou at Houston",
+  "lat": 29.775,
+  "lon": -95.396944444444,
+  "flood_stages": {
+   "action": 29,
+   "minor": 32,
+   "moderate": 33.5,
+   "major": 36
+  }
+ },
+ {
+  "id": "HMMT2",
+  "usgs_id": "08069500",
+  "name": "West Fork San Jacinto River near Humble",
+  "lat": 30.026388888889,
+  "lon": -95.258333333333,
+  "flood_stages": {
+   "action": 45.3,
+   "minor": 49.3,
+   "moderate": 50.3,
+   "major": 52.3
+  }
+ },
+ {
+  "id": "HSIT2",
+  "usgs_id": "08075500",
+  "name": "Sims Bayou at Houston",
+  "lat": 29.674167,
+  "lon": -95.289167,
+  "flood_stages": {
+   "action": 23.2,
+   "minor": 26.2,
+   "moderate": 27.2,
+   "major": 28.2
+  }
+ },
+ {
+  "id": "HSJT2",
+  "usgs_id": "08072000",
+  "name": "San Jacinto River at Lake Houston",
+  "lat": 29.916111111111,
+  "lon": -95.141111111111,
+  "flood_stages": {
+   "action": null,
+   "minor": null,
+   "moderate": null,
+   "major": null
+  }
+ },
+ {
+  "id": "HYST2",
+  "usgs_id": "08077110",
+  "name": "Hickory Slough at FM 865 near Pearland",
+  "lat": 29.56640556,
+  "lon": -95.35073611,
+  "flood_stages": {
+   "action": 49.5,
+   "minor": 51,
+   "moderate": 52,
+   "major": 53
+  }
+ },
+ {
+  "id": "KHOT2",
+  "usgs_id": "08068720",
+  "name": "Cypress Creek near Hockley",
+  "lat": 29.95,
+  "lon": -95.808055555556,
+  "flood_stages": {
+   "action": 154.3,
+   "minor": 157.3,
+   "moderate": 159.3,
+   "major": 160.6
+  }
+ },
+ {
+  "id": "LLYT2",
+  "usgs_id": "08072760",
+  "name": "Langham Creek near Addicks",
+  "lat": 29.866944444444,
+  "lon": -95.646388888889,
+  "flood_stages": {
+   "action": 106,
+   "minor": 109,
+   "moderate": 110,
+   "major": 111
+  }
+ },
+ {
+  "id": "LWCT2",
+  "usgs_id": "08068325",
+  "name": "Willow Creek near Tomball",
+  "lat": 30.105277777778,
+  "lon": -95.546388888889,
+  "flood_stages": {
+   "action": 126.4,
+   "minor": 129.4,
+   "moderate": 130.5,
+   "major": 133.5
+  }
+ },
+ {
+  "id": "MBVT2",
+  "usgs_id": "08067505",
+  "name": "Cedar Bayou at I-10 near Mont Belvieu",
+  "lat": 29.82151389,
+  "lon": -94.90970556,
+  "flood_stages": {
+   "action": 8,
+   "minor": 13,
+   "moderate": 18.5,
+   "major": 20.5
+  }
+ },
+ {
+  "id": "MGPT2",
+  "usgs_id": null,
+  "name": "Tide Station (HGX) at Morgan's Point",
+  "lat": 29.6817,
+  "lon": -94.985,
+  "flood_stages": {
+   "action": 3.5,
+   "minor": 3.7,
+   "moderate": 4.5,
+   "major": 5
+  }
+ },
+ {
+  "id": "NCET2",
+  "usgs_id": "08070200",
+  "name": "East Fork San Jacinto River near New Caney",
+  "lat": 30.145277777778,
+  "lon": -95.124166666667,
+  "flood_stages": {
+   "action": 54.5,
+   "minor": 58,
+   "moderate": 62,
+   "major": 69
+  }
+ },
+ {
+  "id": "NCHT2",
+  "usgs_id": null,
+  "name": "Tide Station (HGX) at Manchester",
+  "lat": 29.7262,
+  "lon": -95.2658,
+  "flood_stages": {
+   "action": 3.5,
+   "minor": 3.7,
+   "moderate": 4.5,
+   "major": 5
+  }
+ },
+ {
+  "id": "POET2",
+  "usgs_id": "08068090",
+  "name": "West Fork San Jacinto River near Porter",
+  "lat": 30.1412,
+  "lon": -95.3381,
+  "flood_stages": {
+   "action": 73,
+   "minor": 81,
+   "moderate": 88.5,
+   "major": 92
+  }
+ },
+ {
+  "id": "PPTT2",
+  "usgs_id": "08073700",
+  "name": "Buffalo Bayou at Piney Point Village",
+  "lat": 29.746666666667,
+  "lon": -95.523333333333,
+  "flood_stages": {
+   "action": 49,
+   "minor": 52,
+   "moderate": 57,
+   "major": 60
+  }
+ },
+ {
+  "id": "PRLT2",
+  "usgs_id": "08076997",
+  "name": "Clear Creek above Telephone Road",
+  "lat": 29.5968,
+  "lon": -95.2972,
+  "flood_stages": {
+   "action": 40.5,
+   "minor": 43.5,
+   "moderate": null,
+   "major": null
+  }
+ },
+ {
+  "id": "RMOT2",
+  "usgs_id": "08114000",
+  "name": "Brazos River at Richmond",
+  "lat": 29.582222222222,
+  "lon": -95.7575,
+  "flood_stages": {
+   "action": 20,
+   "minor": 45,
+   "moderate": 48,
+   "major": 50
+  }
+ },
+ {
+  "id": "SHLT2",
+  "usgs_id": "08072050",
+  "name": "San Jacinto River near Sheldon",
+  "lat": 29.876111111111,
+  "lon": -95.093611111111,
+  "flood_stages": {
+   "action": 8,
+   "minor": 10,
+   "moderate": 13,
+   "major": 15
+  }
+ },
+ {
+  "id": "SLNT2",
+  "usgs_id": "08114100",
+  "name": "Brazos River at US 59",
+  "lat": 29.56758,
+  "lon": -95.66822,
+  "flood_stages": {
+   "action": 40,
+   "minor": 66.5,
+   "moderate": 68.5,
+   "major": 70.5
+  }
+ },
+ {
+  "id": "SPNT2",
+  "usgs_id": "08068500",
+  "name": "Spring Creek near Spring",
+  "lat": 30.110277777778,
+  "lon": -95.436111111111,
+  "flood_stages": {
+   "action": 88,
+   "minor": 91.5,
+   "moderate": 95,
+   "major": 100
+  }
+ },
+ {
+  "id": "TMBT2",
+  "usgs_id": "08068275",
+  "name": "Spring Creek at Tomball",
+  "lat": 30.119722222222,
+  "lon": -95.645833333333,
+  "flood_stages": {
+   "action": 152,
+   "minor": 155,
+   "moderate": 157,
+   "major": 159
+  }
+ },
+ {
+  "id": "WFDT2",
+  "usgs_id": "08069000",
+  "name": "Cypress Creek near Westfield",
+  "lat": 30.0355555555556,
+  "lon": -95.4286111111111,
+  "flood_stages": {
+   "action": 82.5,
+   "minor": 85.5,
+   "moderate": 88,
+   "major": 90
+  }
+ },
+ {
+  "id": "WSBT2",
+  "usgs_id": "08073600",
+  "name": "Buffalo Bayou at West Belt Drive",
+  "lat": 29.761944444444,
+  "lon": -95.5575,
+  "flood_stages": {
+   "action": 59.2,
+   "minor": 62.2,
+   "moderate": 63.2,
+   "major": 65.3
+  }
+ }
+]

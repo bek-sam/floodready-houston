@@ -1,0 +1,14 @@
+.env
+*.db
+__pycache__/
+.venv/
+node_modules/
+dist/
+.DS_Store
+.vapid.json
+backend/.cache/
+data/harvey/*.sqlite
+data/harvey/*.sqlite-*
+data/harvey/checkpoints/
+*.log
+frontend/dev-dist/

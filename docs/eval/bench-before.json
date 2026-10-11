@@ -1,0 +1,183 @@
+{
+ "summary": {
+  "label": "before",
+  "n": 10,
+  "median_ms": 811.0,
+  "llm_calls": 9,
+  "embed_calls": 0,
+  "prompt_tokens": 9113,
+  "completion_tokens": 1116,
+  "est_cost_usd": 0.001358,
+  "cost_is_estimate": true
+ },
+ "rows": [
+  {
+   "q": "How long is the waiting period for flood insurance?",
+   "lang": "en",
+   "ms": 681,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 428,
+   "completion_tokens": 73,
+   "est_cost_usd": 7.2e-05,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "Flood insurance coverage goes into effect 30 days after your date of purchase ([). Buying a policy when a storm is already forecast is too late ([).\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "Which shelters are open right now?",
+   "lang": "en",
+   "ms": 684,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 1813,
+   "completion_tokens": 82,
+   "est_cost_usd": 0.0002141,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "I don't know which specific shelters are open right now. You can dial 2-1-1 or (877) 541-7905 to check for extreme weather shelters and evacuation information through 211 Texas ([)).\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "Are there any flood alerts for my area right now?",
+   "lang": "en",
+   "ms": 987,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 1708,
+   "completion_tokens": 108,
+   "est_cost_usd": 0.000214,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "NWS flood warnings and alerts are issued by area, county, or zone rather than individual roads or addresses ([weather.gov API docs](https://www.weather.gov/documentation/services-web-api)). To receive official alerts, you can sign up for ReadyHarris alerts, turn on your phone's emergency alerts, and"
+  },
+  {
+   "q": "How many flood insurance claims were there in ZIP 77096?",
+   "lang": "en",
+   "ms": 594,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 1460,
+   "completion_tokens": 79,
+   "est_cost_usd": 0.0001776,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "In ZIP 77096, there have been a total of 6,482 NFIP flood insurance claims, including 2,610 claims since 2017 ([OpenFEMA](https://www.fema.gov/openfema-data-page/nfip-redacted-claims-v3)).\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "How do I avoid contractor scams after a flood?",
+   "lang": "en",
+   "ms": 1423,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 509,
+   "completion_tokens": 202,
+   "est_cost_usd": 0.0001317,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "To avoid contractor scams after a flood, do not pay a contractor in full upfront or in cash, and always get their offer in writing ([). Be aware that some dishonest contractors take upfront payment and then fail to do the work ([). Report any suspected fraud or price gouging to (800) 621-0508, and c"
+  },
+  {
+   "q": "¿Se ha inundado mi dirección antes?",
+   "lang": "es",
+   "ms": 1349,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 1766,
+   "completion_tokens": 289,
+   "est_cost_usd": 0.0002922,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "Sí, su ubicación se encuentra dentro de la zona estimada de inundación del huracán Harvey según los modelos de la Ciudad de Houston ([)). Además, Harvey inundó 154,170 hogares en el condado de Harris y solo el 36% tenía seguro de inundación ([)). Recuerde que estar fuera de una zona de riesgo no gar"
+  },
+  {
+   "q": "I'm a renter and my landlord never told me the apartment flooded before. What are my rights, and should I buy flood insurance before hurricane season?",
+   "lang": "en",
+   "ms": 12015,
+   "route": "graph_loop",
+   "cache": "none",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "template",
+   "answer": "Flood insurance takes 30 days to start; buy today and you are covered from 2026-11-10 [1].\nWhat to do:\n1. Renters should ask the landlord about past flooding in writing, consider renters insurance with a separate flood policy, and know where to call. [2]\n2. Buy well before the season peaks. Use the "
+  },
+  {
+   "q": "Bảo hiểm người thuê nhà có chi trả thiệt hại do lũ không?",
+   "lang": "vi",
+   "ms": 530,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 462,
+   "completion_tokens": 8,
+   "est_cost_usd": 4.94e-05,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "Tôi không biết.\nĐây không phải hướng dẫn chính thức. Trong trường hợp khẩn cấp, hãy gọi 911."
+  },
+  {
+   "q": "What is the waiting period for flood insurance?",
+   "lang": "en",
+   "ms": 615,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 458,
+   "completion_tokens": 61,
+   "est_cost_usd": 7.02e-05,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "The waiting period for flood insurance is 30 days from your date of purchase, meaning a policy bought when a storm is already forecast is too late ([FloodSmart.gov](https://www.floodsmart.gov/get-insured/buy-a-policy)).\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "How do I avoid contractor scams after a flood?",
+   "lang": "en",
+   "ms": 938,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 509,
+   "completion_tokens": 214,
+   "est_cost_usd": 0.0001365,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "To avoid contractor scams after a flood, do not pay a contractor in full upfront or in cash, and always get their offer in writing ([Texas Attorney General](https://www.texasattorneygeneral.gov/news/releases/attorney-general-paxton-warns-disaster-scams-following-texas-floods)). Be aware that some di"
+  }
+ ]
+}

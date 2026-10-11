@@ -1,0 +1,110 @@
+{
+ "bond": {
+  "facts": [
+   {
+    "text": "By March 2025, 43 of 181 projects in Harris County's 2018 flood bond program were complete.",
+    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
+   },
+   {
+    "text": "$864M of the $2.5B bond had been spent by that point.",
+    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
+   },
+   {
+    "text": "Out of $834 million in partner (FRT) funds originally anticipated, only $165 million materialized.",
+    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
+   },
+   {
+    "text": "Funds were allocated 'as-needed,' not 'in order of prioritization scores'; second-quartile projects received $317.5M vs. $187.3M for the first quartile.",
+    "source": "https://auditor.harriscountytx.gov/portals/auditor/documents/AuditDocs/062725Memo%20-%202018%20Bond%20Program%206.23.2025.pdf"
+   },
+   {
+    "text": "Flood bond project information is published by Harris County Precinct 4.",
+    "source": "https://cp4.harriscountytx.gov/Connect/Newsroom/flood-bond"
+   }
+  ],
+  "projects": []
+ },
+ "reservoir": {
+  "in_area": false,
+  "facts": [
+   {
+    "text": "Addicks and Barker reservoirs date from the 1940s and were rated 'extremely high risk'; the Corps found a 'high risk of failure due to seepage and piping' and more than $100M in repairs were needed.",
+    "source": "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/"
+   },
+   {
+    "text": "5,138 of about 14,000 homes inside the reservoirs flooded in Harvey; about 4,000 were built after Allison.",
+    "source": "https://projects.propublica.org/graphics/harvey-reservoirs"
+   },
+   {
+    "text": "Reservoir releases during Harvey flooded thousands more homes downstream.",
+    "source": "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/"
+   },
+   {
+    "text": "Neither the city nor the county requires flood disclosure to buyers; the only warning is a plat note.",
+    "source": "https://projects.propublica.org/graphics/harvey-reservoirs"
+   }
+  ]
+ },
+ "responsibility": [
+  {
+   "issue": "Flood warning gauges and bayou channels in Harris County",
+   "agency": "Harris County Flood Control District (HCFCD)",
+   "contact": "https://www.hcfcd.org"
+  },
+  {
+   "issue": "Live flood gauge map (not a notification system)",
+   "agency": "Harris County Flood Warning System",
+   "contact": "https://harriscountyfws.org/Help"
+  },
+  {
+   "issue": "Emergency alerts and family preparedness plans",
+   "agency": "Harris County Office of Homeland Security and Emergency Management (ReadyHarris)",
+   "contact": "https://www.readyharris.org"
+  },
+  {
+   "issue": "New flood maps (MAAPnext) and floodplain info",
+   "agency": "Harris County Flood Control District / FEMA",
+   "contact": "https://www.hcfcd.org/MAAPnext"
+  },
+  {
+   "issue": "Buyouts and relocation programs",
+   "agency": "Harris County Housing and Community Development",
+   "contact": "https://hcd.harriscountytx.gov/Disaster-Recovery/Buyout-Relocation-Programs/Involuntary-Buyout-Relocation-Program"
+  },
+  {
+   "issue": "Flood bond projects",
+   "agency": "Harris County (Precinct 4 flood bond page; County Auditor reviews the program)",
+   "contact": "https://cp4.harriscountytx.gov/Connect/Newsroom/flood-bond"
+  },
+  {
+   "issue": "Roadway flood sensors and traffic conditions",
+   "agency": "Houston TranStar",
+   "contact": "https://traffic.houstontranstar.org/api/api_doc.aspx"
+  },
+  {
+   "issue": "Underpasses and city street barricades inside Houston",
+   "agency": "City of Houston officials (lists published via KPRC); call 311 for non-emergencies",
+   "contact": "https://www.click2houston.com/news/local/2026/06/15/list-houston-area-intersections-roads-most-likely-to-flood-during-heavy-rain/"
+  },
+  {
+   "issue": "Addicks and Barker reservoirs",
+   "agency": "US Army Corps of Engineers (as described in Texas Tribune and ProPublica reporting)",
+   "contact": "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/"
+  },
+  {
+   "issue": "Flood insurance (NFIP)",
+   "agency": "FEMA / FloodSmart",
+   "contact": "https://www.floodsmart.gov/get-insured/buy-a-policy"
+  },
+  {
+   "issue": "Who is in charge overall",
+   "agency": "Fragmented: each jurisdiction follows its own floodplain criteria, and one resident said 'The city doesn't talk to the county... Nobody's in charge.'",
+   "contact": "https://projects.propublica.org/graphics/harvey-reservoirs"
+  },
+  {
+   "issue": "Emergencies",
+   "agency": "Call 911",
+   "contact": "911"
+  }
+ ]
+}

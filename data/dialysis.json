@@ -1,0 +1,1055 @@
+[
+ {
+  "name": "Children'S Memorial Hermann Dialysis Center",
+  "address": "6411 Fannin St",
+  "city": "Houston",
+  "zip": "77030",
+  "phone": "(713) 704-0093",
+  "lat": 29.71509482743,
+  "lon": -95.396526728592
+ },
+ {
+  "name": "Texas Childrens Hospital Dialysis Unit",
+  "address": "6621 Fannin Street Ste 610",
+  "city": "Houston",
+  "zip": "77030",
+  "phone": "(832) 826-0850",
+  "lat": 29.708926381281,
+  "lon": -95.40141348495
+ },
+ {
+  "name": "North Cypress Medical Center - Dialysis Center",
+  "address": "21216 Northwest Fwy Ste 320",
+  "city": "Cypress",
+  "zip": "77429",
+  "phone": "(832) 912-3745",
+  "lat": 29.936596648379,
+  "lon": -95.649663046269
+ },
+ {
+  "name": "Midtown Kidney Center",
+  "address": "9126 Eastex Freeway",
+  "city": "Houston",
+  "zip": "77093",
+  "phone": "(713) 699-3450",
+  "lat": 29.844625818684,
+  "lon": -95.332919153329
+ },
+ {
+  "name": "Southeast Kidney Center",
+  "address": "8537 Gulf Freeway",
+  "city": "Houston",
+  "zip": "77017",
+  "phone": "(713) 947-9564",
+  "lat": 29.668679054952,
+  "lon": -95.261517495049
+ },
+ {
+  "name": "Fresenius Medical Care Fondren",
+  "address": "7011 Regency Square Blvd",
+  "city": "Houston",
+  "zip": "77036",
+  "phone": "(713) 782-1810",
+  "lat": 29.716231101039,
+  "lon": -95.505708349707
+ },
+ {
+  "name": "Davita Med Center Dialysis",
+  "address": "5610 Almeda Road",
+  "city": "Houston",
+  "zip": "77004",
+  "phone": "(713) 520-6878",
+  "lat": 29.719765358308,
+  "lon": -95.379851204447
+ },
+ {
+  "name": "Fresenius Medical Care North Houston",
+  "address": "5435 Aldine Mail Route",
+  "city": "Houston",
+  "zip": "77039",
+  "phone": "(281) 987-7772",
+  "lat": 29.902078408551,
+  "lon": -95.308911674977
+ },
+ {
+  "name": "Fresenius Medical Care Baytown Dialysis",
+  "address": "2202 Rollingbrook",
+  "city": "Baytown",
+  "zip": "77521",
+  "phone": "(281) 422-3794",
+  "lat": 29.760854191514,
+  "lon": -94.982531446419
+ },
+ {
+  "name": "Fresenius Medical Care Southwest Houston Dialysis Center",
+  "address": "8303 Creek Bend",
+  "city": "Houston",
+  "zip": "77071",
+  "phone": "(713) 541-5541",
+  "lat": 29.665268264393,
+  "lon": -95.525556238493
+ },
+ {
+  "name": "Davita Houston Dialysis",
+  "address": "900 South Loop West Ste. 100",
+  "city": "Houston",
+  "zip": "77054",
+  "phone": "(713) 748-0942",
+  "lat": 29.681024945644,
+  "lon": -95.38750447334
+ },
+ {
+  "name": "Clear Lake Kidney Center",
+  "address": "1550 Live Oak",
+  "city": "Webster",
+  "zip": "77598",
+  "phone": "(281) 554-4900",
+  "lat": 29.545360582225,
+  "lon": -95.130279554706
+ },
+ {
+  "name": "Davita Northwest Kidney Center",
+  "address": "10985 Northwest Freeway",
+  "city": "Houston",
+  "zip": "77092",
+  "phone": "(713) 812-1217",
+  "lat": 29.817092382544,
+  "lon": -95.466793287785
+ },
+ {
+  "name": "Davita Channelview Dialysis",
+  "address": "777 Sheldon Road",
+  "city": "Channelview",
+  "zip": "77530",
+  "phone": "(281) 860-0600",
+  "lat": 29.786874838617,
+  "lon": -95.124712785556
+ },
+ {
+  "name": "Davita Omni Dialysis Center",
+  "address": "9350 Kirby Drive   #110",
+  "city": "Houston",
+  "zip": "77054",
+  "phone": "(713) 665-4747",
+  "lat": 29.668915674073,
+  "lon": -95.413099177448
+ },
+ {
+  "name": "Northwest Houston Dialysis Ctr",
+  "address": "8925 Hwy 6 North",
+  "city": "Houston",
+  "zip": "77095",
+  "phone": "(281) 550-0287",
+  "lat": 29.907943648269,
+  "lon": -95.630486503064
+ },
+ {
+  "name": "Davita Northstar Dialysis Center",
+  "address": "380 W Little York Rd",
+  "city": "Houston",
+  "zip": "77076",
+  "phone": "(281) 448-4506",
+  "lat": 29.869906943086,
+  "lon": -95.404072532595
+ },
+ {
+  "name": "Davita Lone Star Dialysis",
+  "address": "8560 Monroe",
+  "city": "Houston",
+  "zip": "77061",
+  "phone": "(713) 378-6094",
+  "lat": 29.644141682771,
+  "lon": -95.264888408529
+ },
+ {
+  "name": "Davita Central Houston Dialysis",
+  "address": "610 South  Wayside Dr",
+  "city": "Houston",
+  "zip": "77011",
+  "phone": "(713) 928-9040",
+  "lat": 29.732934868751,
+  "lon": -95.307958734345
+ },
+ {
+  "name": "Davita North Houston Dialysis Center",
+  "address": "8621 Fulton St",
+  "city": "Houston",
+  "zip": "77022",
+  "phone": "(713) 699-3748",
+  "lat": 29.838748824161,
+  "lon": -95.375667376696
+ },
+ {
+  "name": "Westminster Dialysis",
+  "address": "12121 Westheimer  Rd   Ste 245",
+  "city": "Houston",
+  "zip": "77077",
+  "phone": "(281) 493-9046",
+  "lat": 29.736226698571,
+  "lon": -95.593290817663
+ },
+ {
+  "name": "Spring Branch Dialysis",
+  "address": "1425 Blalock Ste 100",
+  "city": "Houston",
+  "zip": "77055",
+  "phone": "(713) 932-7795",
+  "lat": 29.796012285713,
+  "lon": -95.523387123849
+ },
+ {
+  "name": "Fmc East Central Houston",
+  "address": "6830 Capitol St",
+  "city": "Houston",
+  "zip": "77011",
+  "phone": "(713) 926-3394",
+  "lat": 29.735438126148,
+  "lon": -95.306195941763
+ },
+ {
+  "name": "Davita Tomball Dialysis Center",
+  "address": "27720 A Tomball Pky",
+  "city": "Tomball",
+  "zip": "77375",
+  "phone": "(281) 351-6802",
+  "lat": 30.077886902611,
+  "lon": -95.628712517585
+ },
+ {
+  "name": "Bayshore Dialysis Center",
+  "address": "4901 E Sam Houston Pkwy S",
+  "city": "Pasadena",
+  "zip": "77505",
+  "phone": "(281) 487-0586",
+  "lat": 29.636589230187,
+  "lon": -95.16307976683
+ },
+ {
+  "name": "Medical Center Kidney Clinic",
+  "address": "2254 Holcombe Blvd",
+  "city": "Houston",
+  "zip": "77030",
+  "phone": "(713) 797-9909",
+  "lat": 29.705946562408,
+  "lon": -95.385464896089
+ },
+ {
+  "name": "Davita Memorial Dialysis Center",
+  "address": "11621 Katy Freeway",
+  "city": "Houston",
+  "zip": "77079",
+  "phone": "(281) 558-5702",
+  "lat": 29.78409532735,
+  "lon": -95.588667410539
+ },
+ {
+  "name": "Davita Houston Kidney Center Southwest",
+  "address": "9980 West Sam Houston Pkwy South",
+  "city": "Houston",
+  "zip": "77099",
+  "phone": "(281) 530-1905",
+  "lat": 29.671680134525,
+  "lon": -95.560864810895
+ },
+ {
+  "name": "Davita Spring Dialysis",
+  "address": "607 Timberdale Lane, Suite 100",
+  "city": "Houston",
+  "zip": "77090",
+  "phone": "(281) 880-7066",
+  "lat": 30.020381700762,
+  "lon": -95.439562011051
+ },
+ {
+  "name": "Davita Katy Cinco Ranch Dialysis",
+  "address": "1265 Rock Canyon Dr",
+  "city": "Katy",
+  "zip": "77450",
+  "phone": "(281) 392-1616",
+  "lat": 29.764520907803,
+  "lon": -95.754897068576
+ },
+ {
+  "name": "Usrc Webster Dialysis",
+  "address": "1914 Caroline Street",
+  "city": "Houston",
+  "zip": "77002",
+  "phone": "(713) 951-9328",
+  "lat": 29.748559095828,
+  "lon": -95.367809491844
+ },
+ {
+  "name": "Fmc Dialysis Services Of Deer Park",
+  "address": "4625 Center St",
+  "city": "Deer Park",
+  "zip": "77536",
+  "phone": "(281) 542-6856",
+  "lat": 29.667361379876,
+  "lon": -95.122943911598
+ },
+ {
+  "name": "Usrc Houston Home Therapies",
+  "address": "8515 Fannin Street",
+  "city": "Houston",
+  "zip": "77054",
+  "phone": "(713) 668-2744",
+  "lat": 29.682017015861,
+  "lon": -95.403132917467
+ },
+ {
+  "name": "Fmc Meyerland",
+  "address": "4740 W Bellfort Ave. Ste A",
+  "city": "Houston",
+  "zip": "77035",
+  "phone": "(832) 742-3557",
+  "lat": 29.672199558121,
+  "lon": -95.457908263032
+ },
+ {
+  "name": "Beechnut Dialysis",
+  "address": "8325 Beechnut",
+  "city": "Houston",
+  "zip": "77036",
+  "phone": "(713) 772-5228",
+  "lat": 29.692514764664,
+  "lon": -95.530502161116
+ },
+ {
+  "name": "Davita Pdi-South Houston",
+  "address": "5989 South Loop East",
+  "city": "Houston",
+  "zip": "77033",
+  "phone": "(713) 641-6130",
+  "lat": 29.691152942475,
+  "lon": -95.328704581349
+ },
+ {
+  "name": "Harris Health Dialysis Center At Quentin Mease Health Center",
+  "address": "3601 N Macgregor Way Ste 1306",
+  "city": "Houston",
+  "zip": "77004",
+  "phone": "(713) 566-3900",
+  "lat": 29.710647300505,
+  "lon": -95.359570791193
+ },
+ {
+  "name": "Davita Jacinto Dialysis Center",
+  "address": "11515 Market Street Rd",
+  "city": "Houston",
+  "zip": "77029",
+  "phone": "(713) 453-0505",
+  "lat": 29.767789667999,
+  "lon": -95.231553403356
+ },
+ {
+  "name": "Crosby Dialysis Facility",
+  "address": "6107 Fm 2100",
+  "city": "Crosby",
+  "zip": "77532",
+  "phone": "(281) 328-8071",
+  "lat": 29.914742304997,
+  "lon": -95.069699213437
+ },
+ {
+  "name": "Gracias Dialysis",
+  "address": "12430 State Highway 249 Ste H",
+  "city": "Houston",
+  "zip": "77086",
+  "phone": "(281) 999-0348",
+  "lat": 29.910313976188,
+  "lon": -95.478304074909
+ },
+ {
+  "name": "Davita Willowbrook Dialysis",
+  "address": "12120 Jones Road, Suite G",
+  "city": "Houston",
+  "zip": "77070",
+  "phone": "(281) 890-7288",
+  "lat": 29.950754421595,
+  "lon": -95.584766076549
+ },
+ {
+  "name": "Fkc Houston Ella Dialysis Center",
+  "address": "1900 North Loop W Ste 200",
+  "city": "Houston",
+  "zip": "77018",
+  "phone": "(713) 773-1717",
+  "lat": 29.812817029917,
+  "lon": -95.432722446385
+ },
+ {
+  "name": "Davita Deerbrook Dialysis",
+  "address": "9660 Fm 1960 Bypass Rd W",
+  "city": "Humble",
+  "zip": "77338",
+  "phone": "(281) 312-6362",
+  "lat": 30.004834235662,
+  "lon": -95.289238935046
+ },
+ {
+  "name": "Fresenius Medical Care Museum District",
+  "address": "4407 Yoakum Blvd",
+  "city": "Houston",
+  "zip": "77006",
+  "phone": "(713) 527-8436",
+  "lat": 29.733577566691,
+  "lon": -95.392428541988
+ },
+ {
+  "name": "Fmc Sunnyside",
+  "address": "8340 Coffee",
+  "city": "Houston",
+  "zip": "77033",
+  "phone": "(713) 731-7027",
+  "lat": 29.669275060914,
+  "lon": -95.353647471407
+ },
+ {
+  "name": "Fresenius Medical Care Mission Bend",
+  "address": "6886 Highway 6 South",
+  "city": "Houston",
+  "zip": "77083",
+  "phone": "(281) 568-0440",
+  "lat": 29.700778467092,
+  "lon": -95.64393980745
+ },
+ {
+  "name": "Davita Home At The Museum Pd",
+  "address": "7505 S Main St",
+  "city": "Houston",
+  "zip": "77030",
+  "phone": "(713) 796-9616",
+  "lat": 29.699680514661,
+  "lon": -95.410161547348
+ },
+ {
+  "name": "Fresenius Kidney Care Hillcroft Dialysis Center",
+  "address": "6015 Hillcroft, Suite 3000",
+  "city": "Houston",
+  "zip": "77081",
+  "phone": "(713) 772-0992",
+  "lat": 29.716259525272,
+  "lon": -95.498560125539
+ },
+ {
+  "name": "Elik Dialysis Home Therapy",
+  "address": "1445 North Loop West",
+  "city": "Houston",
+  "zip": "77008",
+  "phone": "(713) 861-7500",
+  "lat": 29.814438970494,
+  "lon": -95.380392092751
+ },
+ {
+  "name": "Fmc Moody Park Dialysis",
+  "address": "2920 Fulton Street",
+  "city": "Houston",
+  "zip": "77009",
+  "phone": "(713) 222-2513",
+  "lat": 29.788227597236,
+  "lon": -95.360338698297
+ },
+ {
+  "name": "Baytown Dialysis",
+  "address": "4665 Garth Rd, Suite 900",
+  "city": "Baytown",
+  "zip": "77521",
+  "phone": "(281) 422-0820",
+  "lat": 29.775361228091,
+  "lon": -94.977737254627
+ },
+ {
+  "name": "Fkc Gessner",
+  "address": "8700 S Gessner",
+  "city": "Houston",
+  "zip": "77074",
+  "phone": "(713) 988-1137",
+  "lat": 29.687115367609,
+  "lon": -95.529441162756
+ },
+ {
+  "name": "Davita Romano Woods Dialysis",
+  "address": "16910 Mathis Church Road",
+  "city": "Houston",
+  "zip": "77090",
+  "phone": "(281) 893-6300",
+  "lat": 30.010364803675,
+  "lon": -95.454317720529
+ },
+ {
+  "name": "Davita Binz Home Training",
+  "address": "1213 Hermann Drive",
+  "city": "Houston",
+  "zip": "77004",
+  "phone": "(713) 529-5155",
+  "lat": 29.723061662987,
+  "lon": -95.389070211093
+ },
+ {
+  "name": "Davita Sagemeadow Dialysis",
+  "address": "10923 Scarsdale Blvd",
+  "city": "Houston",
+  "zip": "77089",
+  "phone": "(281) 922-6130",
+  "lat": 29.585899519419,
+  "lon": -95.212431159142
+ },
+ {
+  "name": "Davita Tc Jester Dialysis",
+  "address": "1800 West 26Th Street",
+  "city": "Houston",
+  "zip": "77008",
+  "phone": "(713) 863-0463",
+  "lat": 29.809642338176,
+  "lon": -95.43052510332
+ },
+ {
+  "name": "Davita Champions Dialysis",
+  "address": "4427 Fm 1960 Rd W",
+  "city": "Houston",
+  "zip": "77068",
+  "phone": "(281) 444-8439",
+  "lat": 29.99142305954,
+  "lon": -95.491774498838
+ },
+ {
+  "name": "Davita West Oaks Dialysis",
+  "address": "14800 Westheimer Road",
+  "city": "Houston",
+  "zip": "77082",
+  "phone": "(281) 752-5469",
+  "lat": 29.735644920243,
+  "lon": -95.647064516872
+ },
+ {
+  "name": "Davita West Point Dialysis",
+  "address": "12051 Westpark Drive",
+  "city": "Houston",
+  "zip": "77082",
+  "phone": "(281) 920-4892",
+  "lat": 29.724451926886,
+  "lon": -95.591307987984
+ },
+ {
+  "name": "Humble Dialysis, Lp",
+  "address": "19502 Mckay Dr.",
+  "city": "Humble",
+  "zip": "77338",
+  "phone": "(281) 540-4313",
+  "lat": 29.999474096769,
+  "lon": -95.275490484483
+ },
+ {
+  "name": "Fresenius Medical Care North Shepherd Llc",
+  "address": "7112 Stuebner Airline Drive",
+  "city": "Houston",
+  "zip": "77091",
+  "phone": "(713) 490-7382",
+  "lat": 29.864408936871,
+  "lon": -95.409514028663
+ },
+ {
+  "name": "Fkc Clutch City",
+  "address": "5910 Scott Street",
+  "city": "Houston",
+  "zip": "77021",
+  "phone": "(713) 748-0554",
+  "lat": 29.704611524645,
+  "lon": -95.358602580989
+ },
+ {
+  "name": "Davita Jensen Dialysis",
+  "address": "9716 Jensen Drive",
+  "city": "Houston",
+  "zip": "77093",
+  "phone": "(713) 692-4600",
+  "lat": 29.851574627867,
+  "lon": -95.341006106389
+ },
+ {
+  "name": "Davita Houston Galleria Dialysis",
+  "address": "5923 Westheimer Rd",
+  "city": "Houston",
+  "zip": "77057",
+  "phone": "(713) 977-1278",
+  "lat": 29.737662348354,
+  "lon": -95.485863790278
+ },
+ {
+  "name": "Davita Horizon Dialysis",
+  "address": "2222 Greenhouse Rd",
+  "city": "Houston",
+  "zip": "77084",
+  "phone": "(281) 829-5941",
+  "lat": 29.791770744523,
+  "lon": -95.705885686828
+ },
+ {
+  "name": "Davita Crosstimbers Dialysis",
+  "address": "4400 North Freeway",
+  "city": "Houston",
+  "zip": "77022",
+  "phone": "(713) 695-4413",
+  "lat": 29.828781217601,
+  "lon": -95.380664535167
+ },
+ {
+  "name": "Blalock Dialysis Center, Inc",
+  "address": "1170 Blalock Road",
+  "city": "Houston",
+  "zip": "77055",
+  "phone": "(713) 463-6611",
+  "lat": 29.78808627293,
+  "lon": -95.521710038032
+ },
+ {
+  "name": "Fresenius Medical Care Texas Medical Center Home",
+  "address": "1333 Old Spanish Trail",
+  "city": "Houston",
+  "zip": "77054",
+  "phone": "(713) 791-9690",
+  "lat": 29.693010207687,
+  "lon": -95.412554905144
+ },
+ {
+  "name": "Davita Ace Dialysis",
+  "address": "14512 Lee Road",
+  "city": "Humble",
+  "zip": "77396",
+  "phone": "(281) 441-5016",
+  "lat": 29.93035456492,
+  "lon": -95.302980362216
+ },
+ {
+  "name": "Fresenius Medical Care Baytown North",
+  "address": "4816 East Chase Street",
+  "city": "Baytown",
+  "zip": "77521",
+  "phone": "(281) 421-4108",
+  "lat": 29.803762343589,
+  "lon": -94.985150074682
+ },
+ {
+  "name": "Davita Green Oak Dialysis",
+  "address": "1426 Kingwood Drive",
+  "city": "Kingwood",
+  "zip": "77339",
+  "phone": "(281) 312-1301",
+  "lat": 30.049358487038,
+  "lon": -95.234354877453
+ },
+ {
+  "name": "Davita Pine Park Dialysis",
+  "address": "3333 Bayshore Blvd",
+  "city": "Pasadena",
+  "zip": "77504",
+  "phone": "(713) 943-1463",
+  "lat": 29.662829661711,
+  "lon": -95.183692804328
+ },
+ {
+  "name": "Davita Cloverleaf Dialysis",
+  "address": "13525 East Freeway",
+  "city": "Houston",
+  "zip": "77015",
+  "phone": "(713) 450-0874",
+  "lat": 29.771041609933,
+  "lon": -95.184775698558
+ },
+ {
+  "name": "Fresenius Medical Care Katy",
+  "address": "21755 Provincial Blvd",
+  "city": "Katy",
+  "zip": "77450",
+  "phone": "(281) 492-3401",
+  "lat": 29.779586172659,
+  "lon": -95.748482646501
+ },
+ {
+  "name": "Davita Denver Harbor Dialysis",
+  "address": "7065 East Fwy",
+  "city": "Houston",
+  "zip": "77020",
+  "phone": "(713) 670-3173",
+  "lat": 29.775365885386,
+  "lon": -95.298999307411
+ },
+ {
+  "name": "Davita Cypress Fairfield Dialysis",
+  "address": "15103 Mason Rd",
+  "city": "Cypress",
+  "zip": "77433",
+  "phone": "(281) 758-1380",
+  "lat": 29.992794525085,
+  "lon": -95.738974368479
+ },
+ {
+  "name": "Davita Vintage Dialysis",
+  "address": "20025 Chasewook Park Drive",
+  "city": "Houston",
+  "zip": "77070",
+  "phone": "(281) 251-0966",
+  "lat": 29.993178765865,
+  "lon": -95.570216972407
+ },
+ {
+  "name": "Davita Springwoods Dialysis",
+  "address": "2950 Fm 2920 Rd",
+  "city": "Spring",
+  "zip": "77388",
+  "phone": "(281) 907-6269",
+  "lat": 30.070746591691,
+  "lon": -95.460409358603
+ },
+ {
+  "name": "Davita Heights Dialysis",
+  "address": "739 E 20Th Street",
+  "city": "Houston",
+  "zip": "77008",
+  "phone": "(713) 802-0542",
+  "lat": 29.804175421277,
+  "lon": -95.388775794459
+ },
+ {
+  "name": "Usrc Stadium Home Dialysis",
+  "address": "2000 Crawford St, Ste 777",
+  "city": "Houston",
+  "zip": "77002",
+  "phone": "(713) 904-1756",
+  "lat": 29.746094333179,
+  "lon": -95.365968767927
+ },
+ {
+  "name": "Kidney Care Center Of Houston",
+  "address": "4803 Bissonnet Street",
+  "city": "Bellaire",
+  "zip": "77401",
+  "phone": "(832) 834-4080",
+  "lat": 29.710325076357,
+  "lon": -95.462491602973
+ },
+ {
+  "name": "Usrc West University Dialysis",
+  "address": "9219 Stella Link",
+  "city": "Houston",
+  "zip": "77025",
+  "phone": "(713) 349-0724",
+  "lat": 29.682932938605,
+  "lon": -95.439895853461
+ },
+ {
+  "name": "Davita Avian Dialysis",
+  "address": "8486 Bellaire Blvd.",
+  "city": "Houston",
+  "zip": "77036",
+  "phone": "(713) 774-0253",
+  "lat": 29.705099254753,
+  "lon": -95.533373248851
+ },
+ {
+  "name": "Fmc North East Houston",
+  "address": "4810 E Sam Houston Pkwy N",
+  "city": "Houston",
+  "zip": "77015",
+  "phone": "(281) 862-9106",
+  "lat": 29.793791204772,
+  "lon": -95.161946649225
+ },
+ {
+  "name": "Fresenius Medical Care Kingwood",
+  "address": "9767 Fm 1960 Bypass Rd W",
+  "city": "Humble",
+  "zip": "77338",
+  "phone": "(281) 548-1250",
+  "lat": 30.005100856876,
+  "lon": -95.283201462579
+ },
+ {
+  "name": "Davita Dairy Ashford Dialysis",
+  "address": "12606 West Park Drive",
+  "city": "Houston",
+  "zip": "77082",
+  "phone": "(281) 679-1848",
+  "lat": 29.723871427547,
+  "lon": -95.603578434989
+ },
+ {
+  "name": "Davita Inwood Dialysis",
+  "address": "6626 Antoine Dr",
+  "city": "Houston",
+  "zip": "77091",
+  "phone": "(713) 681-0481",
+  "lat": 29.861303803007,
+  "lon": -95.473348675631
+ },
+ {
+  "name": "Usrc Space City Dialysis",
+  "address": "3402 Burke Road",
+  "city": "Pasadena",
+  "zip": "77504",
+  "phone": "(713) 425-0428",
+  "lat": 29.660067208586,
+  "lon": -95.186592360677
+ },
+ {
+  "name": "Usrc Premier",
+  "address": "8181 N Stadium Drive",
+  "city": "Houston",
+  "zip": "77054",
+  "phone": "(713) 425-1969",
+  "lat": 29.68927584986,
+  "lon": -95.407681551654
+ },
+ {
+  "name": "Davita City Center Dialysis",
+  "address": "10405 Katy Fwy",
+  "city": "Houston",
+  "zip": "77024",
+  "phone": "(713) 647-0641",
+  "lat": 29.783842574348,
+  "lon": -95.553933897576
+ },
+ {
+  "name": "Davita Mason Dialysis",
+  "address": "2922 N Mason Rd.",
+  "city": "Katy",
+  "zip": "77449",
+  "phone": "(281) 579-9057",
+  "lat": 29.818430048166,
+  "lon": -95.752208663651
+ },
+ {
+  "name": "Fkc Pasadena-Crenshaw",
+  "address": "5040 Crenshaw Road",
+  "city": "Pasadena",
+  "zip": "77505",
+  "phone": "(832) 476-8260",
+  "lat": 29.640493655111,
+  "lon": -95.166447915235
+ },
+ {
+  "name": "Fresenius Medical Care Beamer",
+  "address": "12727 Beamer Road",
+  "city": "Houston",
+  "zip": "77089",
+  "phone": "(281) 922-9930",
+  "lat": 29.584021648347,
+  "lon": -95.212145966317
+ },
+ {
+  "name": "Fkc Northside Dialysis",
+  "address": "235 Fm 1960 Rd W Ste 235C",
+  "city": "Houston",
+  "zip": "77090",
+  "phone": "(281) 583-4698",
+  "lat": 30.019944332282,
+  "lon": -95.432892775757
+ },
+ {
+  "name": "Davita Atascocita Dialysis",
+  "address": "5414 Fm 1960 Rd E",
+  "city": "Humble",
+  "zip": "77346",
+  "phone": "(832) 445-0020",
+  "lat": 29.998851701225,
+  "lon": -95.197679225624
+ },
+ {
+  "name": "Davita Barker Cypress Dialysis",
+  "address": "18003 Longenbaugh Dr",
+  "city": "Cypress",
+  "zip": "77433",
+  "phone": "(281) 856-6198",
+  "lat": 29.895611699587,
+  "lon": -95.68929735507
+ },
+ {
+  "name": "Fkc Cypress Fairbanks",
+  "address": "10505 Jones Rd",
+  "city": "Houston",
+  "zip": "77065",
+  "phone": "(281) 894-9687",
+  "lat": 29.924408252193,
+  "lon": -95.585018019795
+ },
+ {
+  "name": "Fmc Strawberry Park",
+  "address": "1210 Southmore Ave",
+  "city": "Pasadena",
+  "zip": "77502",
+  "phone": "(713) 475-6617",
+  "lat": 29.690827251777,
+  "lon": -95.197323458726
+ },
+ {
+  "name": "Fmc Texas Avenue",
+  "address": "400 W Medical Center Blvd Ste 125",
+  "city": "Webster",
+  "zip": "77598",
+  "phone": "(281) 332-0046",
+  "lat": 29.544940242524,
+  "lon": -95.121382403215
+ },
+ {
+  "name": "Fkc Baytown Home",
+  "address": "1671 Rollingbrook Dr",
+  "city": "Baytown",
+  "zip": "77521",
+  "phone": "(346) 216-4912",
+  "lat": 29.760826339317,
+  "lon": -94.979855517687
+ },
+ {
+  "name": "Fresenius Kidney Care Tomball",
+  "address": "13730 Alice Rd Ste D",
+  "city": "Tomball",
+  "zip": "77377",
+  "phone": "(832) 639-0170",
+  "lat": 30.077100654562,
+  "lon": -95.629426323784
+ },
+ {
+  "name": "Davita Post Oak Dialysis",
+  "address": "4751 W Fuqua St",
+  "city": "Houston",
+  "zip": "77045",
+  "phone": "(713) 413-9075",
+  "lat": 29.613208893643,
+  "lon": -95.452088852634
+ },
+ {
+  "name": "Davita Fallbrook Dialysis",
+  "address": "11321 Fallbrook Dr",
+  "city": "Houston",
+  "zip": "77065",
+  "phone": "(281) 890-5468",
+  "lat": 29.925697083639,
+  "lon": -95.589902554897
+ },
+ {
+  "name": "Luxury Dialysis",
+  "address": "600 N. Kobayashi Rd.",
+  "city": "Webster",
+  "zip": "77598",
+  "phone": "(281) 525-6427",
+  "lat": 29.534177333326,
+  "lon": -95.130883958334
+ },
+ {
+  "name": "Fkc Market Street",
+  "address": "12098 East Fwy",
+  "city": "Houston",
+  "zip": "77029",
+  "phone": "(713) 815-6867",
+  "lat": 29.77097831063,
+  "lon": -95.225122384577
+ },
+ {
+  "name": "Fkc Fairfield",
+  "address": "20435 Cypresswood Dr",
+  "city": "Cypress",
+  "zip": "77433",
+  "phone": "(346) 254-6687",
+  "lat": 29.991815435645,
+  "lon": -95.737502852664
+ },
+ {
+  "name": "Davita Garden Oaks Dialysis",
+  "address": "2001 W 34Th St",
+  "city": "Houston",
+  "zip": "77018",
+  "phone": "(713) 366-4567",
+  "lat": 29.817196192424,
+  "lon": -95.43474971824
+ },
+ {
+  "name": "Aqua Dialysis Clear Lake",
+  "address": "1050 Gemini Street",
+  "city": "Houston",
+  "zip": "77058",
+  "phone": "(346) 800-1300",
+  "lat": 29.553954718209,
+  "lon": -95.115104764921
+ },
+ {
+  "name": "Fresenius Medical Care Little York",
+  "address": "2711 Little York Ste 201",
+  "city": "Houston",
+  "zip": "77093",
+  "phone": "(832) 831-6066",
+  "lat": 29.87110399753,
+  "lon": -95.343953617203
+ },
+ {
+  "name": "Fkc Atascocita",
+  "address": "5208 Atascocita Rd",
+  "city": "Humble",
+  "zip": "77346",
+  "phone": "(281) 697-5440",
+  "lat": 29.987161606371,
+  "lon": -95.196322489347
+ },
+ {
+  "name": "Usrc Sharpstown",
+  "address": "6888 Southwest Freeway",
+  "city": "Houston",
+  "zip": "77074",
+  "phone": "(713) 481-8929",
+  "lat": 29.71134435154,
+  "lon": -95.505855033991
+ },
+ {
+  "name": "South Belt Dialysis",
+  "address": "3327 S. Sam Houston Pkwy East",
+  "city": "Houston",
+  "zip": "77047",
+  "phone": "(281) 506-8470",
+  "lat": 29.936991094148,
+  "lon": -95.470704303424
+ },
+ {
+  "name": "Fresenius Kidney Care Greater Heights",
+  "address": "1411 Bonner St",
+  "city": "Houston",
+  "zip": "77007",
+  "phone": "(832) 839-4200",
+  "lat": 29.773618995365,
+  "lon": -95.402316951856
+ },
+ {
+  "name": "Fkc Vintage Park",
+  "address": "102 Vintage Park Blvd Ste A L Bldg",
+  "city": "Houston",
+  "zip": "77070",
+  "phone": "(832) 604-8700",
+  "lat": 29.993862128011,
+  "lon": -95.574301181194
+ },
+ {
+  "name": "Fresenius Medical Care Champions",
+  "address": "3203 Fm 1960 W Road",
+  "city": "Houston",
+  "zip": "77068",
+  "phone": "(346) 277-6400",
+  "lat": 29.998101652365,
+  "lon": -95.479799917952
+ },
+ {
+  "name": "Usrc Fall Creek",
+  "address": "9330 N Sam Houston Parkway E, Ste 100",
+  "city": "Humble",
+  "zip": "77396",
+  "phone": "(281) 201-1555",
+  "lat": 29.934085540324,
+  "lon": -95.252936065052
+ },
+ {
+  "name": "Fresenius Kidney Care Northshore Houston",
+  "address": "12734 Woodforest Blvd.",
+  "city": "Houston",
+  "zip": "77015",
+  "phone": "(713) 848-8250",
+  "lat": 29.791651773523,
+  "lon": -95.199877730999
+ }
+]

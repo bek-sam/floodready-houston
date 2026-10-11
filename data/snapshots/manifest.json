@@ -1,0 +1,30 @@
+{
+ "snapshots": {
+  "shelters": {
+   "date": "2026-10-10",
+   "count": 74,
+   "source": "https://services.arcgis.com/NummVBqZSIJKUeVR/arcgis/rest/services/Evacuation_Shelters/FeatureServer/0"
+  },
+  "dialysis": {
+   "date": "2026-10-10",
+   "count": 117,
+   "source": "https://data.cms.gov/provider-data/dataset/23ew-n7w9"
+  },
+  "crossings": {
+   "date": "2026-10-11",
+   "count": 128,
+   "source": "https://www.click2houston.com/ + USGS STN + OpenStreetMap (see fetch_crossings_extra.py)"
+  },
+  "harvey": {
+   "date": "2026-10-11",
+   "count": 350000,
+   "source": "https://geogimsms.houstontx.gov/arcgis/rest/services/TDO/StormDrainage_Study/MapServer/4"
+  },
+  "knowledge": {
+   "date": "2026-10-10",
+   "count": 15,
+   "source": null
+  }
+ },
+ "generated_at": "2026-10-11T05:50:47+00:00"
+}

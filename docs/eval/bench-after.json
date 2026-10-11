@@ -1,0 +1,174 @@
+{
+ "summary": {
+  "label": "after",
+  "n": 10,
+  "median_ms": 227.5,
+  "llm_calls": 5,
+  "embed_calls": 0,
+  "prompt_tokens": 2667,
+  "completion_tokens": 306,
+  "est_cost_usd": 0.000389,
+  "cost_is_estimate": true
+ },
+ "rows": [
+  {
+   "q": "How long is the waiting period for flood insurance?",
+   "lang": "en",
+   "ms": 233,
+   "route": "det_countdown",
+   "cache": "none",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "template",
+   "answer": "Flood insurance from the NFIP usually has a 30-day waiting period [1]. If you buy a policy today (2026-10-11), coverage generally starts 2026-11-10; until then you have no flood coverage. That is before hurricane season ends (2026-11-30). Buy before a storm is forecast.\nNot official guidance. In dan"
+  },
+  {
+   "q": "Which shelters are open right now?",
+   "lang": "en",
+   "ms": 222,
+   "route": "det_shelter",
+   "cache": "none",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "template",
+   "answer": "I don't have live shelter status. During a storm call 311 or 211, or check houstonoem.org for open shelters. In danger, call 911. Sites used during Harvey near you included Holy Ghost (Independent) and Stella Link Library (2017, historical) [1].\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "Are there any flood alerts for my area right now?",
+   "lang": "en",
+   "ms": 5,
+   "route": "det_alerts",
+   "cache": "none",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "template",
+   "answer": "There are no active flood-related National Weather Service alerts for your location right now [1].\nConditions change fast: keep phone emergency alerts on.\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "How many flood insurance claims were there in ZIP 77096?",
+   "lang": "en",
+   "ms": 5,
+   "route": "det_zip",
+   "cache": "none",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "template",
+   "answer": "ZIP 77096 has 6482 NFIP flood insurance claims on record, 2610 of them since 2017 [1]. 4537 flood policies are in force there. The most claims were in 2017 (2550).\nClaims show past flooding in the ZIP, not your exact street; few claims does not mean safe.\nNot official guidance. In danger, call 911."
+  },
+  {
+   "q": "How do I avoid contractor scams after a flood?",
+   "lang": "en",
+   "ms": 1151,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 388,
+   "completion_tokens": 82,
+   "est_cost_usd": 7.16e-05,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "To avoid contractor scams after a flood, do not pay a contractor in full upfront or in cash, and always get the offer in writing [1]. Be aware that some contractors may take upfront payment and then fail to do the work [1]. You can report suspected fraud or price gouging to (800) 621-0508 [1].\nNot o"
+  },
+  {
+   "q": "¿Se ha inundado mi dirección antes?",
+   "lang": "es",
+   "ms": 761,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 1057,
+   "completion_tokens": 39,
+   "est_cost_usd": 0.0001213,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "Sí, esta ubicación se inundó durante el huracán Harvey, el cual inundó 154,170 hogares en el condado de Harris [1].\nEsto no es una guía oficial. En una emergencia, llame al 911."
+  },
+  {
+   "q": "I'm a renter and my landlord never told me the apartment flooded before. What are my rights, and should I buy flood insurance before hurricane season?",
+   "lang": "en",
+   "ms": 2445,
+   "route": "llm_strong",
+   "cache": "none",
+   "llm_calls": 2,
+   "embed_calls": 0,
+   "prompt_tokens": 652,
+   "completion_tokens": 154,
+   "est_cost_usd": 0.0001268,
+   "models": [
+    "gemini-2.5-flash",
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "Neither the city nor the county requires flood-risk disclosure to renters, and the only warning is a plat note [1]. You should ask your landlord about past flooding in writing and consider getting renters insurance with a separate flood policy [1]. \n\nRegarding flood insurance, there is a 30-day wait"
+  },
+  {
+   "q": "Bảo hiểm người thuê nhà có chi trả thiệt hại do lũ không?",
+   "lang": "vi",
+   "ms": 859,
+   "route": "llm_single",
+   "cache": "none",
+   "llm_calls": 1,
+   "embed_calls": 0,
+   "prompt_tokens": 570,
+   "completion_tokens": 31,
+   "est_cost_usd": 6.94e-05,
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "by": "gemini",
+   "answer": "Người thuê nhà nên xem xét mua bảo hiểm người thuê nhà kết hợp với một chính sách bảo hiểm lũ lụt riêng [1].\nĐây không phải hướng dẫn chính thức. Trong trường hợp khẩn cấp, hãy gọi 911."
+  },
+  {
+   "q": "What is the waiting period for flood insurance?",
+   "lang": "en",
+   "ms": 7,
+   "route": "det_countdown",
+   "cache": "none",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "template",
+   "answer": "Flood insurance from the NFIP usually has a 30-day waiting period [1]. If you buy a policy today (2026-10-11), coverage generally starts 2026-11-10; until then you have no flood coverage. That is before hurricane season ends (2026-11-30). Buy before a storm is forecast.\nNot official guidance. In dan"
+  },
+  {
+   "q": "How do I avoid contractor scams after a flood?",
+   "lang": "en",
+   "ms": 6,
+   "route": "cache",
+   "cache": "exact",
+   "llm_calls": 0,
+   "embed_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "est_cost_usd": 0.0,
+   "models": [],
+   "by": "gemini",
+   "answer": "To avoid contractor scams after a flood, do not pay a contractor in full upfront or in cash, and always get the offer in writing [1]. Be aware that some contractors may take upfront payment and then fail to do the work [1]. You can report suspected fraud or price gouging to (800) 621-0508 [1].\nNot o"
+  }
+ ]
+}

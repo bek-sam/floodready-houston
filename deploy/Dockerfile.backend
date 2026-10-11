@@ -1,0 +1,23 @@
+# Build context: repo root (see docker-compose.yml). Layout mirrors the repo so
+# the backend's relative paths (ROOT/data, ROOT/research-brief.md) keep working.
+FROM python:3.13-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PYTHONUNBUFFERED=1 \
+    PATH="/app/backend/.venv/bin:$PATH"
+WORKDIR /app/backend
+
+# Dependencies first (cached layer)
+COPY backend/pyproject.toml backend/uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+# App + data + RAG sources (app/ai/rag.py reads ROOT/data/knowledge, research-brief.md, flood-problems.md)
+COPY backend/app ./app
+COPY data /app/data
+COPY research-brief.md flood-problems.md /app/
+
+# Persistent state lives in the /state volume; symlink where the code expects it:
+# SQLite db, .vapid.json (push keys), .cache (geocode/route/voice/embedding caches).
+RUN mkdir -p /state && chmod 777 /state
+VOLUME /state
+EXPOSE 8000
+CMD ["sh", "-c", "mkdir -p /state/cache && ln -sfn /state/cache .cache && ln -sf /state/floodready.db floodready.db && ln -sf /state/vapid.json .vapid.json && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*"]

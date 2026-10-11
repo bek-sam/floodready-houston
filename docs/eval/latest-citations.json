@@ -1,0 +1,467 @@
+{
+ "run_at": "2026-10-11 01:00:05",
+ "base": "http://localhost:8000",
+ "quick": false,
+ "total": 30,
+ "passed": 29,
+ "pass_rate": 0.967,
+ "results": [
+  {
+   "id": "cite-en-1",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "Are there any flood alerts for my area right now?",
+   "answer": "There are no active flood-related National Weather Service alerts for your location right now (as of 12:59 AM CDT) [1].\nConditions change fast: keep phone emergency alerts on.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 237,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-1",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "Are there any flood alerts for my area right now?",
+   "answer": "There are no active flood-related National Weather Service alerts for your location right now (as of 12:59 AM CDT) [1].\nConditions change fast: keep phone emergency alerts on.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 228,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-10",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "How many flood insurance claims were there in ZIP 77096?",
+   "answer": "ZIP 77096 has 6482 NFIP flood insurance claims on record, 2610 of them since 2017 [1]. 4537 flood policies are in force there. The most claims were in 2017 (2550).\nClaims show past flooding in the ZIP, not your exact street; few claims does not mean safe.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.fema.gov/openfema-data-page/nfip-redacted-claims-v3"
+   ],
+   "generated_by": "template",
+   "ms": 7,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-10",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "How many flood insurance claims were there in ZIP 77096?",
+   "answer": "ZIP 77096 has 6482 NFIP flood insurance claims on record, 2610 of them since 2017 [1]. 4537 flood policies are in force there. The most claims were in 2017 (2550).\nClaims show past flooding in the ZIP, not your exact street; few claims does not mean safe.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.fema.gov/openfema-data-page/nfip-redacted-claims-v3"
+   ],
+   "generated_by": "template",
+   "ms": 6,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-11",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "How do I avoid contractor scams after a flood?",
+   "answer": "To avoid contractor scams after a flood, do not pay a contractor in full upfront or in cash, get the offer in writing, and report suspected fraud or price gouging to (800) 621-0508 [1]. The Texas Attorney General warns that some contractors take upfront payment after a disaster and then fail to do the work [1].\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.texasattorneygeneral.gov/news/releases/attorney-general-paxton-warns-disaster-scams-following-texas-floods"
+   ],
+   "generated_by": "gemini",
+   "ms": 8,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-11",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "How do I avoid contractor scams after a flood?",
+   "answer": "To avoid scams, do not pay a contractor in full upfront or in cash. Always get the offer in writing before any work begins. Report suspected fraud or gouging to the provided helpline.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.texasattorneygeneral.gov/news/releases/attorney-general-paxton-warns-disaster-scams-following-texas-floods"
+   ],
+   "generated_by": "gemini",
+   "ms": 7,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-12",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "Did my address flood during Hurricane Harvey?",
+   "answer": "Yes, your address flooded during Hurricane Harvey [1].\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://geogimsms.houstontx.gov/arcgis/rest/services/TDO/StormDrainage_Study/MapServer/4"
+   ],
+   "generated_by": "gemini",
+   "ms": 552,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-12",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "Did my address flood during Hurricane Harvey?",
+   "answer": "Yes, your address flooded during Hurricane Harvey. There are no active alerts as of 12:59 AM CDT [5].\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.texastribune.org/2017/09/28/could-houstons-dams-have-failed-during-harvey/",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9198619/",
+    "https://www.floodsmart.gov/get-insured/buy-a-policy",
+    "https://communityimpact.com/news/2018/06/08/hurricane-harvey-damage-report-harris-county",
+    "https://api.weather.gov/alerts/active"
+   ],
+   "generated_by": "gemini",
+   "ms": 810,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-14",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "What FEMA flood zone am I in and what does it mean?",
+   "answer": "You are in FEMA flood zone AE, which is a Special Flood Hazard Area where flood insurance is typically required with a federally backed mortgage. Being in this zone means you are in an area with a high risk of flooding. Not being in a flood zone also does not mean you are safe, as the lines on a FEMA map are often actuarial rather than physical.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://communityimpact.com/news/2018/06/08/hurricane-harvey-damage-report-harris-county",
+    "https://news.rice.edu/news/2026/10-years-after-tax-day-flood-rice-researchers-warn-hidden-risk",
+    "https://harriscountyfws.org/Help",
+    "https://nhess.copernicus.org/articles/18/1073/2018/nhess-18-1073-2018.pdf"
+   ],
+   "generated_by": "gemini",
+   "ms": 753,
+   "failures": [
+    "no citations"
+   ],
+   "pass": false
+  },
+  {
+   "id": "cite-en-14",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "What FEMA flood zone am I in and what does it mean?",
+   "answer": "You are in FEMA flood zone AE, which is a Special Flood Hazard Area. This means flood insurance is typically required with a federally backed mortgage.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://communityimpact.com/news/2018/06/08/hurricane-harvey-damage-report-harris-county",
+    "https://news.rice.edu/news/2026/10-years-after-tax-day-flood-rice-researchers-warn-hidden-risk",
+    "https://harriscountyfws.org/Help",
+    "https://nhess.copernicus.org/articles/18/1073/2018/nhess-18-1073-2018.pdf"
+   ],
+   "generated_by": "gemini",
+   "ms": 612,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-15",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "Is flood insurance worth it if I rent an apartment?",
+   "answer": "Most renters insurance does not cover flood damage [1].\nSome specific numbers were removed because I could not verify them in our sources.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm"
+   ],
+   "generated_by": "gemini",
+   "ms": 881,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-15",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "Is flood insurance worth it if I rent an apartment?",
+   "answer": "Most renters insurance does not cover flood damage. A home outside the floodplain can still flood.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm",
+    "https://projects.propublica.org/graphics/harvey-reservoirs",
+    "https://www.floodsmart.gov/get-insured/buy-a-policy"
+   ],
+   "generated_by": "gemini",
+   "ms": 657,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-2",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "Is there an active flood warning near me at the moment?",
+   "answer": "There are no active flood-related National Weather Service alerts for your location right now (as of 12:59 AM CDT) [1].\nConditions change fast: keep phone emergency alerts on.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 6,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-2",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "Is there an active flood warning near me at the moment?",
+   "answer": "There are no active flood-related National Weather Service alerts for your location right now (as of 12:59 AM CDT) [1].\nConditions change fast: keep phone emergency alerts on.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 7,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-6",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "What is the nearest river gauge to me and what is its status right now?",
+   "answer": "The nearest gauges are Brays Bayou at Houston, which has a stage of 16.83 feet and normal status, and Brays Bayou at Gessner Drive, which has a stage of 38.69 feet and normal status, as of 12:59 AM CDT [5].\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://projects.propublica.org/graphics/harvey-reservoirs",
+    "https://tdem.texas.gov/stear",
+    "https://maapnext.harriscountytx.gov/Understand-Your-Risk",
+    "https://api.weather.gov/alerts/active",
+    "https://api.water.noaa.gov/nwps/v1/"
+   ],
+   "generated_by": "gemini",
+   "ms": 1686,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-6",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "What is the nearest river gauge to me and what is its status right now?",
+   "answer": "The nearest gauges are Brays Bayou at Houston and Brays Bayou at Gessner Drive. Both gauges currently have a normal status as of 12:59 AM CDT [5].\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://projects.propublica.org/graphics/harvey-reservoirs",
+    "https://tdem.texas.gov/stear",
+    "https://maapnext.harriscountytx.gov/Understand-Your-Risk",
+    "https://api.weather.gov/alerts/active",
+    "https://api.water.noaa.gov/nwps/v1/"
+   ],
+   "generated_by": "gemini",
+   "ms": 1686,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-7",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "Is the water level at my closest gauge high right now?",
+   "answer": "No, the water levels at your closest gauges (Brays Bayou at Houston and Brays Bayou at Gessner Drive) are currently normal as of 12:59 AM CDT [get_risk] [5].\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.mprnews.org/story/2024/07/08/npr-hurricane-beryl-texas",
+    "https://disabilityrightstx.org/en/news/hurricane-harvey-claims-rejected-by-fema-drtx-can-help-with-appeal/",
+    "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm",
+    "https://www.weather.gov/documentation/services-web-api",
+    "https://api.water.noaa.gov/nwps/v1/"
+   ],
+   "generated_by": "gemini",
+   "ms": 665,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-7",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "Is the water level at my closest gauge high right now?",
+   "answer": "Your location is in a FEMA Special Flood Hazard Area and Harvey flooded 154,170 Harris County homes.\nThere are no active alerts as of 12:59 AM CDT [5].\nThe nearest gauges show normal status, with Brays Bayou at Houston at 16.83 feet and Brays Bayou at Gessner Drive at 38.69 feet.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.mprnews.org/story/2024/07/08/npr-hurricane-beryl-texas",
+    "https://disabilityrightstx.org/en/news/hurricane-harvey-claims-rejected-by-fema-drtx-can-help-with-appeal/",
+    "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm",
+    "https://www.weather.gov/documentation/services-web-api",
+    "https://api.weather.gov/alerts/active"
+   ],
+   "generated_by": "gemini",
+   "ms": 799,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-9",
+   "lang": "en",
+   "endpoint": "ask",
+   "question": "How long is the waiting period for flood insurance?",
+   "answer": "Flood insurance from the NFIP usually has a 30-day waiting period [1]. If you buy a policy today (2026-10-11), coverage generally starts 2026-11-10; until then you have no flood coverage. That is before hurricane season ends (2026-11-30). Buy before a storm is forecast.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.floodsmart.gov/get-insured/buy-a-policy"
+   ],
+   "generated_by": "template",
+   "ms": 4,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-en-9",
+   "lang": "en",
+   "endpoint": "stream",
+   "question": "How long is the waiting period for flood insurance?",
+   "answer": "Flood insurance from the NFIP usually has a 30-day waiting period [1]. If you buy a policy today (2026-10-11), coverage generally starts 2026-11-10; until then you have no flood coverage. That is before hurricane season ends (2026-11-30). Buy before a storm is forecast.\nNot official guidance. In danger, call 911.",
+   "sources": [
+    "https://www.floodsmart.gov/get-insured/buy-a-policy"
+   ],
+   "generated_by": "template",
+   "ms": 7,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-es-13",
+   "lang": "es",
+   "endpoint": "ask",
+   "question": "¿Cuánto tiempo de espera tiene el seguro contra inundaciones?",
+   "answer": "El seguro de inundación del NFIP normalmente tiene un período de espera de 30 días [1]. Si compra una póliza hoy (2026-10-11), la cobertura generalmente empieza el 2026-11-10; hasta entonces no tiene cobertura. Eso es antes de que termine la temporada de huracanes (2026-11-30). Compre antes de que se pronostique una tormenta.\nEsto no es una guía oficial. En una emergencia, llame al 911.",
+   "sources": [
+    "https://www.floodsmart.gov/get-insured/buy-a-policy"
+   ],
+   "generated_by": "template",
+   "ms": 3,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-es-13",
+   "lang": "es",
+   "endpoint": "stream",
+   "question": "¿Cuánto tiempo de espera tiene el seguro contra inundaciones?",
+   "answer": "El seguro de inundación del NFIP normalmente tiene un período de espera de 30 días [1]. Si compra una póliza hoy (2026-10-11), la cobertura generalmente empieza el 2026-11-10; hasta entonces no tiene cobertura. Eso es antes de que termine la temporada de huracanes (2026-11-30). Compre antes de que se pronostique una tormenta.\nEsto no es una guía oficial. En una emergencia, llame al 911.",
+   "sources": [
+    "https://www.floodsmart.gov/get-insured/buy-a-policy"
+   ],
+   "generated_by": "template",
+   "ms": 4,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-es-3",
+   "lang": "es",
+   "endpoint": "ask",
+   "question": "¿Hay alertas de inundación activas en mi zona ahora mismo?",
+   "answer": "No hay alertas activas del Servicio Meteorológico Nacional relacionadas con inundaciones para su ubicación en este momento (al 12:59 AM CDT) [1].\nLas condiciones cambian rápido: mantenga activas las alertas de emergencia del teléfono.\nEsto no es una guía oficial. En una emergencia, llame al 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 2,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-es-3",
+   "lang": "es",
+   "endpoint": "stream",
+   "question": "¿Hay alertas de inundación activas en mi zona ahora mismo?",
+   "answer": "No hay alertas activas del Servicio Meteorológico Nacional relacionadas con inundaciones para su ubicación en este momento (al 12:59 AM CDT) [1].\nLas condiciones cambian rápido: mantenga activas las alertas de emergencia del teléfono.\nEsto no es una guía oficial. En una emergencia, llame al 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 2,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-es-8",
+   "lang": "es",
+   "endpoint": "ask",
+   "question": "¿Cuál es el estado del medidor de río más cercano ahora?",
+   "answer": "Su ubicación se encuentra cerca de dos medidores en Brays Bayou: el medidor en Brays Bayou at Houston está en estado normal con un nivel de 16.83 pies, y el medidor en Brays Bayou at Gessner Drive está en estado normal con un nivel de 38.69 pies as of 12:59 AM CDT [5].\nEsto no es una guía oficial. En una emergencia, llame al 911.",
+   "sources": [
+    "https://projects.propublica.org/graphics/harvey-reservoirs",
+    "https://www.fox26houston.com/news/assessing-the-flood-damage-as-renters",
+    "https://traffic.houstontranstar.org/api/api_doc.aspx",
+    "https://nhess.copernicus.org/articles/18/1073/2018/nhess-18-1073-2018.pdf",
+    "https://api.water.noaa.gov/nwps/v1/"
+   ],
+   "generated_by": "gemini",
+   "ms": 662,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-es-8",
+   "lang": "es",
+   "endpoint": "stream",
+   "question": "¿Cuál es el estado del medidor de río más cercano ahora?",
+   "answer": "El nivel del Brays Bayou en Houston es normal con 16.83 pies. El medidor en Gessner Drive también está normal con 38.69 pies.\nEsto no es una guía oficial. En una emergencia, llame al 911.",
+   "sources": [
+    "https://projects.propublica.org/graphics/harvey-reservoirs",
+    "https://www.fox26houston.com/news/assessing-the-flood-damage-as-renters",
+    "https://traffic.houstontranstar.org/api/api_doc.aspx",
+    "https://nhess.copernicus.org/articles/18/1073/2018/nhess-18-1073-2018.pdf"
+   ],
+   "generated_by": "gemini",
+   "ms": 737,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-vi-4",
+   "lang": "vi",
+   "endpoint": "ask",
+   "question": "Hiện có cảnh báo lũ nào cho khu vực của tôi không?",
+   "answer": "Hiện không có cảnh báo lũ nào đang hiệu lực của Cơ quan Thời tiết Quốc gia cho vị trí của bạn (tính đến 12:59 AM CDT) [1].\nTình hình thay đổi nhanh: hãy bật cảnh báo khẩn cấp trên điện thoại.\nĐây không phải hướng dẫn chính thức. Trong trường hợp khẩn cấp, hãy gọi 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 7,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-vi-4",
+   "lang": "vi",
+   "endpoint": "stream",
+   "question": "Hiện có cảnh báo lũ nào cho khu vực của tôi không?",
+   "answer": "Hiện không có cảnh báo lũ nào đang hiệu lực của Cơ quan Thời tiết Quốc gia cho vị trí của bạn (tính đến 12:59 AM CDT) [1].\nTình hình thay đổi nhanh: hãy bật cảnh báo khẩn cấp trên điện thoại.\nĐây không phải hướng dẫn chính thức. Trong trường hợp khẩn cấp, hãy gọi 911.",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 8,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-zh-5",
+   "lang": "zh",
+   "endpoint": "ask",
+   "question": "我这个地区现在有洪水警报吗？",
+   "answer": "您所在位置目前没有与洪水相关的美国国家气象局有效警报 (截至 12:59 AM CDT) [1]。\n情况变化很快：请保持手机紧急警报开启。\n这不是官方指南。紧急情况下，请拨打911。",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 5,
+   "failures": [],
+   "pass": true
+  },
+  {
+   "id": "cite-zh-5",
+   "lang": "zh",
+   "endpoint": "stream",
+   "question": "我这个地区现在有洪水警报吗？",
+   "answer": "您所在位置目前没有与洪水相关的美国国家气象局有效警报 (截至 12:59 AM CDT) [1]。\n情况变化很快：请保持手机紧急警报开启。\n这不是官方指南。紧急情况下，请拨打911。",
+   "sources": [
+    "https://www.weather.gov/documentation/services-web-api"
+   ],
+   "generated_by": "template",
+   "ms": 6,
+   "failures": [],
+   "pass": true
+  }
+ ]
+}

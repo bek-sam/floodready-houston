@@ -1,0 +1,38 @@
+# Run from the deploy/ directory: DOMAIN=example.com docker compose up -d --build
+# (deploy.sh does this on the VPS). Expects ../.env and ../frontend/dist.
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.backend
+    env_file: ../.env
+    environment:
+      # backend code resolves ../data relative to its own file; make it explicit
+      DATA_DIR: /app/data
+    volumes:
+      - state:/state
+    restart: unless-stopped
+    expose:
+      - "8000"
+
+  caddy:
+    image: caddy:2
+    depends_on:
+      - backend
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN, e.g. DOMAIN=floodready.tech}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../frontend/dist:/srv/dist:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  state:
+  caddy_data:
+  caddy_config:
