@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Keyboard, MessageCircleQuestion, Mic, Settings2 } from 'lucide-react'
 import { api, ApiError, type Ask } from '../api'
 import { LANGS } from '../i18n'
+import { toast } from '../components/ds/Toast'
 import { useApp } from '../ctx'
 import { speak, stopSpeaking, unlockAudio, createSpeechQueue, preloadFiller, type SpeechQueue } from '../components/speak'
 import { Button, DemoPanel, EmptyState, IconButton, LoadingText, PageHeader, Segmented } from '../components/ds'
@@ -45,8 +46,16 @@ function speakFallback(a: string): string {
 const SpeechRec: SR | undefined = (window as unknown as { SpeechRecognition?: SR; webkitSpeechRecognition?: SR }).SpeechRecognition
   ?? (window as unknown as { webkitSpeechRecognition?: SR }).webkitSpeechRecognition
 
+/** Live can't connect and we're offline: say so and play the recorded (cached) answer if the backend has one. */
+function offlineVoiceFor(msg: string, lang: string) {
+  if (navigator.onLine) return
+  toast({ message: msg })
+  try { const a = new Audio('/api/demo/voice?lang=' + encodeURIComponent(lang)); a.play().catch(() => {}) } catch { /* no audio */ }
+}
+
 export default function AskPage() {
   const { t, lang, place } = useApp()
+  const offlineVoice = () => offlineVoiceFor(t('p14.voice.offline'), lang)
   const { demo } = useDemoMode()
   const [mode, setModeState] = useState<AskMode>(loadMode)
   const [sheet, setSheet] = useState(false)
@@ -295,7 +304,7 @@ export default function AskPage() {
           </> : (
             <div className="w-full pt-4">
               <Suspense fallback={<LoadingText />}>
-                {engine === 'live' ? <LiveTalk lang={lang} lat={place?.lat} lon={place?.lon} onFallback={() => setEngineState('fast')} onType={() => setMode('type')} /> : <ElAgentTalk lang={lang} lat={place?.lat} lon={place?.lon} />}
+                {engine === 'live' ? <LiveTalk lang={lang} lat={place?.lat} lon={place?.lon} onFallback={() => { setEngineState('fast'); offlineVoice() }} onType={() => setMode('type')} /> : <ElAgentTalk lang={lang} lat={place?.lat} lon={place?.lon} />}
               </Suspense>
             </div>
           )}

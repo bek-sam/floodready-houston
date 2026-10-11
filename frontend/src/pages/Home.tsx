@@ -13,6 +13,7 @@ import { FloodHistoryList, PlaceProfile } from '../components/home/PlaceProfile'
 import EvacSurgeBody, { evacShow, useEvac } from '../components/evac/EvacSurgeCard'
 import HwmBody, { hasMarks, useHwm } from '../components/hwm/HwmCard'
 import DigestBanner from '../components/digest/DigestBanner'
+import RainCard from '../components/rain24/RainCard'
 import CoastalChip from '../components/coastal/CoastalChip'
 import RentBuy from '../components/RentBuy'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
@@ -188,6 +189,7 @@ export default function Home() {
           <LiveConditions title={t('live.title')} loc={loc} risk={inputs.risk} alerts={inputs.alerts} outlook={inputs.outlook}
             updatedAt={d.updatedAt} onRetry={d.refresh} />
           <CoastalChip />
+          <div className="mt-4"><RainCard loc={loc} /></div>
         </div>
 
         <section aria-labelledby="det-title" className="space-y-3 md:col-span-7 md:col-start-1 md:row-start-2">

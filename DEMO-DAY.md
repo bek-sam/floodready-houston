@@ -43,6 +43,12 @@ Hot-reload drops live voice sessions. Stop the dev backend and run:
 ## Gemini quota (free tier)
 Quotas are per model and per project. Don't run `eval_ai.py` (live) before judging. Optional backup: create a 2nd key in a NEW project at aistudio.google.com/apikey and add `GEMINI_API_KEYS=<key2>` to `.env`, then restart the backend. `/#status` shows the active Gemini model.
 
+## Wi-Fi fails (offline snapshot mode)
+Recorded responses for every demo step live in `data/demo_snapshot/` (re-record while online: start a no-key backend on :8070 with `GEMINI_API_KEY= ELEVENLABS_API_KEY= uv run uvicorn app.main:app --port 8070`, then `cd backend && uv run python ../scripts/record_demo.py`, then stop :8070).
+If the venue network dies, restart the backend with:
+`cd backend && DEMO_SNAPSHOT=1 uv run uvicorn app.main:app --port 8000`
+Every recorded request is answered from the snapshot (header `X-FloodReady-Snapshot: 1`, meta.freshness "snapshot") and the app shows an "Offline demo data from <time>" banner. Ask uses 6 canned answers (pitch questions, templated from the knowledge cards); voice shows "Voice needs internet" and falls back to browser speech. Without `DEMO_SNAPSHOT=1` the same snapshots are used automatically if a request errors. Tip: put the laptop and phone on your phone hotspot (the app only needs localhost + the phone for push); for the phone, open `http://<laptop-LAN-IP>:5173`.
+
 ## If something breaks
 - Backend down: `cd backend && uv run uvicorn app.main:app --port 8000`
 - Frontend down: `cd frontend && npm run dev`

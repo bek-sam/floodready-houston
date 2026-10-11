@@ -99,6 +99,13 @@ export interface Outlook extends Warned {
   day1: { category: 'None' | 'Marginal' | 'Slight' | 'Moderate' | 'High'; label: string } | null
   source: string; note: string; note_code?: string
 }
+export interface ParkingCheck extends Warned {
+  lat: number; lon: number; address?: string | null; verdict: 'move' | 'no_flags'; headline: string; detail: string
+  reasons: { code: string; text: string }[]; fema_zone: string | null; harvey_flooded: boolean | null; elevation_ft: number | null
+  crossings_within_300m: { name: string; distance_m: number; risk: string }[]; active_flood_alerts: number | null
+  higher_ground: { lat: number; lon: number; elevation_ft: number | null; gain_ft: number | null; distance_m: number | null; maps_url: string } | null
+  limits: string; sources: string[]; meta?: Meta
+}
 export interface DemoRoute { label: string; origin: LatLon; destination: LatLon }
 
 export interface ZipInsurance extends Warned {
@@ -159,6 +166,7 @@ export const api = {
     req<{ places: WatchStatus[] }>('/watch/status?ids=' + encodeURIComponent(ids.join(',')) + (simulate ? '&simulate=storm' : ''), { signal }),
   shelters: (p: LatLon, petFriendly = false, limit = 10) =>
     req<Shelters>('/shelters?' + q(p) + `&pet_friendly=${petFriendly}&limit=${limit}`),
+  parkingCheck: (p: LatLon | { q: string }) => req<ParkingCheck>('/parking/check?' + q(p)),
   outlook: (p: LatLon) => req<Outlook>('/outlook?' + q(p)),
   routeDemo: () => req<DemoRoute[]>('/route-check/demo'),
   vapidKey: () => req<{ key: string }>('/push/vapid-public-key'),

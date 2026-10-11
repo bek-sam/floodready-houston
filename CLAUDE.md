@@ -137,6 +137,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 - GET `/coastal` → `{tide:{station, observed_ft, predicted_ft, anomaly_ft, as_of}, active_storms:[{name, type, advisory_url}], meta}` (NOAA CO-OPS Galveston + NHC CurrentStorms).
 - Frontend: go-bag checklist (printable + wallet card) and storm-season .ics reminders — client-side only.
 
+**Cycle 25 additions:** GET `/rain24?lat&lon` → `{available, windows[], total_inches|null, wettest_window|null, pop_hourly[], max_pop_pct, action{show,text,window_start}, source, source_url, note, meta}`; GET `/parking/check?lat&lon|q` → `{verdict:"move"|"no_flags", headline, detail, reasons[{code,text}], fema_zone, harvey_flooded, elevation_ft, crossings_within_300m[], active_flood_alerts, higher_ground|null, limits, sources, meta}`; DEMO_SNAPSHOT=1 serves data/demo_snapshot responses (header X-FloodReady-Snapshot: 1); frontend #widget (iframe) and #share=… (family plan in URL fragment).
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

@@ -39,6 +39,10 @@
 		header @sw Cache-Control "no-cache"
 		@manifest path /manifest.webmanifest
 		header @manifest Content-Type "application/manifest+json"
+		# Embeddable widget (/widget?lat&lon&lang) may be framed by partner sites;
+		# every other page keeps frame-ancestors 'self'.
+		@widget path /widget /widget/*
+		header @widget Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src * data: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob: data:; worker-src 'self' blob:; media-src 'self' blob: data:; object-src 'none'; base-uri 'self'; frame-ancestors *"
 		# Hashed build assets are immutable
 		@assets path /assets/*
 		header @assets Cache-Control "public, max-age=31536000, immutable"

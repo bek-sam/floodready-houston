@@ -5,6 +5,7 @@ import { api, errText, type DemoRoute, type LatLon, type RouteCheck, type WatchP
 import { useApp } from '../ctx'
 import { Map } from '../components/maps'
 import { speak, stopSpeaking } from '../components/speak'
+import ParkCard from '../components/parking/ParkCard'
 import PosterSheet from '../components/poster/PosterSheet'
 import ReportSheet from '../components/ReportSheet'
 import { useAsync, Warnings } from '../components/ui'
@@ -131,6 +132,8 @@ export default function Drive() {
           <p className="text-body-sm text-ink">{t('p3.drive.banner2')}</p>
         </div>
       </Card>
+
+      <ParkCard />
 
       <DemoPanel title={t('p3.drive.demoSamples')}>
         <div className="flex flex-wrap gap-2">

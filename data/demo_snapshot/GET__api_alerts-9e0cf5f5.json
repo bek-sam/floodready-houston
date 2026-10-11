@@ -1,0 +1,1 @@
+{"key": "GET /api/alerts?lat=29.6876&lon=-95.4583", "method": "GET", "path": "/api/alerts", "query": "lat=29.6876&lon=-95.4583", "status": 200, "recorded_at": "2026-10-11T04:22:30-05:00", "body": {"alerts": [], "meta": {"as_of": "2026-10-11T09:22:32+00:00", "source": "https://api.weather.gov/alerts/active", "freshness": "live", "storm_mode": false}}}

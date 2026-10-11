@@ -1,5 +1,6 @@
 import { useApp } from '../ctx'
 import { ArrowRight } from 'lucide-react'
+import EmbedSnippet from '../components/share/EmbedSnippet'
 import { Card, PageHeader, SourceLink } from '../components/ds'
 
 // Same list as README "Data sources".
@@ -42,6 +43,7 @@ export default function About() {
         <span className="min-w-0 flex-1"><span className="block text-h3 text-ink">{t('p9.status.link')}</span><span className="block text-caption text-muted">{t('p9.status.link.d')}</span></span>
         <ArrowRight aria-hidden size={20} className="shrink-0 text-muted rtl:rotate-180" />
       </a>
+      <EmbedSnippet />
       <Card title={t('about.aiTitle')}>
         <p className="text-body">{t('about.ai')}</p>
       </Card>

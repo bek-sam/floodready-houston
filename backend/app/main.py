@@ -42,6 +42,7 @@ app = FastAPI(title="FloodReady Houston API", lifespan=lifespan)
 _origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()] or [
     "http://localhost:5173", "http://127.0.0.1:5173"]
 app.add_middleware(RateLimitMiddleware)
+from app.demo_snapshot import install as _install_snapshot; _install_snapshot(app)  # noqa: E402  DEMO_SNAPSHOT=1 / offline fallback
 app.add_middleware(  # added last = outermost, so 429/422 responses still carry CORS headers
     CORSMiddleware,
     allow_origins=_origins,
@@ -63,6 +64,9 @@ api.include_router(_harvey_router.router)
 from app.routers import hwm as _hwm_router, coastal as _coastal_router  # noqa: E402
 api.include_router(_hwm_router.router)
 api.include_router(_coastal_router.router)
+from app.routers import rain24 as _rain24_router, parking as _parking_router  # noqa: E402
+api.include_router(_rain24_router.router)
+api.include_router(_parking_router.router)
 
 try:
     from app.ai.router import router as ai_router  # type: ignore

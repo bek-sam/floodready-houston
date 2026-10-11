@@ -156,3 +156,7 @@
 - Strict recount: 33 REDUCES / 17 INFORMS / 2 NONE (63%) — unchanged; new features deepen already-counted problems. docs/cycles/cycle-24-coverage.md.
 - Docs refreshed with measured numbers (README, devpost, judge-qa Q26–31, business-case, DEMO-DAY incl. Seabrook evac + Voice beats).
 - Visual QA sweep: 20 routes × 1280/390 in en + Home/Drive/Prepare in es/vi/zh/ar: 0 page/console errors, 0 raw keys, 0 horizontal overflow at 390 px. Fixed double colon in zh/ar "For:" header.
+## Cycle 25 — Sun Oct 11, ~5 AM (offline resilience + everyday decisions)
+- Offline demo mode: DEMO_SNAPSHOT=1 serves 97 recorded responses + canned Ask answers + prerecorded voice-es.mp3 (header X-FloodReady-Snapshot); banner shows only on that header (fixed false "Offline demo data" banner triggered by crossings' legit meta.freshness "snapshot").
+- New: GET /rain24 (NWS hourly rain/PoP windows → "move car before 3 PM" action), GET /parking/check (FEMA zone, Harvey, elevation, crossings ≤300 m, alerts → move/no_flags + higher ground); Rain-next-24h card, "Where should I park?" card, family-plan share link (#share=, plan in URL fragment, never on server), embeddable /widget (iframe snippet; Caddy CSP frame-ancestors * on /widget only).
+- Verified: 178 tests, build, /widget + Drive screenshots c25-*.jpg, 0 page errors. Caddy validate not re-run (local Docker daemon hung).

@@ -3,6 +3,7 @@ import { CalendarPlus, Check, ChevronLeft, ChevronRight, ExternalLink, Pencil } 
 import TenantLetter from '../components/TenantLetter'
 import MedicalAccess from '../components/MedicalAccess'
 import PetsCard from '../components/pets/PetsCard'
+import SharePlanCard from '../components/share/SharePlanCard'
 import GoBag from '../components/gobag/GoBag'
 import SeasonReminders from '../components/season/SeasonReminders'
 import EvacuationHelp from '../components/prepare/EvacuationHelp'
@@ -117,6 +118,8 @@ export default function Prepare() {
               <Button className="mt-4" size="lg" loading={planBusy} onClick={runPlan}>{plan ? t('p5a.plan.update') : t('p5a.plan.build')}</Button>
               {planErr && <div className="mt-3"><ErrorBox error={planErr} onRetry={runPlan} /></div>}
             </Card>
+
+            <SharePlanCard />
 
             {planBusy && (
               <Card aria-busy={true}>

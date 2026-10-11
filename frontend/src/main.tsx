@@ -4,9 +4,11 @@ import './index.css'
 import App from './App'
 import { toast } from './components/ds/Toast'
 import { tr } from './i18n'
+import { installSnapshotWatcher } from './lib/snapshot'
 import { initEasy } from './components/easyread/easyRead'
 
 initEasy()
+installSnapshotWatcher()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

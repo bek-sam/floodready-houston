@@ -10,6 +10,7 @@ import { EmergencyStrip } from './components/shell/EmergencyStrip'
 import { Header } from './components/shell/Header'
 import { Sidebar } from './components/shell/Sidebar'
 import { BottomNav } from './components/shell/BottomNav'
+import { SnapshotBanner } from './components/shell/SnapshotBanner'
 import { OfflineBanner } from './components/shell/OfflineBanner'
 import { MyPlaceSheet } from './components/shell/MyPlaceSheet'
 import { HouseholdSheet } from './components/shell/HouseholdSheet'
@@ -32,6 +33,8 @@ const PAGES = {
   compare: lazy(() => import('./pages/Compare')),
 } as const
 type Route = keyof typeof PAGES
+const Widget = lazy(() => import('./pages/Widget'))
+const SharedPlan = lazy(() => import('./components/share/SharedPlan'))
 const Welcome = lazy(() => import('./pages/Welcome'))
 
 const Spinner = () => (
@@ -41,7 +44,18 @@ const Spinner = () => (
 )
 
 export default function App() {
+  // Minimal-chrome routes (no nav, no place provider): the embeddable widget and a shared family plan (#share=).
+  const h = location.hash
+  if (/^#widget(\?|$)/.test(h) || location.pathname.startsWith('/widget')) return <Suspense fallback={<Spinner />}><Widget /></Suspense>
+  if (h.startsWith('#share=')) return <SharedPlanRoute />
   return <PlaceProvider><Shell /></PlaceProvider>
+}
+
+function SharedPlanRoute() {
+  const [lang] = useState(() => store.get('lang') || 'en')
+  const ctx = useMemo(() => ({ lang, t: (k: string) => tr(lang, k), setLang: () => {}, dark: false, setDark: () => {}, place: null, setPlace: () => {} }), [lang])
+  useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr' }, [lang])
+  return <AppCtx.Provider value={ctx as never}><Toaster /><Suspense fallback={<Spinner />}><SharedPlan /></Suspense></AppCtx.Provider>
 }
 
 function Shell() {
@@ -146,6 +160,7 @@ function Shell() {
                 <EmergencyStrip dangerEvent={danger} placeName={nick} />
                 <Header onPlace={() => setSheet('place')} onLang={() => setSheet('lang')} onMore={() => setSheet('more')} onInstall={install} logoProps={logoProps} />
                 {!online && <OfflineBanner />}
+                <SnapshotBanner />
                 <main id="main" tabIndex={-1}
                   className={`mx-auto w-full flex-1 px-4 pt-4 md:pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] outline-none md:px-6 md:pb-10 ${route === 'home' ? 'max-w-[1040px]' : 'max-w-[960px]'}`}>
                   <ErrorBoundary key={route}><Suspense fallback={<Spinner />}><Active /></Suspense></ErrorBoundary>
