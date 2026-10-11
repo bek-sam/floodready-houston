@@ -51,6 +51,7 @@ ZIPS = {
 
 STR = {
     "en": {
+        "danger": "CALL 911 NOW if you are in danger. If you cannot get through, keep trying. Go to the highest level; do not climb into a closed attic, go on the roof only if necessary. Turn around, don't drown.",
         "zone": "FEMA zone {z}", "nozone": "FEMA zone unknown",
         "hv_y": "Flooded in Harvey", "hv_n": "Not in Harvey extent (not proof it stayed dry)", "hv_u": "Harvey data n/a here",
         "al_n": "No active flood alerts", "al_y": "ACTIVE: {e}",
@@ -69,6 +70,7 @@ STR = {
         "stopped": "", "err": "FloodReady: service is busy. Text again soon. Call 911 if in danger.",
     },
     "es": {
+        "danger": "LLAME AL 911 AHORA si esta en peligro. Si no contestan, siga intentando. Suba al nivel mas alto; no se meta en un atico cerrado, suba al techo solo si es necesario. No cruce el agua.",
         "zone": "Zona FEMA {z}", "nozone": "Zona FEMA desconocida",
         "hv_y": "Se inundo en Harvey", "hv_n": "Fuera del area de Harvey (no garantiza que no se inundo)", "hv_u": "Sin datos de Harvey aqui",
         "al_n": "Sin alertas de inundacion activas", "al_y": "ACTIVA: {e}",
@@ -87,6 +89,7 @@ STR = {
         "stopped": "", "err": "FloodReady: servicio ocupado. Intente pronto. Llame al 911 si esta en peligro.",
     },
     "vi": {
+        "danger": "GOI 911 NGAY neu ban dang gap nguy hiem. Neu khong goi duoc, hay tiep tuc goi. Len tang cao nhat; dung chui vao gac mai kin, chi len mai nha khi that can thiet. Dung lo nuoc.",
         "zone": "Vung FEMA {z}", "nozone": "Chua ro vung FEMA",
         "hv_y": "Bi ngap khi bao Harvey", "hv_n": "Ngoai vung ngap Harvey (khong co nghia la chua tung ngap)", "hv_u": "Khong co du lieu Harvey",
         "al_n": "Khong co canh bao lu dang hieu luc", "al_y": "DANG CO: {e}",
@@ -197,6 +200,16 @@ _ON = {"on", "si", "activar", "activa", "bat"}
 _OFF = {"off", "no", "desactivar", "desactiva", "tat"}
 
 
+# Someone texting that they are trapped must get "call 911" first, never a risk summary or "not found".
+_DANGER = re.compile(r"\b(trapped|stuck|attic|on (the|my) roof|drown|rescue|help me|sos|water (is )?rising|cant get out|can't get out|"
+                     r"atrapad|atico|techo|ahog|rescate|socorro|auxilio|"
+                     r"mac ket|cuu toi|cuu voi|nuoc dang len)", re.I)
+
+
+def is_danger(body: str) -> bool:
+    return bool(_DANGER.search(norm(body or "")))
+
+
 def parse_command(body: str) -> tuple[str, str]:
     """Returns (cmd, rest). cmd in stop|start|help|on|off|query|empty."""
     n = norm(body)
@@ -298,6 +311,9 @@ async def handle(phone: str, body: str, simulate: bool = False) -> str:
         if row.stopped:  # compliance: no replies after STOP until START
             s.commit()
             return ""
+        if is_danger(body):
+            s.commit()
+            return clip(S["danger"])
         if cmd in ("empty",):
             s.commit()
             return S["ask"]

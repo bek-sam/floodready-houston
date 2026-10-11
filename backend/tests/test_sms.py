@@ -85,3 +85,11 @@ def test_inbound_ignores_simulate(client):
     r = client.post("/api/sms/inbound", content="From=%2B15550013&Body=77096&simulate=1",
                     headers={"content-type": "application/x-www-form-urlencoded"})
     assert r.status_code == 200 and "SIMULATED" not in r.text
+
+
+def test_danger_texts_get_911_first():
+    from app.services.sms import is_danger
+    for body in ["help me we are stuck in the attic", "Estamos atrapados, el agua sube", "cuu toi nuoc dang len", "water rising can't get out"]:
+        assert is_danger(body), body
+    for body in ["77096", "HELP", "ALERTS ON 77096", "AYUDA 77096", "5300 N Braeswood Blvd"]:
+        assert not is_danger(body), body
