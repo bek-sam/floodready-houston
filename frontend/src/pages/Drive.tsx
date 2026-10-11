@@ -11,12 +11,13 @@ import PosterSheet from '../components/poster/PosterSheet'
 import ReportSheet from '../components/ReportSheet'
 import VoteButtons from '../components/VoteButtons'
 import { useAsync, Warnings } from '../components/ui'
-import { Button, Card, DemoPanel, Disclosure, ErrorBox, Freshness, IconButton, PageHeader, RiskBadge, Skeleton, SourceLink, Switch, inputCls } from '../components/ds'
+import { Button, Card, DemoPanel, Disclosure, ErrorBox, Freshness, IconButton, PageHeader, RiskBadge, Skeleton, SourceLink, inputCls } from '../components/ds'
 import { cssVar, verdictLabelKey, verdictLevel } from '../lib/levels'
 import { parseHash } from '../components/shell/nav'
 import { hazardReason, hazName, routeMessage, useBk } from '../lib/bk'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
-import { placeName, store, streetOf, usePlace, useDemoMode } from '../state/place'
+import { placeName, store, streetOf, usePlace, useDemoMode, useSimStorm } from '../state/place'
+import SimToggle from '../components/SimToggle'
 
 /** One end of the route: text, optional known coordinates, and whether it is My place. */
 interface Pt { text: string; ll?: LatLon; mine?: boolean }
@@ -45,7 +46,7 @@ export default function Drive() {
   })
   // Judge step 2: preselect the Allen Parkway sample route with the storm simulation on (demo mode only).
   const [demoGo] = useState(() => peekDemoGo(2))
-  const [sim, setSim] = useState(demoGo)
+  const { sim, setSim } = useSimStorm()
   const demoApplied = useRef(false)
   const [sample, setSample] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -70,7 +71,7 @@ export default function Drive() {
     setFrom({ text: t('p6.drive.start').replace('{label}', r.label), ll: r.origin }); setTo({ text: t('p6.drive.end').replace('{label}', r.label), ll: r.destination }); setSample(true); setSim(true)
   }, [demoGo, samples.data, t])
   // Real users never get a simulated route, even if a flag was left over.
-  const simOn = demo && sim
+  const simOn = sim
   const { place: areaPlace } = usePlace()
   const area = useAreaAlerts(areaPlace ?? { lat: 29.76, lon: -95.37 })
   const [warnOn, setWarnOn] = useWarningsOn(area)
@@ -151,10 +152,8 @@ export default function Drive() {
             </button>
           ))}
         </div>
-        <div className="mt-2">
-          <Switch label={t('p3.drive.demoSim')} description={t('p3.drive.demoSimHint')} checked={sim} onChange={setSim} />
-        </div>
       </DemoPanel>
+      <SimToggle />
 
       <Card>
         <form onSubmit={check} className="space-y-3">

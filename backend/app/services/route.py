@@ -170,6 +170,11 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
         msg = (f"Avoid this route. It passes {len(hazards)} flood-prone crossing(s) "
                f"({_names(hazards)}) and conditions are active ({'; '.join(conds)}). "
                "Turn around, don't drown. Call 911 if you are in danger.")
+    elif hazards and simulate and active:
+        verdict, mcode, mparams = "caution", "route.cautionSim", {"n": len(hazards), "conditions": "; ".join(conds)}
+        msg = (f"Use caution. This route crosses {len(hazards)} known flood-prone spot(s) "
+               f"({_names(hazards)}). Simulated storm: conditions are active ({'; '.join(conds)}). "
+               "This is a demo, not a real route verdict. Turn around, don't drown.")
     elif hazards:
         verdict, mcode, mparams = "caution", "route.caution", {"n": len(hazards)}
         msg = (f"Use caution. This route crosses {len(hazards)} known flood-prone spot(s) "

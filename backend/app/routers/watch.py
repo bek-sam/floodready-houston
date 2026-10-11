@@ -43,5 +43,12 @@ async def status(ids: str = "", simulate: str | None = None):
     except Exception:
         places = []
     out = [await evaluate(p, simulate == "storm") for p in places]
-    return {"places": out, "meta": freshness.meta("NWS alerts + NOAA NWPS gauges", "live",
-                                                    storm=any((o.get("meta") or {}).get("storm_mode") for o in out))}
+    sim = simulate == "storm"
+    res = {"places": out, "meta": freshness.meta("NWS alerts + NOAA NWPS gauges", "live",
+                                                   storm=sim or any((o.get("meta") or {}).get("storm_mode") for o in out))}
+    if sim:
+        res["simulated"] = True
+        for o in out:
+            o["simulated"] = True
+            o["meta"] = {**(o.get("meta") or {}), "storm_mode": True}
+    return res

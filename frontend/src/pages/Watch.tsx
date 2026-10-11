@@ -8,11 +8,12 @@ import AlertsSwitch, { usePush } from '../components/AlertsSwitch'
 import BuddySection from '../components/buddy/BuddySection'
 import ReportSheet from '../components/ReportSheet'
 import { speak } from '../components/speak'
-import { Button, Card, DemoPanel, EmptyState, ErrorBox, Field, Freshness, GaugeChips, IconButton, PageHeader, RiskBadge, Segmented, Sheet, Skeleton, StatusBadge, Switch, inputCls, toast } from '../components/ds'
+import { Button, Card, DemoPanel, EmptyState, ErrorBox, Field, Freshness, GaugeChips, IconButton, PageHeader, RiskBadge, Segmented, Sheet, Skeleton, StatusBadge, inputCls, toast } from '../components/ds'
 import { useShell } from '../components/shell/ShellContext'
 import { watchLevel } from '../lib/levels'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
-import { placeName, store, streetOf, usePlace, useDemoMode } from '../state/place'
+import { placeName, store, streetOf, usePlace, useDemoMode, useSimStorm } from '../state/place'
+import SimToggle from '../components/SimToggle'
 
 const KEY = 'watchPlaces'
 const MINE = 'floodready.myWatch'
@@ -39,7 +40,8 @@ export default function Watch() {
   const [mineP, setMineP] = useState<WatchPlace | null>(null)
   const [status, setStatus] = useState<WatchStatus[]>([])
   const [loaded, setLoaded] = useState(false)
-  const [sim, setSim] = useState(false)
+  const { sim: simOn } = useSimStorm()
+  const sim = simOn
   const [pollErr, setPollErr] = useState<string | null>(null)
   const [checkedAt, setCheckedAt] = useState<Date | null>(null)
   const [announce, setAnnounce] = useState('')
@@ -75,7 +77,7 @@ export default function Watch() {
     if (!ids.length) { setStatus([]); setLoaded(true); return }
     const c = new AbortController(); ctl.current = c
     try {
-      const r = await api.watchStatus(ids, demo && sim, c.signal)
+      const r = await api.watchStatus(ids, sim, c.signal)
       if (c.signal.aborted) return
       const got = Array.isArray(r.places) ? r.places : []
       setPollErr(null); setStatus(got); setCheckedAt(new Date()); setLoaded(true)
@@ -141,9 +143,9 @@ export default function Watch() {
           <Button variant="secondary" disabled={!push.sub || push.busy} onClick={async () => { const n = await push.send('sim'); if (n != null) toast(t('p3.demo.sent').replace('{n}', String(n))) }}>{t('p3.demo.sim')}</Button>
         </div>
         {!push.sub && <p className="mt-2 text-caption text-muted">{t('p3.demo.needPush')}</p>}
-        <div className="mt-2"><Switch label={t('p3.demo.inapp')} checked={sim} onChange={setSim} /></div>
       </DemoPanel>
-      {demo && sim && <p className="text-caption font-semibold text-watch">{t('p3.demo.simBadge')}</p>}
+      <SimToggle />
+      {sim && <p className="text-caption font-semibold text-watch">{t('p3.demo.simBadge')}</p>}
 
       {pollErr && <ErrorBox error={pollErr} onRetry={() => { void poll() }} />}
 
@@ -163,13 +165,13 @@ export default function Watch() {
                     </p>
                     <p className="text-caption text-muted">{streetOf(p.label)}</p>
                   </div>
-                  {s && <RiskBadge level={lvl} size="md" label={t('p3.level.' + s.level)} suffix={demo && sim ? t('demo.simulated') : undefined} />}
+                  {s && <RiskBadge level={lvl} size="md" label={t('p3.level.' + s.level)} suffix={sim ? t('demo.simulated') : undefined} />}
                 </div>
                 {!s && !loaded && <div className="mt-3 space-y-2"><Skeleton w="90%" h={16} /><Skeleton w="60%" h={16} /></div>}
                 {!s && loaded && <p className="mt-3 text-body-sm text-muted">{t('p3.places.noStatus')}</p>}
                 {s && (
                   <div className="mt-3 space-y-2">
-                    <Freshness meta={s.meta} />
+                    <Freshness meta={s.meta} simulated={sim} />
                     <p className="text-base text-ink">{msgOf(s)}</p>
                     {(s.reasons ?? []).length > 0 && (
                       <div><p className="text-caption font-semibold text-muted">{t('p3.places.why')}</p>

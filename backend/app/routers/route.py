@@ -24,6 +24,9 @@ async def route_check(body: RouteReq, simulate: str | None = None):
         out["meta"] = freshness.meta("OSRM routing + crossings snapshot + community reports", "live",
                                      storm=freshness.storm_on())
         out["meta"]["snapshot_date"] = freshness.snapshot_dates().get("crossings")
+        if simulate == "storm":
+            out["simulated"] = True
+            out["meta"]["storm_mode"] = True
     return out
 
 

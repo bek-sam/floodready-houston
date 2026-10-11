@@ -21,7 +21,7 @@ export const DEFAULT_HOUSEHOLD: Household = {
 
 export const KEYS = {
   place: 'floodready.place.v1', household: 'floodready.household.v1', onboarded: 'floodready.onboarded.v1',
-  actionsDone: 'floodready.actionsDone.v1', demo: 'floodready.demo',
+  actionsDone: 'floodready.actionsDone.v1', demo: 'floodready.demo', simStorm: 'floodready.simStorm',
 } as const
 
 /** Safe storage helpers: return null / do nothing when storage is unavailable. */
@@ -98,6 +98,8 @@ export interface PlaceCtx {
   household: Household; setHousehold(h: Household): void
   onboarded: boolean; finishOnboarding(): void
   demo: boolean; setDemo(on: boolean): void
+  /** Raw demo storm flag; use useSimStorm() which gates it on demo mode. */
+  simFlag: boolean; setSimFlag(on: boolean): void
   /** True when this page load came from ?demo=1 (onboarding is skipped). */
   demoFromUrl: boolean
 }
@@ -109,6 +111,7 @@ export function PlaceProvider({ children }: { children: ReactNode }) {
   const [household, setHouseholdState] = useState<Household>(loadHousehold)
   const [onboarded, setOnboarded] = useState(() => store.get(KEYS.onboarded) === '1')
   const [demo, setDemoState] = useState(init.demo)
+  const [simFlag, setSimState] = useState(() => init.demo && store.get(KEYS.simStorm, true) === '1')
 
   const setPlace = useCallback((p: Place | MyPlace | null) => {
     setPlaceState((prev) => {
@@ -119,7 +122,8 @@ export function PlaceProvider({ children }: { children: ReactNode }) {
   }, [])
   const setHousehold = useCallback((h: Household) => { setHouseholdState(h); store.set(KEYS.household, JSON.stringify(h)) }, [])
   const finishOnboarding = useCallback(() => { setOnboarded(true); store.set(KEYS.onboarded, '1') }, [])
-  const setDemo = useCallback((on: boolean) => { setDemoState(on); store.set(KEYS.demo, on ? '1' : null, true) }, [])
+  const setDemo = useCallback((on: boolean) => { setDemoState(on); store.set(KEYS.demo, on ? '1' : null, true); if (!on) { setSimState(false); store.set(KEYS.simStorm, null, true) } }, [])
+  const setSimFlag = useCallback((on: boolean) => { setSimState(on); store.set(KEYS.simStorm, on ? '1' : null, true) }, [])
 
   // Keep tabs in sync when another tab changes the saved place.
   useEffect(() => {
@@ -132,8 +136,8 @@ export function PlaceProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<PlaceCtx>(() => ({
-    place, setPlace, household, setHousehold, onboarded, finishOnboarding, demo, setDemo, demoFromUrl: init.fromUrl,
-  }), [place, setPlace, household, setHousehold, onboarded, finishOnboarding, demo, setDemo, init.fromUrl])
+    place, setPlace, household, setHousehold, onboarded, finishOnboarding, demo, setDemo, simFlag, setSimFlag, demoFromUrl: init.fromUrl,
+  }), [place, setPlace, household, setHousehold, onboarded, finishOnboarding, demo, setDemo, simFlag, setSimFlag, init.fromUrl])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 
@@ -166,4 +170,10 @@ export function placeName(nickname: string | null | undefined, t: (k: string) =>
   const k = 'nick.' + nickname
   const v = t(k)
   return v === k ? nickname : v
+}
+
+/** The one shared demo-storm flag. `sim` is true only in demo mode, so real users never get a simulation. */
+export function useSimStorm(): { sim: boolean; setSim: (on: boolean) => void; demo: boolean } {
+  const { demo, simFlag, setSimFlag } = usePlace()
+  return { sim: demo && simFlag, setSim: setSimFlag, demo }
 }

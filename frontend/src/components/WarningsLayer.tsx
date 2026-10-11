@@ -5,6 +5,9 @@ import { api, type AreaAlerts, type LatLon } from '../api'
 import { useApp } from '../ctx'
 import { Freshness, Switch } from './ds'
 
+/** Zone-only warnings are shown only for the Houston region (drops e.g. Corpus Christi). */
+const HOUSTON_REGION = /Harris|Fort Bend|Montgomery|Galveston|Brazoria|Chambers|Liberty|Waller/i
+
 const color = (event: string) => (/flash flood warning/i.test(event) ? '#C62828' : /warning/i.test(event) ? '#EF6C00' : '#F9A825')
 
 /** GET /alerts/area around a point (about 1 degree each way). Failures give null. */
@@ -47,7 +50,7 @@ export function WarningsMapLayer({ data, on }: { data: AreaAlerts | null; on: bo
 export function WarningsBar({ data, on, onChange }: { data: AreaAlerts | null; on: boolean; onChange: (v: boolean) => void }) {
   const { t } = useApp()
   if (!data) return null
-  const zones = Array.isArray(data.zone_only) ? data.zone_only : []
+  const zones = (Array.isArray(data.zone_only) ? data.zone_only : []).filter((z) => HOUSTON_REGION.test(z.area_desc ?? ''))
   const n = withGeom(data).length
   return (
     <div className="mb-2 space-y-1">

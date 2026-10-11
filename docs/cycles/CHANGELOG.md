@@ -197,3 +197,7 @@
 - Skipped (unverifiable): contractor-fraud release (HTTP 402), CDC food/tetanus numbers.
 - Lead fixes: FEMA ALL-CAPS titles title-cased, localized declaration date, DR-number kept on one line.
 - Verified: 212 tests, build, i18n 0 missing, Recover page at 390 px (banner, SBA, proof of loss, 311), c33-banner.jpg, 0 page errors.
+## Cycle 34 — Sun Oct 11, ~8:15 AM (one consistent simulated storm)
+- Audit (docs/cycles/cycle-34-research.md): with the demo storm on, Home still said "Normal / no alerts" while Alerts said "Warning · Simulated"; caution routes said "No active flood conditions" under a simulated storm; "Live" chips next to "Simulated"; Corpus Christi advisories on Drive.
+- Fixed: one shared demo-storm switch (demo mode only, per tab) drives Home, Alerts and Drive; /alerts gains simulate=storm with one alert labelled "SIMULATED — demo only"; all simulate-capable endpoints return simulated:true + storm_mode; new route.cautionSim message in 5 languages (lead fix); simulated responses show a "Simulated" tag instead of "Live"; Drive zone-only NWS warnings limited to Houston-region counties.
+- Verified: 215 tests, build, i18n 0 missing; e2e at 390 px with ?demo=1: Home shows Simulated tag + simulated alert, Alerts and Drive switches stay in sync, Meyerland→Downtown says "Simulated storm: conditions are active"; only remaining Live chip is the real Galveston tide; 0 page errors.

@@ -2,8 +2,8 @@
 
 export type Status = 'normal' | 'action' | 'minor' | 'moderate' | 'major' | 'unknown'
 export interface FloodStages { action: number | null; minor: number | null; moderate: number | null; major: number | null }
-export type FreshnessKind = 'live' | 'recent' | 'cached' | 'snapshot' | 'historical'
-export interface Meta { as_of: string; source: string; freshness: FreshnessKind; snapshot_date?: string; storm_mode?: boolean }
+export type FreshnessKind = 'live' | 'recent' | 'cached' | 'snapshot' | 'historical' | 'simulated'
+export interface Meta { as_of: string; source: string; freshness: FreshnessKind; snapshot_date?: string; storm_mode?: boolean; simulated?: boolean }
 export interface GaugeFlags { stale?: boolean; provisional?: boolean; spike?: boolean; offline?: boolean }
 export interface GaugeImpact {
   current: { stage: number; statement: string } | null; next: { stage: number; statement: string } | null
@@ -24,7 +24,7 @@ export interface Coded { code?: string; params?: Record<string, unknown> }
 export interface Fact extends Coded { text: string; source: string }
 export interface Declaration { disaster_number: number; title: string; incident_type?: string; declaration_date: string; ia_program?: boolean; ha_program?: boolean; url: string }
 export interface Declarations { available: boolean; latest: Declaration | null; active_ia: boolean; recent?: Declaration[]; source?: string }
-export interface Warned { warnings?: string[]; warning_codes?: string[] }
+export interface Warned { warnings?: string[]; warning_codes?: string[]; simulated?: boolean }
 export interface Geocode extends Warned { lat: number | null; lon: number | null; matched_address: string | null; place?: string }
 export interface Harvey { flooded: boolean | null; source?: string; note?: string; note_code?: string }
 export interface Risk extends Warned {
@@ -184,10 +184,10 @@ export const api = {
     if (g.lat == null || g.lon == null) throw new ApiError(g.warnings?.join('. ') || 'Address not found', 404)
     return g as Geocode & { lat: number; lon: number }
   },
-  risk: (p: LatLon) => req<Risk>('/risk?' + q(p)),
+  risk: (p: LatLon, simulate = false) => req<Risk>('/risk?' + q(p) + (simulate ? '&simulate=storm' : '')),
   floodHistory: (p: LatLon, zip?: string) => req<FloodHistory>('/flood-history?' + q(p) + (zip ? '&zip=' + encodeURIComponent(zip) : '')),
   status: () => req<StatusReport>('/status'),
-  alerts: (p: LatLon) => req<Alerts>('/alerts?' + q(p)),
+  alerts: (p: LatLon, simulate = false) => req<Alerts>('/alerts?' + q(p) + (simulate ? '&simulate=storm' : '')),
   crossings: () => req<Crossings>('/crossings'),
   routeCheck: (origin: LatLon, destination: LatLon, simulate: boolean) =>
     post<RouteCheck>('/route-check' + (simulate ? '?simulate=storm' : ''), { origin, destination }),
@@ -198,7 +198,7 @@ export const api = {
   shelters: (p: LatLon, petFriendly = false, limit = 10) =>
     req<Shelters>('/shelters?' + q(p) + `&pet_friendly=${petFriendly}&limit=${limit}`),
   parkingCheck: (p: LatLon | { q: string }) => req<ParkingCheck>('/parking/check?' + q(p)),
-  outlook: (p: LatLon) => req<Outlook>('/outlook?' + q(p)),
+  outlook: (p: LatLon, simulate = false) => req<Outlook>('/outlook?' + q(p) + (simulate ? '&simulate=storm' : '')),
   routeDemo: () => req<DemoRoute[]>('/route-check/demo'),
   vapidKey: () => req<{ key: string }>('/push/vapid-public-key'),
   pushSubscribe: (subscription: unknown, place_ids: string[], lang: string) => post<{ id: string }>('/push/subscribe', { subscription, place_ids, lang }),

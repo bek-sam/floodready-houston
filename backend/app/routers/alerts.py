@@ -1,13 +1,16 @@
 from fastapi import APIRouter
 
-from app.services.alerts import area_alerts, get_alerts
+from app.services.alerts import add_simulated_alert, area_alerts, get_alerts
 
 router = APIRouter()
 
 
 @router.get("/alerts")
-async def alerts(lat: float, lon: float):
-    return await get_alerts(lat, lon)
+async def alerts(lat: float, lon: float, simulate: str | None = None):
+    out = await get_alerts(lat, lon)
+    if simulate == "storm":
+        out = add_simulated_alert(out, lat, lon)
+    return out
 
 
 @router.get("/alerts/area")

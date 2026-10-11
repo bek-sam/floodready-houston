@@ -93,3 +93,19 @@ async def area_alerts(bbox: str) -> dict:
         freshness.mark_storm()
     out["meta"] = freshness.meta(AREA_URL, "live", storm=storm or freshness.storm_on())
     return out
+
+
+def add_simulated_alert(out: dict, lat: float, lon: float) -> dict:
+    """Demo only: prepend one clearly labelled fake Flash Flood Warning to a real /alerts response."""
+    from datetime import datetime, timedelta, timezone
+    area = f"your area ({lat:.3f}, {lon:.3f})"
+    sim = {"event": "Flash Flood Warning", "severity": "Severe",
+           "headline": f"SIMULATED \u2014 demo only: Flash Flood Warning for {area}",
+           "description": "Simulated storm for demonstration. Not a real NWS alert.",
+           "expires": (datetime.now(timezone.utc) + timedelta(hours=3)).isoformat(timespec="seconds"),
+           "simulated": True}
+    out = dict(out)
+    out["alerts"] = [sim] + list(out.get("alerts") or [])
+    out["simulated"] = True
+    out["meta"] = {**(out.get("meta") or freshness.meta("simulated", "live")), "storm_mode": True}
+    return out

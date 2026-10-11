@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BookOpen, ChevronRight, FileText, History, Landmark, MapPinPlus, ShieldCheck, Waves, Home as HomeIcon, type LucideIcon } from 'lucide-react'
 import { api, ApiError, type Alerts, type FloodHistory, type LatLon, type Outlook, type Risk, type ZipInsurance } from '../api'
 import { HOUSTON, useApp } from '../ctx'
-import { placeName, store, usePlace } from '../state/place'
+import { placeName, store, usePlace, useSimStorm } from '../state/place'
 import { useShell } from '../components/shell/ShellContext'
 import { exposure as computeExposure, fill, profilePreview, rightNow, type Src, type SummaryInputs } from '../lib/summary'
 import { Button, Card, Disclosure, EmptyState, ErrorBox, LoadingText, SkeletonText, toast } from '../components/ds'
@@ -17,6 +17,7 @@ import RainCard from '../components/rain24/RainCard'
 import CoastalChip from '../components/coastal/CoastalChip'
 import RentBuy from '../components/RentBuy'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
+import SimToggle from '../components/SimToggle'
 
 const SAMPLE_ADDRESS = '5300 N Braeswood Blvd, Houston, TX 77096' // the demo address in DEMO-DAY.md
 const CACHE_KEY = 'floodready.homeCache.v1'
@@ -65,10 +66,11 @@ function useSrc<T>(name: string, key: string | null, fn: () => Promise<T>, nonce
 function useHomeData(loc: LatLon | null, zip: string | null, tag: string) {
   const [nonce, setNonce] = useState(0)
   const refresh = useCallback(() => setNonce((n) => n + 1), [])
-  const k = loc ? `${tag}:${loc.lat.toFixed(5)},${loc.lon.toFixed(5)}` : null
-  const risk = useSrc<Risk>('risk', k, () => api.risk(loc!), nonce)
-  const alerts = useSrc<Alerts>('alerts', k, () => api.alerts(loc!), nonce)
-  const outlook = useSrc<Outlook>('outlook', k, () => api.outlook(loc!), nonce)
+  const { sim } = useSimStorm() // demo mode only; false for real users
+  const k = loc ? `${tag}${sim ? '-sim' : ''}:${loc.lat.toFixed(5)},${loc.lon.toFixed(5)}` : null
+  const risk = useSrc<Risk>('risk', k, () => api.risk(loc!, sim), nonce)
+  const alerts = useSrc<Alerts>('alerts', k, () => api.alerts(loc!, sim), nonce)
+  const outlook = useSrc<Outlook>('outlook', k, () => api.outlook(loc!, sim), nonce)
   const hist = useSrc<FloodHistory>('hist', tag === 'place' ? k && k + ':' + (zip ?? '') : null, () => api.floodHistory(loc!, zip ?? undefined), nonce)
   const zipIns = useSrc<ZipInsurance>('zip', tag === 'place' && zip ? 'zip:' + zip : null, () => api.zipInsurance(zip!), nonce)
   const all = [risk, alerts, outlook, hist, ...(zip ? [zipIns] : [])]
@@ -140,6 +142,7 @@ function NoPlace() {
           action={<Button size="lg" icon={MapPinPlus} onClick={openPlaceSheet}>{t('empty.cta')}</Button>}
           secondary={<Button variant="ghost" loading={busy} onClick={sample}>{t('empty.sample')}</Button>} />
       </section>
+      <SimToggle />
       <LiveConditions title={t('live.houston')} loc={HOUSTON} risk={d.inputs.risk} alerts={d.inputs.alerts} outlook={d.inputs.outlook}
         updatedAt={d.updatedAt} onRetry={d.refresh} wide />
       <TrustCard />
@@ -150,6 +153,7 @@ function NoPlace() {
 export default function Home() {
   const { t } = useApp()
   const { place } = usePlace()
+  const { sim } = useSimStorm()
   const { setDanger } = useShell()
   const loc = useMemo(() => (place ? { lat: place.lat, lon: place.lon } : null), [place?.lat, place?.lon]) // eslint-disable-line react-hooks/exhaustive-deps
   const d = useHomeData(loc, place?.zip ?? null, 'place')
@@ -176,6 +180,8 @@ export default function Home() {
   return (
     <div className="space-y-5 md:space-y-8">
       <h1 className="sr-only">{t('nav.home')}</h1>
+      <SimToggle />
+      {sim && <p className="text-caption font-semibold text-watch" data-testid="simulated-tag">{t('p34.simulated')}</p>}
       <SummaryHero placeLabel={name} inputs={inputs} now={now} exp={exp}
         updatedAt={d.updatedAt} offlineAt={d.offlineAt} refreshing={d.refreshing} onRefresh={d.refresh} />
 

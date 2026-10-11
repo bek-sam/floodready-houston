@@ -151,6 +151,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Cycle 33 additions:** GET `/declarations?county=Harris&state=TX` → `{available, county, state, latest{disaster_number,title,incident_type,declaration_date,incident_begin,incident_end,ia_program,ha_program,url}|null, active_ia, recent[≤5], source, note, meta, warnings?}` (OpenFEMA DisasterDeclarationsSummaries; active_ia counts IA or IH program within 60 days of incident end).
 
+**Cycle 34:** `simulate=storm` (demo mode only in UI) on `/alerts` (adds one alert labelled "SIMULATED — demo only", `simulated:true`), `/risk`, `/outlook`, `/route-check`, `/watch/status` → top-level `simulated:true` + `meta.storm_mode:true`; new route message code `route.cautionSim` {n, names, conds}. Frontend: one shared demo-storm flag (`useSimStorm`, sessionStorage) + `SimToggle` on Home/Alerts/Drive.
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

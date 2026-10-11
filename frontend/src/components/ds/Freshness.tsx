@@ -2,7 +2,7 @@ import { Clock, Database, History, Radio, Zap } from 'lucide-react'
 import type { GaugeFlags, Meta } from '../../api'
 import { useApp } from '../../ctx'
 
-const ICON = { stale: Clock, live: Radio, recent: Clock, cached: Clock, snapshot: Database, historical: History } as const
+const ICON = { stale: Clock, live: Radio, recent: Clock, cached: Clock, snapshot: Database, historical: History, simulated: Zap } as const
 
 function ago(t: (k: string) => string, iso: string): string {
   const ms = Date.now() - Date.parse(iso)
@@ -32,8 +32,11 @@ export function freshnessLabel(m: Pick<Meta, 'freshness' | 'as_of' | 'snapshot_d
 }
 
 /** "Live · 2 min ago" / "Snapshot · Oct 10, 2026" / "Historical · 2017" badge from a response `meta`. Renders nothing without meta. */
-export function Freshness({ meta, className = '', prefix }: { meta?: Meta | null; className?: string; prefix?: string }) {
+export function Freshness({ meta, className = '', prefix, simulated }: { meta?: Meta | null; className?: string; prefix?: string; simulated?: boolean }) {
   const { t, lang } = useApp()
+  if (simulated || meta?.simulated || meta?.freshness === 'simulated') {
+    return <span data-testid="simulated-tag" className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-watch px-2 py-0.5 text-caption font-semibold text-watch ${className}`}><Zap aria-hidden size={12} />{t('p34.simulated')}</span>
+  }
   if (!meta || !meta.freshness) return null
   const Icon = ICON[meta.freshness] ?? Clock
   const label = (prefix ? prefix + ' · ' : '') + freshnessLabel(meta, t, lang)

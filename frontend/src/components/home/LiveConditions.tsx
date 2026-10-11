@@ -131,8 +131,8 @@ export function LiveConditions({ title, loc, risk, alerts, outlook, updatedAt, o
         <h2 id="live-title" className="text-h2 text-ink">{title}</h2>
         {updatedAt != null && <span className="text-caption text-muted">{fill(t, 'sum.updated', { time: timeOf(updatedAt, lang) })}</span>}
       </div>
-      {(alerts.data?.meta || risk.data?.meta) && (
-        <div className="mt-1 flex flex-wrap gap-2"><Freshness meta={alerts.data?.meta} prefix={t('p9.fresh.for.alerts')} /><Freshness meta={risk.data?.meta} prefix={t('p9.fresh.for.gauges')} /></div>
+      {(alerts.data?.meta || risk.data?.meta || alerts.data?.simulated || risk.data?.simulated) && (
+        <div className="mt-1 flex flex-wrap gap-2"><Freshness meta={alerts.data?.meta} simulated={alerts.data?.simulated} prefix={t('p9.fresh.for.alerts')} /><Freshness meta={risk.data?.meta} simulated={risk.data?.simulated} prefix={t('p9.fresh.for.gauges')} /></div>
       )}
       <div className={`mt-3 grid gap-3 ${wide ? 'sm:grid-cols-2' : ''}`}>
         <div aria-busy={!alerts.done || undefined} aria-live="polite">
