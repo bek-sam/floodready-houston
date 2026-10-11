@@ -97,6 +97,7 @@ export interface ReservoirPool {
   ground_elevation_ft: number | null; pool_below_ground_ft: number | null; harvey_above_ground_ft: number | null
   relevant: boolean; message?: string; message_code?: string; datum_note?: string; disclaimer?: string; source?: string; meta?: Meta; warnings?: string[]
 }
+export interface AirportsStatus { airports: { code: string; closed: boolean | null; reason?: string | null; reopen?: string | null }[]; source?: string; note?: string }
 export interface BuyoutArea { in_buyout_area: boolean | null; area_name?: string | null; source?: string; note?: string; note_code?: string; params?: Record<string, unknown> }
 
 export interface WatchPlace { id: string; label: string; lat: number; lon: number; lang: string }
@@ -221,6 +222,7 @@ export const api = {
   medical: (p: LatLon, limit = 5) => req<Medical>('/medical?' + q(p) + `&kind=dialysis&limit=${limit}`),
   empower: (zip: string) => req<Empower>('/empower?zip=' + encodeURIComponent(zip)),
   reservoirPool: (p: LatLon) => req<ReservoirPool>('/reservoir/pool?' + q(p)),
+  airportsStatus: () => req<AirportsStatus>('/airports/status'),
   buyoutArea: (p: LatLon) => req<BuyoutArea>('/buyout-area?' + q(p)),
   civic: (p?: LatLon | null) => {
     const key = p ? q(p) : ''

@@ -30,7 +30,7 @@ Then open `/#judge` on the projector — QR code now points at your real domain.
 5. **Voice mode** → Ask → **Voice** (Gemini Live, default) → say "Did my neighborhood flood before?" → spoken answer in about 1 s (measured 0.64-1.4 s) → interrupt mid-answer (barge-in) → follow-up in Spanish. If it stalls: Retry / "Switch to Standard". Typed Ask median is 228 ms.
 6. **Ask** (Spanish) → "¿Qué hago si mi calle se inunda?" → sourced safety steps, 911.
 7. **Watch** → Simulate storm push → phone buzzes. Optional: Judge-page SMS simulator (demo mode) → `ALERTS ON`.
-Close: "Directly reduces **36 of 52** documented Houston flood problems (strict recount: `docs/cycles/cycle-24-coverage.md` + `cycle-28-coverage.md`); the other 16 are mostly policy problems we make visible and actionable."
+Close: "Directly reduces **37 of 52** documented Houston flood problems (strict recount: `docs/cycles/cycle-24-coverage.md` + `cycle-28-coverage.md`); the other 15 are mostly policy problems we make visible and actionable."
 
 ## Voice mode needs a real mic check
 The live-mic loop is verified with a fake mic only (CHANGELOG, "Live talking verified"). Do one real-mic run on the demo laptop and browser before judging.

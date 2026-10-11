@@ -5,6 +5,7 @@ import MedicalAccess from '../components/MedicalAccess'
 import PowerDependentCard from '../components/prepare/PowerDependentCard'
 import PetsCard from '../components/pets/PetsCard'
 import SharePlanCard from '../components/share/SharePlanCard'
+import { PayLess } from '../components/p35/P35'
 import GoBag from '../components/gobag/GoBag'
 import SeasonReminders from '../components/season/SeasonReminders'
 import EvacuationHelp from '../components/prepare/EvacuationHelp'
@@ -193,6 +194,7 @@ export default function Prepare() {
                 </div>
               )}
             </Card>
+            <PayLess />
             <a href="#home/rentbuy" className="flex min-h-12 items-center justify-between gap-2 rounded-lg border border-line bg-surface p-4 text-body-sm font-semibold text-brand">
               {place?.zip ? t('p5a.ins.zip').replace('{zip}', place.zip) : t('p5a.ins.zipNone')}<ChevronRight aria-hidden size={18} />
             </a>

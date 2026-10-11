@@ -201,3 +201,8 @@
 - Audit (docs/cycles/cycle-34-research.md): with the demo storm on, Home still said "Normal / no alerts" while Alerts said "Warning · Simulated"; caution routes said "No active flood conditions" under a simulated storm; "Live" chips next to "Simulated"; Corpus Christi advisories on Drive.
 - Fixed: one shared demo-storm switch (demo mode only, per tab) drives Home, Alerts and Drive; /alerts gains simulate=storm with one alert labelled "SIMULATED — demo only"; all simulate-capable endpoints return simulated:true + storm_mode; new route.cautionSim message in 5 languages (lead fix); simulated responses show a "Simulated" tag instead of "Live"; Drive zone-only NWS warnings limited to Houston-region counties.
 - Verified: 215 tests, build, i18n 0 missing; e2e at 390 px with ?demo=1: Home shows Simulated tag + simulated alert, Alerts and Drive switches stay in sync, Meyerland→Downtown says "Simulated storm: conditions are active"; only remaining Live chip is the real Galveston tide; 0 page errors.
+## Cycle 35 — Sun Oct 11, ~8:30 AM (coverage recount + cheap conversions)
+- Recount after cycles 29-34 (docs/cycles/cycle-35-coverage.md): no change from those cycles (they deepened already-REDUCES problems).
+- New: HCFCD Home Buyout Hotline 346-286-4020 + volunteer form on Renting/buying (G1 → REDUCES); "Ways to pay less for flood insurance" (FloodSmart elevation certificate / elevating; generic, so C4 stays INFORMS); IAH/HOU FAA status chip on Drive (E5 partial, stays INFORMS); knowledge cards updated.
+- Coverage: 37 REDUCES / 13 INFORMS / 2 NONE (71%); README, devpost, judge-qa, business-case, DEMO-DAY updated.
+- Verified: 215 tests, build, i18n 0 missing, browser check of all three at 390 px, 0 page errors.

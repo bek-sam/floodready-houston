@@ -4,6 +4,7 @@ import { useBk } from '../lib/bk'
 import { ErrorBox, LoadingText, SkeletonText, SourceLink } from './ds'
 import { useAsync } from './ui'
 import { useState } from 'react'
+import { BuyoutContact } from './p35/P35'
 
 function TenantRights({ open }: { open: boolean }) {
   const { t } = useApp()
@@ -96,6 +97,7 @@ export default function RentBuy({ label, zone, sfha, lat, lon }: { label: string
           <SourceLink href={b.source} />
         </p>
       )}
+      {hasLoc && <BuyoutContact />}
       <TenantRights open={b?.in_buyout_area === true} />
       {showDecision && (
         <div className="rounded-md bg-surface-2 p-4" role="note">

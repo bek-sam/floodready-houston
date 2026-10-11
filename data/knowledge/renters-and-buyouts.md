@@ -21,3 +21,11 @@ source: https://hcd.harriscountytx.gov/Disaster-Recovery/Buyout-Relocation-Progr
 - Harris County's Buyout & Relocation Program says owners inside buyout areas receive an official "General Information Notice". Ask the program in writing whether federal funds are used and whether tenants get the same notice. (Harris County HCD)
 - Letter to send: ask (1) whether federal funds are involved, (2) for the written general information notice, (3) for relocation advisory services and an eligibility determination. Keep your lease and rent receipts.
 - This is not legal advice and not official guidance. For legal help, contact a tenant legal aid office. In danger, call 911.
+
+## Who to call about a Harris County Flood Control District home buyout
+source: https://www.hcfcd.org/Buyouts
+source: https://survey123.arcgis.com/share/dced0658099e45c5a2059748577d4beb
+
+- The Harris County Flood Control District lists a Home Buyout Hotline at 346-286-4020 for eligibility, application status, process and relocation questions. Its general line is 346-286-4000. (HCFCD)
+- Homeowners who want to volunteer a home for a buyout can use the "Volunteer for a Home Buyout" online survey form linked from the HCFCD Buyouts page. (HCFCD)
+- The page states no approval timeline, and a buyout is not immediate recovery help. Do not promise a date. In danger, call 911.

@@ -17,6 +17,7 @@ import { parseHash } from '../components/shell/nav'
 import { hazardReason, hazName, routeMessage, useBk } from '../lib/bk'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
 import { placeName, store, streetOf, usePlace, useDemoMode, useSimStorm } from '../state/place'
+import { AirportChip } from '../components/p35/P35'
 import SimToggle from '../components/SimToggle'
 
 /** One end of the route: text, optional known coordinates, and whether it is My place. */
@@ -154,6 +155,7 @@ export default function Drive() {
         </div>
       </DemoPanel>
       <SimToggle />
+      <AirportChip />
 
       <Card>
         <form onSubmit={check} className="space-y-3">

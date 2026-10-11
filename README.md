@@ -33,7 +33,7 @@ Not official guidance. In an emergency, **call 911**.
 | Language equity | 1,338 UI strings x 5 languages (en/es/vi/zh/ar), 0 missing (`scripts/i18n_coverage.mjs`); backend messages carry codes rendered in each language; easy-read mode |
 | Help and recovery | Neighbor check-in (buddy system, data stays on device), go-bag checklist, pets, 311 card by jurisdiction, flood-damage photo helper (on device, never uploaded), Compare places (`#compare`), storm-season reminders |
 
-Coverage, audited honestly and recounted strictly in cycles 24 and 28 ([`cycle-24`](docs/cycles/cycle-24-coverage.md), [`cycle-28`](docs/cycles/cycle-28-coverage.md)): the app **directly reduces 36 of the 52** problems (69%), informs 14 and leaves 2 unaddressed; the rest are policy problems (details in [`app-plan.md`](app-plan.md)).
+Coverage, audited honestly and recounted strictly in cycles 24 and 28 ([`cycle-24`](docs/cycles/cycle-24-coverage.md), [`cycle-28`](docs/cycles/cycle-28-coverage.md)): the app **directly reduces 37 of the 52** problems (71%), informs 13 and leaves 2 unaddressed; the rest are policy problems (details in [`app-plan.md`](app-plan.md)).
 
 Every feature works without API keys (deterministic fallbacks: template text, BM25 search, browser speechSynthesis).
 

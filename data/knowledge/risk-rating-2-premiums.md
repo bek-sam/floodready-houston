@@ -9,3 +9,10 @@ source: https://www.cnbc.com/2020/08/26/every-us-home-gets-flood-risk-score-and-
 - Consumers underestimate "the probability and severity of future disasters." FEMA counts about 9 million properties at substantial risk, versus 14.5 million in First Street's model. (CSFI; CNBC)
 
 Note: these are 2022-era figures from one analysis. Actual quotes vary by property; get a quote from an agent or FloodSmart.gov.
+
+## Ways to pay less for flood insurance
+source: https://www.floodsmart.gov/flood-insurance-cost
+
+- FloodSmart says an elevation certificate is not required, "but they can help you pay less." (FloodSmart)
+- FloodSmart says elevating your home is one of many ways to get a flood insurance discount, and that modifying your home can help you "pay less for flood insurance." (FloodSmart)
+- This is not an affordability program, and the page does not promise a specific discount. Ask an agent for a quote. This is not official guidance.
