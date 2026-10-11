@@ -54,3 +54,8 @@ Not recommended: B4/B5 deep link to the MAAPnext map. https://www.maapnext.org/I
 - D6: the live TranStar roadway feed needs an access agreement.
 - D7: an internal build risk, not a user-facing problem.
 - B5: map timing is FEMA's.
+
+## After the cycle 35 build
+G1 shipped (HCFCD Home Buyout Hotline 346-286-4020 + volunteer form in Renting/buying, `frontend/src/components/p35/P35.tsx` BuyoutContact, verified in the browser) → REDUCES. C4 ("Ways to pay less") is generic, not address-aware → stays INFORMS. E5 airport chip covers airports only → stays INFORMS.
+
+Recount: 37 REDUCES / 13 INFORMS / 2 NONE of 52

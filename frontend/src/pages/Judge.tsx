@@ -5,24 +5,28 @@ import { api } from '../api'
 import { useApp } from '../ctx'
 import { Button, Card, Checkbox, PageHeader, Switch, toast } from '../components/ds'
 import SmsSimulator from '../components/SmsSimulator'
-import { DEFAULT_HOUSEHOLD, KEYS, store, usePlace, type Household } from '../state/place'
+import Evidence from '../components/JudgeEvidence'
+import { DEFAULT_HOUSEHOLD, KEYS, store, usePlace, useSimStorm, type Household } from '../state/place'
 
 const DEMO_ADDR = '5300 N Braeswood Blvd, Houston, TX 77096'
 const DEMO_FALLBACK = { lat: 29.6847, lon: -95.4698, label: DEMO_ADDR }
 const CHECK_KEY = 'floodready.judgeChecked'
 const GO_KEY = 'floodready.demoGo' // read by Drive/Replay/Ask/Alerts to preload the demo step (sessionStorage)
-type Go = { hash: string; lang?: string; household?: Household; place?: boolean }
+type Go = { hash: string; lang?: string; household?: Household; place?: boolean; storm?: boolean }
 const STEPS: Go[] = [
   { hash: '#home', place: true, household: { ...DEFAULT_HOUSEHOLD, renter: false, hasCar: true } },
-  { hash: '#drive' },
+  { hash: '#drive', storm: true },
   { hash: '#replay' },
   { hash: '#ask', lang: 'es' },
-  { hash: '#alerts' },
+  { hash: '#alerts', storm: true },
 ]
 
 export default function Judge() {
   const { t, setLang } = useApp()
   const { demo, setDemo, setPlace, setHousehold } = usePlace()
+  const { setSim } = useSimStorm()
+  const [nCross, setNCross] = useState<number | null>(null)
+  useEffect(() => { api.crossings().then((c) => setNCross(c.features.length)).catch(() => setNCross(null)) }, [])
   const url = location.origin + '/'
   const [svg, setSvg] = useState('')
   const [checked, setChecked] = useState<boolean[]>(() => { try { const v = JSON.parse(sessionStorage.getItem(CHECK_KEY) || '[]'); return [0, 1, 2, 3, 4].map((i) => !!v[i]) } catch { return [false, false, false, false, false] } })
@@ -43,6 +47,7 @@ export default function Judge() {
     if (s.place) await demoPlace()
     if (s.household) setHousehold(s.household)
     if (s.lang) setLang(s.lang)
+    if (s.storm) { setDemo(true); setSim(true) }
     store.set(GO_KEY, String(i + 1), true)
     setBusy(null)
     location.hash = s.hash
@@ -97,13 +102,14 @@ export default function Judge() {
             ))}
           </ol>
           {demo && (
-            <Card title="Text FloodReady (SMS demo)">
-              <p className="mb-3 text-body-sm text-muted">For people without smartphones or data. Simulated here; no real texts are sent.</p>
+            <Card title={t('p36.sms.title')}>
+              <p className="mb-3 text-body-sm text-muted">{t('p36.sms.blurb')}</p>
               <SmsSimulator />
             </Card>
           )}
+          <Evidence />
           <Card tone="inset" title={t('p5a.j.limits')}>
-            <ul className="list-disc space-y-1 ps-5 text-body-sm text-ink">{[1, 2, 3, 4, 5].map((n) => <li key={n}>{t('p5a.j.lim' + n)}</li>)}</ul>
+            <ul className="list-disc space-y-1 ps-5 text-body-sm text-ink">{[1, 2, 3, 4, 5].map((n) => <li key={n}>{n === 2 ? (nCross ? t('p5a.j.lim2').replace('{n}', String(nCross)) : t('p36.lim2n')) : t('p5a.j.lim' + n)}</li>)}</ul>
           </Card>
         </div>
       </div>

@@ -14,6 +14,7 @@ class SimIn(BaseModel):
     # `from` is a Python keyword, so accept it via alias; `phone` also works.
     from_: str = Field(default="+15555550100", alias="from", max_length=32)
     body: str = Field(default="", max_length=1000)
+    simulate: bool = False
     model_config = {"populate_by_name": True}
 
 
@@ -43,7 +44,8 @@ async def inbound(request: Request):
 
 @router.post("/sms/simulate")
 async def simulate(body: SimIn):
-    return {"reply": await svc.handle(body.from_, body.body)}
+    reply = await svc.handle(body.from_, body.body, simulate=body.simulate)
+    return {"reply": reply, "simulated": bool(body.simulate and reply.startswith(svc.SIM_PREFIX))}
 
 
 @router.get("/checkin/script")

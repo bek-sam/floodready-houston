@@ -246,9 +246,18 @@ async def resolve_place(text: str) -> tuple[float, float, str] | None:
     return g["lat"], g["lon"], label[:60]
 
 
-async def summarize(lat: float, lon: float, label: str, lang: str) -> str:
+SIM_PREFIX = "[SIMULATED - demo only]"
+
+
+async def summarize(lat: float, lon: float, label: str, lang: str, simulate: bool = False) -> str:
     S = STR[lang]
     risk, alerts = await asyncio.gather(get_risk(lat, lon), get_alerts(lat, lon), return_exceptions=True)
+    if simulate:  # demo only: inject the fake Flash Flood Warning (never used by /sms/inbound)
+        from app.services.alerts import add_simulated_alert
+        alerts = add_simulated_alert(alerts if isinstance(alerts, dict) else {}, lat, lon)
+        sim_alert = alerts["alerts"][0]
+        return clip(f"{SIM_PREFIX} {label}: Level Warning. {sim_alert['headline']}. "
+                    f"Check official NWS alerts. {S['c911']}")
     risk = risk if isinstance(risk, dict) else {}
     flood = [a for a in (alerts.get("alerts", []) if isinstance(alerts, dict) else []) if is_flood_alert(a)]
     zone = risk.get("fema_zone")
@@ -267,7 +276,7 @@ async def summarize(lat: float, lon: float, label: str, lang: str) -> str:
 
 # ---------- main entry ----------
 
-async def handle(phone: str, body: str) -> str:
+async def handle(phone: str, body: str, simulate: bool = False) -> str:
     """Returns the plain-text reply ('' = send nothing)."""
     phone = (phone or "unknown")[:32]
     cmd, rest = parse_command(body)
@@ -321,7 +330,7 @@ async def handle(phone: str, body: str) -> str:
                 s.commit()
                 return clip(S["on"].format(p=label))
             s.commit()
-            summary = await summarize(lat, lon, label, lang)
+            summary = await summarize(lat, lon, label, lang, simulate)
             if cmd == "help":
                 return clip(summary)
             return summary

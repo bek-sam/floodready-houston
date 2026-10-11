@@ -55,3 +55,6 @@ Every recorded request is answered from the snapshot (header `X-FloodReady-Snaps
 - Backend down: `cd backend && uv run uvicorn app.main:app --port 8000`
 - Frontend down: `cd frontend && npm run dev`
 - Any tab errors → other tabs still work (error boundaries); in danger copy always shows 911.
+
+## Refresh evidence numbers
+`python3 scripts/build_evidence.py` (runs backend pytest; rewrites frontend/public/evidence.json from docs/eval/*, cycle-35 coverage; fails if a source is missing).

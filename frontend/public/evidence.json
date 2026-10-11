@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-10-11T12:30:18+00:00",
+  "items": [
+    {
+      "id": "ai_eval",
+      "label": "AI eval pass rate",
+      "value": "38/40 (95%)",
+      "detail": "by language: en 26/26, es 12/14; known failures: rent-es-1, rent-es-1",
+      "as_of": "2026-10-11 01:20",
+      "source_path": "docs/eval/latest.md",
+      "source_url": null
+    },
+    {
+      "id": "citation_eval",
+      "label": "Citation eval (live Gemini)",
+      "value": "15/15 (100%)",
+      "detail": "by language: en 10/10, es 3/3, vi 1/1, zh 1/1; no failures",
+      "as_of": "2026-10-11 06:51",
+      "source_path": "docs/eval/latest-citations.md",
+      "source_url": null
+    },
+    {
+      "id": "voice_latency",
+      "label": "Voice latency (end of speech to first audio)",
+      "value": "median 1.4 s",
+      "detail": "gemini-3.1-flash-live-preview, n=3 (small sample); includes ~600 ms VAD silence wait",
+      "as_of": "2026-10-11 00:20",
+      "source_path": "docs/eval/live-bench.md",
+      "source_url": null
+    },
+    {
+      "id": "tests",
+      "label": "Backend tests",
+      "value": "219 passed",
+      "detail": "219 passed, 4 warnings in 9.52s",
+      "as_of": "2026-10-11 07:30",
+      "source_path": "backend/tests",
+      "source_url": null
+    },
+    {
+      "id": "a11y",
+      "label": "Accessibility (axe-core 4.10.2)",
+      "value": "0 violations in 48 combos",
+      "detail": "12 views x 2 widths x 2 themes; was 1 serious + moderate before fixes; reported in CHANGELOG cycle 31, raw JSON not kept",
+      "as_of": "2026-10-11",
+      "source_path": "docs/eval/a11y.md",
+      "source_url": null
+    },
+    {
+      "id": "coverage",
+      "label": "Flood problems addressed",
+      "value": "37/52 reduce, 13 inform, 2 not addressed",
+      "detail": "counted by hand per docs/cycles/cycle-24-coverage.md rules",
+      "as_of": "2026-10-11",
+      "source_path": "docs/cycles/cycle-35-coverage.md",
+      "source_url": null
+    }
+  ]
+}

@@ -153,6 +153,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Cycle 34:** `simulate=storm` (demo mode only in UI) on `/alerts` (adds one alert labelled "SIMULATED — demo only", `simulated:true`), `/risk`, `/outlook`, `/route-check`, `/watch/status` → top-level `simulated:true` + `meta.storm_mode:true`; new route message code `route.cautionSim` {n, names, conds}. Frontend: one shared demo-storm flag (`useSimStorm`, sessionStorage) + `SimToggle` on Home/Alerts/Drive.
 
+**Cycle 36:** POST `/sms/simulate` accepts `simulate:bool` → `{reply, simulated}` (replies prefixed "[SIMULATED - demo only]"; /sms/inbound ignores it). Judge page Evidence reads `frontend/public/evidence.json` built by `scripts/build_evidence.py` from docs/eval/*, docs/cycles/cycle-35-coverage.md (last "Recount:" line) and a real pytest run — regenerate before the demo.
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

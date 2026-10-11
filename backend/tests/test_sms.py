@@ -62,3 +62,26 @@ def test_checkin(client, monkeypatch):
     s = client.get("/api/checkin/script?lang=es").json()
     assert s["lang"] == "es" and "1" in s["digits"] and "2" in s["digits"] and "<Gather" in s["twiml"]
     assert client.post("/api/checkin/call", json={"phone": "+15550006", "name": "A", "lang": "en"}).status_code == 503
+
+
+def test_simulate_storm_prefix_and_warning(client):
+    j = client.post("/api/sms/simulate", json={"from": "+15550010", "body": "77096", "simulate": True}).json()
+    r = j["reply"]
+    assert j["simulated"] is True and r.startswith("[SIMULATED - demo only]")
+    assert "Warning" in r and "SIMULATED" in r and "911" in r and len(r) <= 459
+
+
+def test_simulate_omitted_unchanged(client):
+    j = client.post("/api/sms/simulate", json={"from": "+15550011", "body": "77096"}).json()
+    assert j["simulated"] is False and "SIMULATED" not in j["reply"]
+
+
+def test_simulate_help_unchanged(client):
+    j = client.post("/api/sms/simulate", json={"from": "+15550012", "body": "HELP", "simulate": True}).json()
+    assert "SIMULATED" not in j["reply"] and "STOP" in j["reply"] and j["simulated"] is False
+
+
+def test_inbound_ignores_simulate(client):
+    r = client.post("/api/sms/inbound", content="From=%2B15550013&Body=77096&simulate=1",
+                    headers={"content-type": "application/x-www-form-urlencoded"})
+    assert r.status_code == 200 and "SIMULATED" not in r.text
