@@ -119,7 +119,8 @@ export interface Nri extends Warned {
 }
 export interface ParkingCheck extends Warned {
   lat: number; lon: number; address?: string | null; verdict: 'move' | 'no_flags'; headline: string; detail: string
-  reasons: { code: string; text: string }[]; fema_zone: string | null; harvey_flooded: boolean | null; elevation_ft: number | null
+  headline_code?: string; detail_code?: string; limits_code?: string
+  reasons: { code: string; text: string; params?: Record<string, string | number> }[]; fema_zone: string | null; harvey_flooded: boolean | null; elevation_ft: number | null
   crossings_within_300m: { name: string; distance_m: number; risk: string }[]; active_flood_alerts: number | null
   higher_ground: { lat: number; lon: number; elevation_ft: number | null; gain_ft: number | null; distance_m: number | null; maps_url: string } | null
   limits: string; sources: string[]; meta?: Meta

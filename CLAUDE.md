@@ -145,6 +145,8 @@ It covers 52 Houston flood problems (`flood-problems.md`). Features are mapped t
 
 **Cycle 28 additions:** GET `/reservoir/pool?lat&lon` → `{available, pool{gauge_id,name,stage_ft,observed_at,action_ft,minor_ft,harvey_crest_ft,harvey_crest_date,status}|null, ground_elevation_ft, pool_below_ground_ft, harvey_above_ground_ft, relevant, message, message_code, datum_note, disclaimer, barker:null, source, meta, thresholds?, warnings?}` (NWPS ADDT2; Barker has no NWPS gauge); GET `/airports/status` → `{airports[{code:IAH|HOU, closed:bool|null, reason, reopen}], source, meta, note, warnings?}` (FAA NAS status; backend only, not in UI); `/zip-insurance` `premiums.truncated`.
 
+**Cycle 30:** `/parking/check` adds `headline_code`, `detail_code`, `limits_code`, reasons `{code, params}` (frontend renders t(code), English text is fallback).
+
 `Gauge = {id, name, lat, lon, stage_ft, observed_at, flood_stages:{action,minor,moderate,major}, status:"normal"|"action"|"minor"|"moderate"|"major"|"unknown"}`
 
 ## Data files (written by the data agent, read by the backend)

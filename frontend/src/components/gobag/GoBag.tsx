@@ -65,7 +65,7 @@ export default function GoBag() {
             <section className="fr-wallet rounded-lg border border-line bg-surface p-3 text-body-sm text-ink" aria-label={t('p10.card.front')}>
               <p className="text-caption font-semibold uppercase text-muted">{t('p10.card.front')}</p>
               <p className="text-h3">{card.name || t('p10.card.nameBlank')}</p>
-              <p>{place?.label ?? ''}</p>
+              <p><bdi>{place?.label ?? ''}</bdi></p>
               <p className="mt-1"><b>{t('p10.card.contacts')}:</b> {card.contacts || '________'}</p>
               <p><b>{t('p10.card.meds')}:</b> {card.meds || '________'}</p>
               <p className="mt-1 font-semibold">{t('p10.card.stear')}</p>

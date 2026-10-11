@@ -39,14 +39,14 @@ export default function Widget() {
     <AppCtx.Provider value={ctx as never}>
       <main className="mx-auto min-h-dvh max-w-[400px] bg-bg p-3 text-ink">
         <section className="rounded-lg border border-line bg-surface p-4 shadow-card" aria-live="polite">
-          <h1 className="text-h3 text-ink">{t('p15.w.title')}{label && <span className="block text-body-sm font-normal text-muted">{label}</span>}</h1>
+          <h1 className="text-h3 text-ink">{t('p15.w.title')}{label && <bdi className="block text-body-sm font-normal text-muted">{label}</bdi>}</h1>
           {!ok ? <p className="mt-2 text-body-sm">{t('p15.w.bad')}</p> : !d.done ? <p className="mt-2 text-body-sm text-muted">{t('p15.w.checking')}…</p>
             : !d.alerts ? <p className="mt-2 text-body-sm">{t('p15.w.fail')}</p> : (
               <div className="mt-2 space-y-2">
                 <RiskBadge level={level} label={t('level.' + level)} />
                 <p className="text-body-sm">{flood.length ? fill(t, 'p15.w.alerts', { n: flood.length }) : t('p15.w.none')}</p>
                 {flood.slice(0, 2).map((a, i) => <p key={i} className="text-body-sm font-semibold">{a.event}</p>)}
-                {cat && <p className="text-body-sm text-muted">{fill(t, 'p15.w.outlook', { c: d.outlook?.day1?.label || cat })}</p>}
+                {cat && <p className="text-body-sm text-muted">{fill(t, 'p15.w.outlook', { c: t('outlook.sub.' + cat) !== 'outlook.sub.' + cat ? t('outlook.sub.' + cat) : d.outlook?.day1?.label || cat })}</p>}
                 {d.risk?.fema_zone && <p className="text-caption text-muted">{fill(t, 'p15.w.zone', { z: d.risk.fema_zone })}</p>}
               </div>
             )}

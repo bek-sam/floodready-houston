@@ -183,7 +183,7 @@ export default function Prepare() {
               {cdErr && <div className="mt-3"><ErrorBox error={cdErr} onRetry={runCd} /></div>}
               {cd && (
                 <div className="mt-4 space-y-3">
-                  <StatTile label={t('p5a.ins.starts')} value={fmtDate(cd.effective_date, lang)} sub={t('p5a.ins.wait').replace('{n}', String(cd.days_wait)).replace('{d}', cd.season_end)} icon={Check} />
+                  <StatTile label={t('p5a.ins.starts')} value={fmtDate(cd.effective_date, lang)} sub={t('p5a.ins.wait').replace('{n}', String(cd.days_wait)).replace('{d}', new Date(cd.season_end + 'T12:00:00').toLocaleDateString(lang, { year: 'numeric', month: 'short', day: 'numeric' }))} icon={Check} />
                   <p className="text-body-sm text-ink">{bk(cd.message_code, cd.message_params, cd.message)}</p>
                   {cd.exceptions_note && <p className="text-caption text-muted">{bk(cd.exceptions_note_code || 'ins.exceptions', {}, cd.exceptions_note)}<SourceLink href="https://www.floodsmart.gov/get-insured/buy-a-policy" label={t('p26.ins.src')} /></p>}
                   <div className="flex flex-wrap items-center gap-3">

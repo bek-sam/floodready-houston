@@ -26,7 +26,7 @@ export function MyPlaceSheet({ open, onClose, onEditHousehold }: { open: boolean
         {place && (
           <Card tone="inset" title={<span className="flex items-center gap-2"><MapPin aria-hidden size={18} className="text-brand" />{placeName(place.nickname, t)}</span>}
             action={!editing && <Button variant="ghost" size="sm" icon={Pencil} onClick={() => setEditing(true)}>{t('place.edit')}</Button>}>
-            <p className="text-body-sm text-ink">{place.label}</p>
+            <p className="text-body-sm text-ink"><bdi>{place.label}</bdi></p>
           </Card>
         )}
         {showForm && (

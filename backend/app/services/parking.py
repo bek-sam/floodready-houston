@@ -49,9 +49,11 @@ async def higher_ground(lat, lon, elev):
 
 def verdict_for(reasons: list[dict], flood_alert: bool) -> dict:
     if reasons or flood_alert:
-        return {"level": "move", "headline": "Consider moving your car to higher ground before heavy rain",
+        return {"level": "move", "headline_code": "p30.park.move.h", "detail_code": "p30.park.move.d",
+                "headline": "Consider moving your car to higher ground before heavy rain",
                 "detail": "Flood records or an active alert flag this spot. Higher ground is not a guarantee of safety."}
-    return {"level": "no_flags", "headline": "No flood flags found for this spot in our records",
+    return {"level": "no_flags", "headline_code": "p30.park.ok.h", "detail_code": "p30.park.ok.d",
+            "headline": "No flood flags found for this spot in our records",
             "detail": "That does not mean the spot is safe. Check the forecast and local alerts."}
 
 
@@ -60,20 +62,21 @@ async def assess(lat: float, lon: float, address: str | None = None) -> dict:
     reasons = []
     zone = risk.get("fema_zone")
     if risk.get("sfha") or (zone or "").upper().startswith(("A", "V")):
-        reasons.append({"code": "fema_zone", "text": f"FEMA mapped flood zone {zone}"})
+        reasons.append({"code": "fema_zone", "params": {"zone": zone}, "text": f"FEMA mapped flood zone {zone}"})
     hv = risk.get("harvey") or {}
     if hv.get("flooded") is True:
-        reasons.append({"code": "harvey", "text": "This spot is inside the mapped Hurricane Harvey flood extent"})
+        reasons.append({"code": "harvey", "params": {}, "text": "This spot is inside the mapped Hurricane Harvey flood extent"})
     cross = [{"name": n, "distance_m": round(d), "risk": r} for d, n, r in crossings_near(lat, lon, CROSSING_M)]
     if cross:
-        reasons.append({"code": "crossing", "text": f"{len(cross)} known flood-prone crossing(s) within {CROSSING_M} m"})
+        reasons.append({"code": "crossing", "params": {"n": len(cross), "m": CROSSING_M}, "text": f"{len(cross)} known flood-prone crossing(s) within {CROSSING_M} m"})
     if risk.get("low_ground"):
-        reasons.append({"code": "low_ground", "text": "Lower than nearby gauges' reference ground (approximate)"})
+        reasons.append({"code": "low_ground", "params": {}, "text": "Lower than nearby gauges' reference ground (approximate)"})
     flood_alerts = [a for a in alerts.get("alerts", []) if is_flood_alert(a)]
     elev = risk.get("elevation_ft")
     hg = await higher_ground(lat, lon, elev) if (reasons or flood_alerts) else None
     v = verdict_for(reasons, bool(flood_alerts))
     out = {"lat": lat, "lon": lon, "address": address, "verdict": v["level"], "headline": v["headline"], "detail": v["detail"],
+           "headline_code": v["headline_code"], "detail_code": v["detail_code"], "limits_code": "p30.park.limits",
            "reasons": reasons,
            "fema_zone": zone, "harvey_flooded": hv.get("flooded"), "elevation_ft": elev,
            "crossings_within_300m": cross,

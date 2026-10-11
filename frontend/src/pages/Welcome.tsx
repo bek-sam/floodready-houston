@@ -57,7 +57,7 @@ export default function Welcome({ onDone }: { onDone: () => void }) {
                 {place && !changing ? (
                   <Card tone="normal">
                     <p className="flex items-center gap-2 text-h3"><Check aria-hidden size={20} className="text-normal" />{placeName(place.nickname, t)}</p>
-                    <p className="mt-1 flex items-start gap-2 text-body-sm"><MapPin aria-hidden size={16} className="mt-0.5 shrink-0 text-brand" />{place.label}</p>
+                    <p className="mt-1 flex items-start gap-2 text-body-sm"><MapPin aria-hidden size={16} className="mt-0.5 shrink-0 text-brand" /><bdi>{place.label}</bdi></p>
                     <button type="button" onClick={() => setChanging(true)} className="mt-2 min-h-11 font-semibold text-brand underline underline-offset-2">{t('place.change')}</button>
                   </Card>
                 ) : (

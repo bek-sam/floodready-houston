@@ -27,7 +27,7 @@ export default function Settings() {
       <Card title={t('place.sheetTitle')}>
         {place ? (
           <p className="flex items-start gap-2 text-body-sm"><MapPin aria-hidden size={16} className="mt-0.5 shrink-0 text-brand" />
-            <span><b>{placeName(place.nickname, t)}</b> · {place.label}</span></p>
+            <span><b>{placeName(place.nickname, t)}</b> · <bdi>{place.label}</bdi></span></p>
         ) : <p className="text-body-sm text-muted">{t('place.none')}</p>}
         <p className="mt-3 flex items-start gap-2 text-body-sm"><Users aria-hidden size={16} className="mt-0.5 shrink-0 text-brand" />
           <span>{chips.length ? chips.map((k) => t(k)).join(' · ') : t('hh.empty')}</span></p>

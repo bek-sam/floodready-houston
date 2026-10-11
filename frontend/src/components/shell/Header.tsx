@@ -27,7 +27,7 @@ export function Header({ onPlace, onLang, onMore, onInstall, logoProps }: {
             <span className="flex min-w-0 items-center gap-1">
               <span className="shrink-0 font-semibold">{name}</span>
               <span aria-hidden className="shrink-0 text-muted">·</span>
-              <span className="min-w-0 max-w-[22ch] truncate text-muted md:max-w-[40ch]">{street}</span>
+              <span className="min-w-0 max-w-[22ch] truncate text-muted md:max-w-[40ch]"><bdi>{street}</bdi></span>
             </span>
           ) : <span className="truncate">{t('place.set')}</span>}
           <ChevronDown aria-hidden size={16} className="shrink-0 text-muted" />

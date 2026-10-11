@@ -22,21 +22,21 @@ function Contact({ v }: { v?: string | null }) {
 }
 
 function PoolCard({ lat, lon }: { lat: number; lon: number }) {
-  const { t } = useApp()
+  const { t, lang } = useApp()
   const pool = useAsync<ReservoirPool>(() => api.reservoirPool({ lat, lon }), [lat, lon])
   const p = pool.data
   if (pool.loading) return <SkeletonCard lines={3} />
   if (pool.error || !p) return null
   const pl = p.pool
   const f1 = (n: number) => n.toFixed(1)
-  const rows: [string, number | undefined][] = pl ? [[t('p28.pool.now'), pl.stage_ft], [t('p28.pool.action'), pl.action_ft], [t('p28.pool.minor'), pl.minor_ft], [t('p28.pool.crest').replace('{date}', pl.harvey_crest_date ?? ''), pl.harvey_crest_ft]] : []
+  const rows: [string, number | undefined][] = pl ? [[t('p28.pool.now'), pl.stage_ft], [t('p28.pool.action'), pl.action_ft], [t('p28.pool.minor'), pl.minor_ft], [t('p28.pool.crest').replace('{date}', pl.harvey_crest_date ? new Date(pl.harvey_crest_date + (pl.harvey_crest_date.length === 10 ? 'T12:00:00' : '')).toLocaleDateString(lang, { year: 'numeric', month: 'short', day: 'numeric' }) : ''), pl.harvey_crest_ft]] : []
   const d = p.pool_below_ground_ft
   return (
     <Card title={t('p28.pool.h')}>
       {!pl && <p className="text-muted">{t('p28.pool.off')}</p>}
       {pl && (
         <ul className="space-y-1 text-body-sm">
-          {rows.map(([k, v], i) => <li key={i} className={'flex justify-between gap-3' + (i === 0 ? ' font-semibold' : '')}><span>{k}</span><span>{v != null ? f1(v) + ' ft' : '—'}</span></li>)}
+          {rows.map(([k, v], i) => <li key={i} className={'flex justify-between gap-3' + (i === 0 ? ' font-semibold' : '')}><span>{k}</span><span>{v != null ? <bdi>{f1(v)} {t('p30b.unit.ft')}</bdi> : '—'}</span></li>)}
         </ul>
       )}
       {d != null && <p className="mt-3 text-body-sm">{(d >= 0 ? t('p28.pool.below') : t('p28.pool.above')).replace('{n}', f1(Math.abs(d)))}</p>}

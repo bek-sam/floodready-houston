@@ -26,7 +26,7 @@ export function ForPlace({ className = '' }: { className?: string }) {
   return (
     <p className={`flex flex-wrap items-center gap-x-1.5 text-caption text-muted ${className}`}>
       <MapPin aria-hidden size={14} />
-      {place ? <span>{t('place.for').replace(/[:：]\s*$/, '')}: {placeName(place.nickname, t)} · {streetOf(place.label)}</span> : <span>{t('place.none')}</span>}
+      {place ? <span>{t('place.for').replace(/[:：]\s*$/, '')}: {placeName(place.nickname, t)} · <bdi>{streetOf(place.label)}</bdi></span> : <span>{t('place.none')}</span>}
       <span aria-hidden>·</span>
       <button type="button" onClick={openPlaceSheet} className="min-h-6 font-semibold text-brand underline underline-offset-2">
         {place ? t('place.change') : t('place.set')}

@@ -47,10 +47,16 @@ export default function ParkCard() {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'move-car.ics'; a.click()
     setTimeout(() => URL.revokeObjectURL(a.href), 2000)
   }
+  // Localized via backend codes; falls back to the English text when a key is missing.
+  const tr = (code: string | undefined, fb: string, vars?: Record<string, string | number>) => {
+    if (!code) return fb
+    const v = t(code)
+    return v && v !== code ? fill(t, code, vars) : fb
+  }
   const move = res?.verdict === 'move'
   return (
     <Card title={<span className="flex items-center gap-2"><Car aria-hidden size={18} className="text-brand" />{t('p15.park.title')}</span>} titleAs="h2" subtitle={t('p15.park.sub')}>
-      {spot && <p className="mb-2 text-body-sm text-muted">{fill(t, 'p15.park.spot', { label: spot.label })}</p>}
+      {spot && <p className="mb-2 text-body-sm text-muted">{fill(t, 'p15.park.spot', { label: '\u2068' + spot.label + '\u2069' })}</p>}
       <div className="flex flex-wrap gap-2">
         {place && <Button variant="secondary" icon={MapPin} loading={busy} onClick={() => run({ lat: place.lat, lon: place.lon }, place.label)}>{t('p15.park.use')}</Button>}
         {spot && <Button variant="secondary" loading={busy} onClick={() => run({ lat: spot.lat, lon: spot.lon }, spot.label)}>{t('p15.park.check')}</Button>}
@@ -63,9 +69,9 @@ export default function ParkCard() {
       {err && <div className="mt-3"><ErrorBox error={err} /></div>}
       {res && (
         <div className={`mt-3 rounded-md border-s-4 p-3 ${move ? 'border-watch bg-surface-2' : 'border-line bg-surface-2'}`} role="status">
-          <p className="text-body font-semibold text-ink">{res.headline}</p>
-          <p className="text-body-sm text-ink">{res.detail}</p>
-          {res.reasons?.length > 0 && <ul className="mt-2 list-disc ps-5 text-body-sm text-ink">{res.reasons.map((r) => <li key={r.code}>{r.text}</li>)}</ul>}
+          <p className="text-body font-semibold text-ink">{tr(res.headline_code, res.headline)}</p>
+          <p className="text-body-sm text-ink">{tr(res.detail_code, res.detail)}</p>
+          {res.reasons?.length > 0 && <ul className="mt-2 list-disc ps-5 text-body-sm text-ink">{res.reasons.map((r) => <li key={r.code}>{tr('p30.park.reason.' + r.code, r.text, r.params)}</li>)}</ul>}
           {move && (
             <div className="mt-3 flex flex-wrap gap-2">
               {res.higher_ground?.maps_url && /^https:\/\//.test(res.higher_ground.maps_url) && (
@@ -74,7 +80,7 @@ export default function ParkCard() {
               <Button size="sm" variant="secondary" icon={CalendarPlus} onClick={download}>{t('p15.park.ics')}</Button>
             </div>
           )}
-          <p className="mt-2 text-caption text-muted">{res.limits || t('p15.park.limits')}</p>
+          <p className="mt-2 text-caption text-muted">{tr(res.limits_code, res.limits || t('p15.park.limits'))}</p>
         </div>
       )}
       {spot && <Button className="mt-3" variant="ghost" size="sm" icon={Trash2} onClick={() => { setSpot(null); setRes(null); store.set(KEY, null) }}>{t('p15.park.clear')}</Button>}

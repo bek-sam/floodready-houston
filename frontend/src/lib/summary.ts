@@ -59,6 +59,13 @@ export function rightNow(i: SummaryInputs): RightNow {
 export interface HistHit { event: string; gauge: string; gaugeId: string; status: Status; peak_ft: number | null }
 
 /** E3: moderate/major peak at the nearest gauge within 3 mi. Worst first. */
+/** i18n key ('@...') for a known flood event name, else the raw name. */
+export function eventLabel(name: string): string {
+  const n = (name || '').toLowerCase()
+  const k = n.includes('harvey') ? 'harvey' : n.includes('tax day') ? 'taxday' : n.includes('imelda') ? 'imelda' : n.includes('june 2026') ? 'june2026' : ''
+  return k ? '@p30b.ev.' + k : name
+}
+
 export function historyHit(h: FloodHistory | null): HistHit | null {
   const evs = (Array.isArray(h?.events) ? h!.events : []).filter((e) => {
     const g = e?.nearest_gauge
@@ -67,7 +74,7 @@ export function historyHit(h: FloodHistory | null): HistHit | null {
   if (!evs.length) return null
   evs.sort((a, b) => LEVEL_RANK[gaugeLevel(b.nearest_gauge!.peak_category)] - LEVEL_RANK[gaugeLevel(a.nearest_gauge!.peak_category)])
   const e = evs[0], g = e.nearest_gauge!
-  return { event: e.name, gauge: g.name, gaugeId: g.id, status: g.peak_category, peak_ft: g.peak_ft }
+  return { event: eventLabel(e.name), gauge: g.name, gaugeId: g.id, status: g.peak_category, peak_ft: g.peak_ft }
 }
 
 export interface ExposureResult { exposure: Exposure; final: boolean; reason: Reason }

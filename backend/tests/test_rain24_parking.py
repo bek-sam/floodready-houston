@@ -54,3 +54,10 @@ def test_verdict_wording():
     v = parking.verdict_for([], False)
     assert v["level"] == "no_flags" and "not mean" in v["detail"]
     assert " safe" not in v["headline"].lower()
+
+
+def test_codes():
+    v = parking.verdict_for([{"code": "x"}], False)
+    assert v["headline_code"] == "p30.park.move.h" and v["detail_code"] == "p30.park.move.d"
+    v = parking.verdict_for([], False)
+    assert v["headline_code"] == "p30.park.ok.h" and v["detail_code"] == "p30.park.ok.d"
