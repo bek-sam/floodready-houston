@@ -22,7 +22,7 @@ for f in SNAP_DIR.glob("*.json"):
     f.unlink()
 saved, failed = 0, []
 
-PLACES = [(29.6876, -95.4583), (29.564, -95.025), (29.6847, -95.4698), (29.68, -95.46)]
+PLACES = [(29.6876, -95.4583), (29.564, -95.025), (29.6847, -95.4698), (29.68, -95.46), (29.7869, -95.644)]
 ROUTE = {"origin": {"lat": 29.7648, "lon": -95.3665}, "destination": {"lat": 29.7648, "lon": -95.356}}
 PITCH = [("Did my neighborhood flood before?", "en", True), ("¿Qué hago si mi calle se inunda?", "es", False),
          ("My street is flooding, what do I do?", "es", False), ("Do I need flood insurance and how long is the wait?", "en", False),
@@ -65,12 +65,19 @@ for lat, lon in PLACES:
     g("/medical", **pt)
     g("/medical", kind="dialysis", limit=5, **pt)
     g("/buyout-area", **pt)
+    g("/rain24", **pt)
+    g("/parking/check", **pt)
+    g("/nri", **pt)
+    g("/reservoir/pool", **pt)
     for gg in (risk or {}).get("nearest_gauges", [])[:3]:
         g(f"/gauges/{gg['id']}/history", hours=48)
 g("/flood-history", lat=29.6876, lon=-95.4583, zip="77096")
 g("/flood-history", lat=29.6847, lon=-95.4698, zip="77096")
 for z in ("77096", "77025", "77586"):
     g("/zip-insurance", zip=z)
+for z in ("77096", "77025", "77586", "77079"):
+    g("/empower", zip=z)
+g("/airports/status")
 g("/coastal")
 g("/crossings")
 g("/status")
