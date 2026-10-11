@@ -14,6 +14,7 @@ log = logging.getLogger("zipinsurance")
 BASE = "https://www.fema.gov/api/open"
 SOURCE = "https://www.fema.gov/openfema-data-page/nfip-redacted-claims-v3"
 TTL = 24 * 3600
+SHORT_TTL = 300
 SEED_ZIPS = ["77096", "77004", "77002", "77026"]
 NOTE = ("Counts are NFIP flood-insurance claims filed in this ZIP (redacted OpenFEMA data); uninsured flood damage "
         "is not included. Policies in force is an approximate count of policy records active today.")
@@ -70,12 +71,15 @@ async def _premiums(z: str):
         "$filter": f"reportedZipCode eq '{z}' and policyEffectiveDate le '{today}' and policyTerminationDate ge '{today}'",
         "$select": "totalInsurancePremiumOfThePolicy", "$top": 10000}, ttl=TTL)
     try:
-        vals = [r["totalInsurancePremiumOfThePolicy"] for r in d["NfipPolicies"]]
+        rows = d["NfipPolicies"]
+        truncated = len(rows) >= 10000
+        vals = [r["totalInsurancePremiumOfThePolicy"] for r in rows]
         vals = sorted(v for v in vals if isinstance(v, (int, float)) and v > 0)
         if not vals:
             return None
         q = statistics.quantiles(vals, n=4) if len(vals) >= 2 else [vals[0]] * 3
         return {"median_annual": round(q[1]), "p25": round(q[0]), "p75": round(q[2]), "sample_size": len(vals),
+                "truncated": truncated,
                 "source": "https://www.fema.gov/openfema-data-page/nfip-redacted-policies-v3"}
     except Exception:
         return None
@@ -99,14 +103,20 @@ async def zip_insurance(z: str) -> dict:
     if hit and time.time() - hit["fetched_at"] < TTL:
         return _out(hit)
     snap = diskcache.get("zip_insurance", z)
-    if snap and "premiums" in snap and time.time() - snap.get("fetched_at", 0) < TTL:
+    if snap and snap.get("premiums") is not None and time.time() - snap.get("fetched_at", 0) < TTL:
         _mem[z] = snap
         return _out(snap)
     fresh = await fetch_zip(z)
     if fresh:
-        _mem[z] = fresh
-        diskcache.put("zip_insurance", z, fresh)
-        return _out(fresh)
+        if fresh.get("premiums") is not None or fresh.get("policies_in_force") is not None:
+            _mem[z] = fresh
+            diskcache.put("zip_insurance", z, fresh)
+            return _out(fresh)
+        # policy calls transiently failed: short TTL, never poison the 24 h cache
+        _mem[z] = {**fresh, "fetched_at": time.time() - TTL + SHORT_TTL}
+        out = _out(fresh)
+        out["warnings"] = ["Policy and premium data temporarily unavailable; claims shown."]
+        return tag_warnings(out)
     if snap:  # stale disk snapshot beats nothing
         out = _out(snap)
         out["warnings"] = ["OpenFEMA unavailable; showing a saved snapshot"]

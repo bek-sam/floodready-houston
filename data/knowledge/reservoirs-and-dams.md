@@ -9,3 +9,12 @@ source: https://projects.propublica.org/graphics/harvey
 - Gauges on Langham Creek, Bear Creek and Buffalo Bayou at the reservoirs are in data/gauges.json.
 
 What to do: if you live near Addicks or Barker, check whether your address is in the reservoir pool area and watch the reservoir gauges during heavy rain.
+
+## Addicks pool level vs your ground (NOAA gauge ADDT2)
+source: https://water.noaa.gov/gauges/ADDT2
+source: https://api.water.noaa.gov/nwps/v1/gauges/ADDT2
+
+- NOAA's gauge ADDT2 (Addicks Reservoir pool) reports pool elevation in feet. NOAA's action stage is 93 ft and minor flood stage is 96 ft. The record crest was 109.09 ft on 2017-08-30 (Harvey). (NOAA NWPS)
+- To compare, subtract your ground elevation from the pool level. Pool and ground elevations may use different vertical datums (NGVD29 vs NAVD88), so treat the result as approximate.
+- NWPS has no Barker pool gauge (BRKT2 returns not found when tested), so Barker is shown as an area flag only.
+- Not official guidance. Follow evacuation orders and call 911 in danger.

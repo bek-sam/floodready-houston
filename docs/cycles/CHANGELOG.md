@@ -169,3 +169,8 @@
 - Civic facts now keyed by explicit `code` (removing a fact no longer shifts translations).
 - New: GET /empower (HHS emPOWER ZIP counts) + Prepare › Medical "Do you rely on power for a medical device?" card (PUC Critical Care, STEAR/2-1-1, CDC carbon-monoxide box, checklist on device); manufactured-home note in evacuation help; 3 knowledge cards (power outage/generators, power-dependent medical, manufactured homes).
 - Verified: 186 tests (one run had 2 transient failures, 3 reruns clean), build, i18n 0 missing, demo_check 21/21, stale-claim grep 0 hits, c27-medical.jpg (ZIP 77096: 201) 0 page errors. Lead fixes: ZIP fallback from address text; duplicated caveat removed.
+## Cycle 28 — Sun Oct 11, ~6:30 AM (coverage push: reservoirs + renters)
+- New: Addicks pool vs your ground (GET /reservoir/pool, NWPS ADDT2 live: 83.89 ft; action 93, minor 96, Harvey 109.09; ground from EPQS; datum caveat) on Who's responsible for reservoir-area places; tenant relocation-rights card in Renting/buying (Uniform Relocation Act 49 CFR 24 — federally funded projects only, copyable letter); GET /airports/status (FAA NAS, backend only).
+- Fixes: zip-insurance no longer caches a failed premiums lookup for 24 h (5-min memory retry), flags the 10k-row cap; OpenFEMA policies already on v3 (no v2 retirement risk).
+- Coverage recount (docs/cycles/cycle-28-coverage.md): A9 (parking + rain24), F2, E3 → REDUCES. 36 REDUCES of 52.
+- Verified: 192 tests, build, i18n 0 missing, live smoke (pool, airports), c28-pool.jpg, 0 page errors.

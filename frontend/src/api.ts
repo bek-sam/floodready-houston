@@ -86,6 +86,12 @@ export interface Civic extends Warned {
   officials?: { commissioner?: Official | null; council?: Official | null; floodplain_admin?: Official | null } | null
 }
 export interface Official { name?: string; title?: string; office?: string; phone?: string; email?: string; url?: string; district?: string; precinct?: string | number; entity?: string }
+export interface ReservoirPool {
+  available: boolean
+  pool: { gauge_id: string; name: string; stage_ft: number; observed_at?: string; action_ft: number; minor_ft: number; harvey_crest_ft: number; harvey_crest_date?: string; status: string } | null
+  ground_elevation_ft: number | null; pool_below_ground_ft: number | null; harvey_above_ground_ft: number | null
+  relevant: boolean; message?: string; message_code?: string; datum_note?: string; disclaimer?: string; source?: string; meta?: Meta; warnings?: string[]
+}
 export interface BuyoutArea { in_buyout_area: boolean | null; area_name?: string | null; source?: string; note?: string; note_code?: string; params?: Record<string, unknown> }
 
 export interface WatchPlace { id: string; label: string; lat: number; lon: number; lang: string }
@@ -204,6 +210,7 @@ export const api = {
   zipInsurance: (zip: string) => req<ZipInsurance>('/zip-insurance?zip=' + encodeURIComponent(zip)),
   medical: (p: LatLon, limit = 5) => req<Medical>('/medical?' + q(p) + `&kind=dialysis&limit=${limit}`),
   empower: (zip: string) => req<Empower>('/empower?zip=' + encodeURIComponent(zip)),
+  reservoirPool: (p: LatLon) => req<ReservoirPool>('/reservoir/pool?' + q(p)),
   buyoutArea: (p: LatLon) => req<BuyoutArea>('/buyout-area?' + q(p)),
   civic: (p?: LatLon | null) => req<Civic>('/civic' + (p ? '?' + q(p) : '')),
   voice: async (text: string, lang: string): Promise<Blob> => {

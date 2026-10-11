@@ -67,6 +67,9 @@ api.include_router(_coastal_router.router)
 from app.routers import rain24 as _rain24_router, parking as _parking_router  # noqa: E402
 api.include_router(_rain24_router.router)
 api.include_router(_parking_router.router)
+from app.routers import reservoir as _reservoir_router, airports as _airports_router  # noqa: E402
+api.include_router(_reservoir_router.router)
+api.include_router(_airports_router.router)
 
 try:
     from app.ai.router import router as ai_router  # type: ignore

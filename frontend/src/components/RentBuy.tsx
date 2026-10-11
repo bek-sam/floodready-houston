@@ -3,6 +3,25 @@ import { useApp } from '../ctx'
 import { useBk } from '../lib/bk'
 import { ErrorBox, LoadingText, SkeletonText, SourceLink } from './ds'
 import { useAsync } from './ui'
+import { useState } from 'react'
+
+function TenantRights({ open }: { open: boolean }) {
+  const { t } = useApp()
+  const [copied, setCopied] = useState(false)
+  const letter = t('p28.ten.l')
+  const copy = async () => { try { await navigator.clipboard.writeText(letter); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch { /* ignore */ } }
+  return (
+    <details className="rounded-md bg-surface-2 p-4" open={open}>
+      <summary className="cursor-pointer text-h3">{open ? t('p28.ten.h') : t('p28.ten.sum')}</summary>
+      <p className="mt-2">{t('p28.ten.body')}</p>
+      <p className="mt-1">{t('p28.ten.keep')}</p>
+      <p className="mt-2 font-semibold">{t('p28.ten.letter')}</p>
+      <pre className="mt-1 whitespace-pre-wrap rounded-md border border-line p-3 text-caption">{letter}</pre>
+      <button type="button" onClick={copy} className="mt-2 rounded-md border border-line px-3 py-1.5 text-body-sm font-semibold" aria-live="polite">{copied ? t('p28.ten.copied') : t('p28.ten.copy')}</button>
+      <p className="mt-2"><SourceLink href="https://www.ecfr.gov/current/title-49/subtitle-A/part-24" label={t('p28.ten.ecfr')} /> <SourceLink href="https://hcd.harriscountytx.gov/Disaster-Recovery/Buyout-Relocation-Programs/" label={t('p28.ten.county')} /></p>
+    </details>
+  )
+}
 
 function ClaimsBars({ rows, title }: { rows: { year: number; count: number }[]; title: string }) {
   const { t, lang } = useApp()
@@ -77,6 +96,7 @@ export default function RentBuy({ label, zone, sfha, lat, lon }: { label: string
           <SourceLink href={b.source} />
         </p>
       )}
+      <TenantRights open={b?.in_buyout_area === true} />
       {showDecision && (
         <div className="rounded-md bg-surface-2 p-4" role="note">
           <p className="text-h3">{t('c11.ins.title')}</p>
