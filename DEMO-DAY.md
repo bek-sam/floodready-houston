@@ -24,12 +24,17 @@ Open `/#judge` on the projector — QR code now points at your real domain.
 1. **My Risk** → `5300 N Braeswood Blvd, Houston, TX 77096` → "Flooded in Harvey (2017)", Zone AE, flood history (Harvey: major), ZIP 77096: 6,482 NFIP claims, median premium ~$1,501.
 2. **Drive Safe** → demo route "Allen Parkway underpass" + Simulate storm → **Avoid** with named crossings.
 3. **Replay** → Hurricane Harvey → Play + **Narrate**.
-4. **Ask** (Spanish) → "¿Qué hago si mi calle se inunda?" → sourced safety steps, 911.
-5. **Watch** → Simulate storm push → phone buzzes.
-Close: "Directly reduces **33 of 52** documented Houston flood problems; the other 19 are policy problems we make visible and actionable."
+4. **Seabrook evacuation** → search `Seabrook, TX 77586` (test point 29.564, -95.025 in `backend/tests/test_evac.py`; it is NOT in `prewarm.py`, so run it once before judging) → summary shows **Evacuation Zone A** + storm-surge depth chips, the Galveston tide chip, and "No Harvey extent data" (Harvey layer covers only the City of Houston, so no false all-clear). Expect no out-of-region storm chip.
+5. **Voice mode** → Ask → **Voice** (Gemini Live, default) → say "Did my neighborhood flood before?" → spoken answer in about 1 s (measured 0.64-1.4 s) → interrupt mid-answer (barge-in) → follow-up in Spanish. If it stalls: Retry / "Switch to Standard". Typed Ask median is 228 ms.
+6. **Ask** (Spanish) → "¿Qué hago si mi calle se inunda?" → sourced safety steps, 911.
+7. **Watch** → Simulate storm push → phone buzzes. Optional: Judge-page SMS simulator (demo mode) → `ALERTS ON`.
+Close: "Directly reduces **33 of 52** documented Houston flood problems (strict recount: `docs/cycles/cycle-24-coverage.md`); the other 19 are mostly policy problems we make visible and actionable."
+
+## Voice mode needs a real mic check
+The live-mic loop is verified with a fake mic only (CHANGELOG, "Live talking verified"). Do one real-mic run on the demo laptop and browser before judging.
 
 ## Say before they ask (limitations)
-Shelter list is 2017 Harvey data (labeled historical) · crossings from one KPRC list (64) · Harvey extent covers 4 demo areas, simplified · elevation fallback approximate · AI answers without a key are templated from sourced cards.
+Shelter list is 2017 Harvey data (labeled historical) · 128 crossings (KPRC list, USGS high-water marks, OSM underpasses; not a complete inventory) · Harvey extent is City of Houston only (357,241 polygons; elsewhere "no Harvey extent data") · vi/zh/ar translations are AI-reviewed, pending native-speaker review · SMS is simulated unless Twilio keys are set · elevation fallback approximate · AI answers without a key are templated from sourced cards.
 
 ## Before judging: run the backend WITHOUT auto-reload
 Hot-reload drops live voice sessions. Stop the dev backend and run:

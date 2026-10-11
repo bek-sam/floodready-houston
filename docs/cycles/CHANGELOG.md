@@ -152,3 +152,7 @@
 - Backend user-visible strings now carry code/params (warnings: warning_codes); UI renders t(code) in 5 languages (frontend/src/i18n/p12.ts) — risk/harvey/facts/jurisdiction, evac, hwm, coastal, route verdicts, watch/push, civic, shelters, insurance, outlook, zip, buyout. Only proper names / USGS site descriptions remain English.
 - Neighbor check-in (buddy system, up to 5 people, call/SMS links, marked-safe; name+phone on device only, rounded coordinates for alerts — disclosed in 5 languages) and Compare places page (#compare: FEMA zone, Harvey, evac, gauge peak, ZIP claims/premium, crossings; every cell sourced).
 - Verified: 173 tests, build, i18n 0 missing, demo_check 21/21, vi/es screenshots c23-*.jpg.
+## Cycle 24 — Sun Oct 11, ~5 AM (recount + docs + visual QA)
+- Strict recount: 33 REDUCES / 17 INFORMS / 2 NONE (63%) — unchanged; new features deepen already-counted problems. docs/cycles/cycle-24-coverage.md.
+- Docs refreshed with measured numbers (README, devpost, judge-qa Q26–31, business-case, DEMO-DAY incl. Seabrook evac + Voice beats).
+- Visual QA sweep: 20 routes × 1280/390 in en + Home/Drive/Prepare in es/vi/zh/ar: 0 page/console errors, 0 raw keys, 0 horizontal overflow at 390 px. Fixed double colon in zh/ar "For:" header.

@@ -20,11 +20,12 @@
 | Homeowners | Half of flooded homes outside mapped zones; 30-day NFIP wait (CL cycle 11) | "Should I insure, and do it before the wait costs me." |
 
 ## 3. Solution and why now
-FloodReady is an address-first PWA: FEMA zone beside "flooded in Harvey", ZIP-level NFIP claims, route check (safe / caution / avoid), storm replay, Watch with Web Push and SMS, tenant-disclosure letter (Tex. Prop. Code 92.0135), dialysis finder, and a cited assistant. Voice runs in **5 languages** (EN/ES/VI/ZH/AR). Self-audit: it **directly reduces 33 of 52 catalogued problems**, informs 17, 2 are not addressed; the rest are policy issues (CL cycle 13; self-audit, not a measurement).
+FloodReady is an address-first PWA: FEMA zone beside "flooded in Harvey", ZIP-level NFIP claims, route check (safe / caution / avoid), storm replay, Watch with Web Push and SMS, tenant-disclosure letter (Tex. Prop. Code 92.0135), dialysis finder, and a cited assistant. Voice runs in **5 languages** (EN/ES/VI/ZH/AR). Self-audit: it **directly reduces 33 of 52 catalogued problems (63%)**, informs 17, 2 are not addressed; the rest are policy issues (strict recount in `docs/cycles/cycle-24-coverage.md`, unchanged from cycle 13; self-audit, not a measurement).
 
 Measured (CL cycles 18-19, EV):
 - Live voice model benchmark: median 1.42 s (gemini-3.1-flash-live-preview), versus 3.83 s for the slowest option tested.
-- 10-question bench: median 811 ms to 228 ms; est. cost per run $0.00136 to $0.00039.
+- 10-question bench: median 811 ms to 228 ms; tokens 10,229 to 2,973 (-71%); est. cost per run $0.00136 to $0.00039 (`docs/eval/bench-*.json`).
+- Voice: end of speech to first audio 0.64-1.4 s (CHANGELOG, Voice v2).
 - Citywide Harvey lookup (357,241 polygons): 11-21 ms. Cache prewarm: 30.8 s to 0.5 s.
 - AI safety eval: quick suite **40/40**; full 99-case suite (5 languages, adversarial included) 87% after fixes, with remaining failures being missing expected terms, not dangerous advice or missing 911 (CL cycle 19).
 
@@ -35,7 +36,7 @@ Measured (CL cycles 18-19, EV):
 |---|---|---|---|---|---|---|---|
 | Address-level risk | Yes | No (general advice) | No (gauges) | Zone only | Yes (score) | No | No |
 | "Flooded in Harvey" next to zone | Yes (citywide) | No | No | No | No | No | No |
-| Live route verdict | Yes (limited to 64 known crossings) | No | No | No | No | Sensors only, no rerouting | No |
+| Live route verdict | Yes (limited to 128 known crossings) | No | No | No | No | Sensors only, no rerouting | No |
 | Real-time alerts | Yes (Push, SMS) | Yes | Gauge map; "not a notification system" | No | Static | Sensors | Yes |
 | Languages | 5 incl. voice | 5 (alerts) | Limited | EN | EN | EN | EN/ES |
 | Renter/buyer tools | Yes | No | No | No | Partial | No | No |
@@ -77,7 +78,7 @@ Why it matters: NFIP has a 30-day wait (CL cycle 11), so a reminder 30+ days ahe
 ## 8. Risks and mitigations
 - **Liability:** labeled "not official guidance", 911 on every emergency answer, never "safe" if routing fails; counsel review before launch.
 - **Data licensing/reliability:** federal data is free; TranStar live feed needs a data agreement; OSRM demo server has no SLA, so move to self-hosted routing.
-- **Accuracy:** crossings list is limited (64) and Harvey data is riverine only; the UI says "not proof it stayed dry".
+- **Accuracy:** crossings list is limited (128) and Harvey data is riverine only and City of Houston only; the UI says "not proof it stayed dry".
 - **AI safety:** 99-case eval incl. adversarial; Gemini failure falls back to sourced templates; keep the eval in CI.
 - **Privacy:** no resident-data sale; minimal PII; SMS consent (STOP/HELP built).
 - **Sustainability:** low hosting cost; diversified buyers; grant uncertainty shown above.
