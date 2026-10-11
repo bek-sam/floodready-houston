@@ -439,6 +439,30 @@ def _cue_steps(question: str, cite: Cites) -> list[str]:
     return steps
 
 
+_STOP = {"much", "fell", "here", "last", "what", "when", "where", "with", "have", "does", "this", "that", "there", "near", "from", "about", "right", "today"}
+_NEW_TOOLS = ("get_rain", "get_declarations", "get_reservoir_pool", "get_nri", "get_power_dependent", "get_parking")
+
+
+def _new_tool_answered(s: State) -> bool:
+    res = s.get("tool_results", {})
+    return bool(_lead_new(res, lambda u: "", s.get("lang") == "es")) if any(k in res for k in _NEW_TOOLS) else False
+
+
+def _title_case(t: str) -> str:
+    if not t or t != t.upper():
+        return t
+    return " ".join(w if w in ("DR", "EM", "FM", "IA", "TX", "FEMA") else w.capitalize() for w in t.split())
+
+
+def _fmt_date(d) -> str:
+    from datetime import date
+    try:
+        x = date.fromisoformat(str(d)[:10])
+        return f"{x.strftime('%b')} {x.day}, {x.year}"
+    except ValueError:
+        return str(d)
+
+
 def _lead_new(res: dict, cite: Cites, es: bool) -> list[str]:
     """Template sentences for the cycle-40 tools (reservoir, declarations, rain, power devices, parking, NRI)."""
     ok = lambda k: isinstance(res.get(k), dict) and "error" not in res[k]  # noqa: E731
@@ -456,8 +480,8 @@ def _lead_new(res: dict, cite: Cites, es: bool) -> list[str]:
         r = res["get_declarations"]
         lt = r.get("latest") or {}
         if lt.get("title"):
-            out.append((f"La declaración de desastre FEMA más reciente en el condado de Harris: {lt['title']} ({lt.get('declaration_date')})" if es
-                        else f"The latest FEMA disaster declaration for Harris County: {lt['title']} ({lt.get('declaration_date')})")
+            out.append((f"La declaración de desastre FEMA más reciente en el condado de Harris: {_title_case(lt['title'])} ({_fmt_date(lt.get('declaration_date'))})" if es
+                        else f"The latest FEMA disaster declaration for Harris County: {_title_case(lt['title'])} ({_fmt_date(lt.get('declaration_date'))})")
                        + (("; hay asistencia individual activa" if es else "; Individual Assistance is active") if r.get("active_ia") else "")
                        + cite(str(r.get("source", ""))) + ".")
     if ok("get_rain"):
@@ -645,7 +669,11 @@ def _answer(s: State) -> State:
         lines.append(_t(lang, "steps", "What to do:"))
         lines += [f"{i}. {t}{mark}" for i, t in enumerate(steps, 1)]
     else:
-        facts = [c for c in ctx if c["source"].startswith("http")][:2]
+        facts = [c for c in ctx if c["source"].startswith("http")]
+        if _new_tool_answered(s):  # a data tool answered; keep only chunks whose title shares the question's topic
+            qw = {w[:4] for w in re.findall(r"[a-záéíóúñ]{4,}", _qtext(s).lower()) if w not in _STOP}
+            facts = [c for c in facts if qw & {w[:4] for w in re.findall(r"[a-záéíóúñ]{4,}", str(c.get("title", "")).lower())}]
+        facts = facts[:2]
         lines += [f"- {_trim(c['text'], 24)}{mark}{cite(c['source'])}" for c in facts]
     if not steps and not lead and not ctx:
         lines.append(_t(lang, "none", "I don't have sourced information on that. For flooding, check weather.gov and local officials."))

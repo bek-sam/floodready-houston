@@ -117,3 +117,16 @@ def test_live_declarations_cover_new_tools():
     names = {d.name for d in live.tool_declarations()}
     assert set(CASES) <= names
     assert set(CASES) <= set(live.TOOL_LABELS)
+
+
+def test_template_rain_no_unrelated_bullets_and_declaration_format(monkeypatch):
+    _fake_all(monkeypatch)
+    j = asyncio.run(graph.ask("How much rain fell here in the last day?", "en", 29.6876, -95.4583))
+    assert "1.25 in" in j["answer"]
+    assert "\n- " not in j["answer"]
+    assert graph._title_case("HURRICANE BERYL") == "Hurricane Beryl"
+    assert graph._title_case("DR 4781 STORMS") == "DR 4781 Storms"
+    assert graph._fmt_date("2024-07-09T00:00:00.000Z") == "Jul 9, 2024"
+    lead = graph._lead_new({"get_declarations": {"source": "s", "latest": {"title": "HURRICANE BERYL", "declaration_date": "2024-07-09"}}},
+                           lambda u: "", False)
+    assert "Hurricane Beryl (Jul 9, 2024)" in lead[0]
