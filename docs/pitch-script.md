@@ -48,7 +48,7 @@ Here's the gap. Today's tools show river gauges and flood maps, not you. Risk, a
 ## Part 2: Introducing FloodReady (slide 5, about 10 seconds)
 
 ### Slide 5: "FloodReady Houston"
-That's why I built FloodReady Houston. It turns any Houston address into a plain-language flood answer, in five languages, with a route check and an AI assistant you can talk to.
+That's why I built FloodReady Houston. It turns any Houston address into a plain-language flood answer, in five languages, with a route check and an AI assistant you can talk to. It isn't a new warning system: it's a layer on top of the official sources (FEMA, NOAA, the county), put together for the people they miss.
 
 Let me show you, live.
 
@@ -61,7 +61,7 @@ Let me show you, live.
 ### Demo 1: Know your risk (about 30 seconds)
 ▶ Home is showing `5300 N Braeswood Blvd` in Meyerland. If it isn't: tap **Set my place** → type the address → pick it → the sheet closes.
 
-This is a real address in Meyerland. In one screen, FloodReady tells me what the official tools never put together.
+This is a real address in Meyerland. In one screen, FloodReady shows what official tools publish separately, side by side.
 
 ▶ Point at the summary chips.
 
@@ -162,6 +162,7 @@ Thank you. I'm happy to take questions, or you can try it on your phone right no
 
 ## Likely judge questions: short answers
 
+- **"Doesn't this already exist?"** The pieces do, and we say so. FEMA has the zones, the county has gauges, NWS and ReadyHarris send alerts, First Street scores risk on Zillow, and TranStar has road sensors. We didn't find any one place for Houston that puts them together for your address, in five languages, with a route check, a cited assistant and recovery steps. NYC's FloodChat is a multilingual flood assistant, so the idea is proven elsewhere; Houston doesn't have one. We're a layer on top of the official tools, not a replacement (`docs/competition.md`).
 - **"Is the data live?"** Yes. FEMA, NOAA, NWS, USGS and OpenFEMA, live with caching. Every screen shows how fresh its data is, and anything historical is labelled. The 2017 shelter list says it's historical.
 - **"How do you know it works?"** A problem-by-problem audit with a live test each: 33 of 52 reduced, 5 fully. It's in `docs/problems/`, and the Judge page has the dated numbers.
 - **"What does the AI actually do?"** It's a LangGraph agent with retrieval over sourced knowledge and 16 live data tools. It cites every sentence, its numbers are checked against the sources, and the "How I answered" panel shows what it used.

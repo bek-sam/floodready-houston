@@ -143,3 +143,6 @@ Stores the household profile (language, mobility, medical, pets, car) so plans a
 - **Gemini free-tier quota is shared and was exhausted once overnight**; rotation and fallbacks exist (Q27), and zh/ar can fall back to an English template body when rate-limited.
 - **SMS is a simulator** unless `TWILIO_*` is configured; no real messages are sent.
 - **The 33/52 count is our own audit** (strict, live test per problem; it replaced an earlier self-count of 37), and not official guidance anywhere: in danger, call 911.
+
+**38. Doesn't this already exist?**
+The pieces exist, and FloodReady consumes them: FEMA zones, county gauges, NWS/ReadyHarris alerts, First Street scores on real-estate sites, TranStar road sensors. A live check on Oct 11 (`docs/competition.md`) found no single Houston tool that puts them together for one address, in five languages, with a pre-trip route check on known flood-prone crossings, a cited assistant and recovery steps. The closest assistant is NYC's FloodChat (multilingual, renters), so the idea is proven elsewhere but not in Houston. We are a layer on top of official sources, not a replacement, and we always say call 911. "Not found" means we didn't find one, not that none exists.
