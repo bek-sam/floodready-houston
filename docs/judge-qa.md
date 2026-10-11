@@ -84,7 +84,7 @@ End of speech to first audio is 0.64 s on a follow-up, 1.0 s in English and 1.4 
 It did: overnight evals exhausted the Gemini free-tier daily quota for three text models (CHANGELOG, "Citations + quota resilience"). Now a quota-aware key x model rotation marks a 429/404 model exhausted with a retry window (`backend/.cache/quota.json`), tries the next, supports several keys (`GEMINI_API_KEYS`), drops embeddings to BM25 on 429, and finally returns a sourced template answer. The live voice model is a separate quota. Emergencies (street flood) are answered from a canned sourced answer with no model call. `/#status` shows the active model.
 
 **28. How do you handle token cost and speed?**
-Deterministic routing (4 of 10 bench answers need no LLM), an answer cache (exact + semantic >= 0.92, location-independent only, never for emergencies), lite vs full model routing, compact tool JSON and adaptive RAG top-k. Bench (`docs/eval/bench-before.json` vs `bench-after.json`): median 811 to 228 ms, 10,229 to 2,973 tokens (-71%), 9 to 5 LLM calls, estimated cost $0.00136 to $0.00039. Quality did not drop: quick eval 40/40, judge eval 18/20 faithful.
+Deterministic routing (4 of 10 bench answers need no LLM), an answer cache (exact + semantic >= 0.92, location-independent only, never for emergencies), lite vs full model routing, compact tool JSON and adaptive RAG top-k. Bench (`docs/eval/bench-before.json` vs `bench-after.json`): median 811 to 228 ms, 10,229 to 2,973 tokens (-71%), 9 to 5 LLM calls, estimated cost $0.00136 to $0.00039. Quality check: AI eval 38/40 (95%) and citation eval 15/15 with live Gemini (Judge page evidence).
 
 **29. How do I know the data is fresh?**
 Data endpoints return `meta{as_of, source, freshness, snapshot_date, storm_mode}`; the UI shows Live (<= 15 min), Recent (<= 2 h) or Stale badges, gauges are flagged stale/provisional/spike/offline, and `/#status` lists 12 sources with last success, last error and p50 latency. Static snapshots (dialysis, bond, shelters) carry a snapshot date and `scripts/refresh_snapshots.py` has a dry run. Shelters stay labeled historical. Unused AI services show "Not used yet", not "Healthy".
@@ -94,6 +94,25 @@ Data endpoints return `meta{as_of, source, freshness, snapshot_date, storm_mode}
 
 **31. What about privacy?**
 No accounts. Household profile, My place and the neighbor check-in list (names and phones, up to 5) stay on the device; check-in alerts use rounded coordinates, disclosed in 5 languages. Flood-damage photos live in IndexedDB, are never uploaded, and have a delete-all button. Community reports are location-rounded, last 24 h, and wrapped as untrusted text before the AI sees them (prompt-injection defense). SMS is STOP/HELP-compliant and sends nothing without Twilio keys. Push test/simulate reach only the caller's own subscription. Not a legal review; see `docs/business-case.md` risks.
+
+### Added since (cycles 32-41)
+**32. How do I see how Ask got its answer?**
+Each answer has a "How I answered" trace: intent, sources searched, live data tools (with timing or "already loaded") and model or template. It adds no Gemini calls and works without keys. Ask has 16 data tools (reservoir pool, FEMA declarations, rain fallen, neighborhood risk index, emPOWER, parking and more), each with its official source.
+
+**33. What does the app do after a flood?**
+Recover has a FEMA declaration banner (it never says "apply now" without a declaration and invents no deadlines), an NFIP proof-of-loss date (60 days), SBA loans, appeal steps if FEMA says no, scam warnings with the FEMA fraud hotline, floodwater and electrical safety, mold, a "waiting for rescue" card (911 first) and an "if you have no home" card (211). Sources we could not verify were left out (used-car title washing, contractor-fraud release).
+
+**34. Can the route check suggest a detour? Is the demo storm labelled?**
+Yes: avoid/caution routes show a dashed detour with fewer flood-prone spots (UH campus to Downtown: 2 to 1, +0.9 min), worded "still check conditions", never "safe". Community reports have "Still there / Cleared" votes; one report gives at most "caution". The demo storm is one switch (demo mode only) shared by Home, Alerts and Drive, and every simulated response is tagged "Simulated".
+
+**35. Who is the dialysis feature for, and what happens offline?**
+Dialysis centers show FEMA zone and "Flooded in Harvey" (Meyerland: 3 nearest centers in Zone AE, 2 flooded in Harvey) with a note to call your center; a no-car or medical household in a warning gets "Get help to evacuate now" (2-1-1, STEAR, 911). Offline, the `#offline` safety card works after a cold reload (a service-worker bug that could blank the app was fixed); 11 pages verified offline.
+
+**36. Accessibility proof?**
+axe-core 4.10.2: 0 violations in 48 combinations (12 views x 2 widths x 2 themes); it was 1 serious plus moderate issues before fixes. Raw JSON was not kept; the result is recorded in the CHANGELOG (cycle 31) and on the Judge page.
+
+**37. What numbers can you show?**
+The Judge page lists dated evidence: 240 backend tests, AI eval 38/40, citation eval 15/15 (live Gemini), voice median 1.4 s (n=3, small sample), axe 0 violations, coverage 33/52. `demo_check` is 21/21 online and 21/21 in snapshot mode. Failures stay listed (es rent question).
 
 ### Sponsors
 **21. Gemini: what does it do and what if it's down?**
@@ -119,8 +138,8 @@ Stores the household profile (language, mobility, medical, pets, car) so plans a
 - **Elevation fallback is approximate.** If USGS EPQS fails, Open-Meteo elevation is used and labeled "approx.". Low-ground only compares against gauges that have a known datum.
 - **Live keys:** Gemini and ElevenLabs were verified live (CHANGELOG, "Keys live"); Backboard's API shape and the ElevenLabs Agent engine are unverified. Run `scripts/check_keys.py` before judging.
 - **Routing relies on the OSRM public demo server**, which has no SLA.
-- **Offline is partial.** See Q7.
+- **Offline is partial.** See Q7. The `#offline` safety card and cached pages work with no connection; live gauges, alerts and fresh route checks do not.
 - **Translations are AI-reviewed, not native-reviewed** (vi/zh/ar headers say so), and no formal user testing was done.
 - **Gemini free-tier quota is shared and was exhausted once overnight**; rotation and fallbacks exist (Q27), and zh/ar can fall back to an English template body when rate-limited.
 - **SMS is a simulator** unless `TWILIO_*` is configured; no real messages are sent.
-- **The 33/52 count is a self-audit**, and not official guidance anywhere: in danger, call 911.
+- **The 33/52 count is our own audit** (strict, live test per problem; it replaced an earlier self-count of 37), and not official guidance anywhere: in danger, call 911.

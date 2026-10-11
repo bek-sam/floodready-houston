@@ -33,16 +33,36 @@ Not official guidance. In an emergency, **call 911**.
 | Language equity | 1,338 UI strings x 5 languages (en/es/vi/zh/ar), 0 missing (`scripts/i18n_coverage.mjs`); backend messages carry codes rendered in each language; easy-read mode |
 | Help and recovery | Neighbor check-in (buddy system, data stays on device), go-bag checklist, pets, 311 card by jurisdiction, flood-damage photo helper (on device, never uploaded), Compare places (`#compare`), storm-season reminders |
 
+### Added in cycles 32-41 and demo hardening
+| Module | What it does |
+|---|---|
+| Ask "How I answered" | Trace of intent, sources searched, live data tools (with timing or "already loaded") and model or template; no extra Gemini calls, works without keys. 16 data tools including reservoir pool, FEMA declarations, rain already fallen, neighborhood risk index, power-dependent residents (emPOWER) and parking, with official per-tool sources |
+| Drive Safe additions | Detour suggestion on avoid/caution routes (OSRM alternatives, same hazard logic, "still check conditions", never "safe"); NWS active warning polygons; "Still there / Cleared" votes on community reports (one report gives at most "caution") |
+| One demo storm | One shared, labelled demo-storm switch (demo mode only) drives Home, Alerts and Drive; simulated responses carry a "Simulated" tag and "SIMULATED - demo only" alert |
+| Offline safety | `#offline` safety card (911/311/211, last-known FEMA zone, elevation and evac zone, household needs, kit reminders, print); last plan saved; offline cold-reload fix (service worker matches the cache ignoring `Vary`); 11 pages verified offline |
+| Recover cards | FEMA declaration banner (OpenFEMA; no "apply now" without a declaration), NFIP proof-of-loss due date (60 days), SBA disaster loans, appeal if FEMA says no, avoid scams (FEMA fraud hotline), floodwater and electrical safety, mold, "waiting for rescue", HCFCD buyout hotline, "if you have no home" (211) |
+| Vulnerable households | Dialysis centers show FEMA zone / "Flooded in Harvey" with a call-your-center note; no-car or medical households in a warning get "Get help to evacuate now" (2-1-1, STEAR, 911) |
+| Judge page evidence | "Evidence (checked, dated)" from `frontend/public/evidence.json` (`scripts/build_evidence.py`), each item with date and source path |
+
 Coverage, from a strict problem-by-problem audit with live tests ([`docs/problems/`](docs/problems/README.md)): the app **reduces harm for 33 of the 52** problems (fully solves 5, partly solves 28), informs on 13, and 6 are beyond any app; the rest are policy problems (details in [`app-plan.md`](app-plan.md)).
 
 Every feature works without API keys (deterministic fallbacks: template text, BM25 search, browser speechSynthesis).
 
 Safety and limits: per-IP rate limits (`/ask` 60/min, `/plan` 40/min, `/push` 20/min by default, overridable via `RATE_*`; raised in cycle 17 because a venue shares one IP), `/ask` capped at 500 characters, push test/simulate reach only the caller's own subscription, CORS from `ALLOWED_ORIGINS`.
 
+## What's measured
+Dated evidence is on the Judge page (`frontend/public/evidence.json`):
+- Backend tests: 240 passed
+- AI eval: 38/40 (95%); citation eval (live Gemini): 15/15
+- Voice latency, end of speech to first audio: median 1.4 s (n=3, small sample, includes ~600 ms VAD wait)
+- Accessibility (axe-core 4.10.2): 0 violations in 48 combos (12 views x 2 widths x 2 themes)
+- `scripts/demo_check.py`: 21/21 online and 21/21 in offline snapshot mode; 14-route sweep at 390 px in en and ar with 0 errors
+- Problem coverage (strict audit): 33/52 reduce harm (5 fully, 28 partly), 13 inform, 6 not app-solvable
+
 ## AI: measured efficiency and safety
 - **Fewer tokens, faster answers** (10-question live bench, `docs/eval/bench-before.json` vs `bench-after.json`): `/ask` median 811 to 228 ms; prompt + completion tokens 10,229 to 2,973 (-71%); LLM calls 9 to 5; estimated cost $0.00136 to $0.00039. Four of 10 answers need no LLM (deterministic routing); exact + semantic answer cache never serves emergencies; lite vs full model routing.
 - **Grounding:** per-sentence [n] citations; unsupported numbers are removed with a warning; community reports are wrapped against prompt injection.
-- **Safety eval** (`scripts/eval_ai.py`, `docs/eval/latest.md`): 99-case suite across en/es/vi/zh/ar incl. adversarial, 67% to 87% after fixes; quick suite 40/40 after the efficiency work; citation suite 29/30. Remaining failures are missing expected terms, not dangerous advice or missing 911.
+- **Safety eval** (`scripts/eval_ai.py`, `docs/eval/latest.md`): 99-case suite across en/es/vi/zh/ar incl. adversarial, 67% to 87% after fixes; AI eval 38/40 (en 26/26, es 12/14; known failures: rent-es-1); citation eval 15/15 with live Gemini. Remaining failures are missing expected terms, not dangerous advice or missing 911.
 - **Quota resilience:** key x model rotation on 429/404, multi-key `GEMINI_API_KEYS`, BM25-only fallback when embeddings are rate-limited, template answers if all models are exhausted; `/#status` shows the active model.
 
 ## Architecture
