@@ -22,6 +22,8 @@ export interface SourceHealth {
 export interface StatusReport { sources: SourceHealth[]; snapshots: Record<string, string | null>; storm_mode: boolean; meta: Meta }
 export interface Coded { code?: string; params?: Record<string, unknown> }
 export interface Fact extends Coded { text: string; source: string }
+export interface Declaration { disaster_number: number; title: string; incident_type?: string; declaration_date: string; ia_program?: boolean; ha_program?: boolean; url: string }
+export interface Declarations { available: boolean; latest: Declaration | null; active_ia: boolean; recent?: Declaration[]; source?: string }
 export interface Warned { warnings?: string[]; warning_codes?: string[] }
 export interface Geocode extends Warned { lat: number | null; lon: number | null; matched_address: string | null; place?: string }
 export interface Harvey { flooded: boolean | null; source?: string; note?: string; note_code?: string }
@@ -192,6 +194,7 @@ export const api = {
   watchSave: (p: { label: string; lat: number; lon: number; lang: string }) => post<WatchPlace>('/watch', p),
   watchStatus: (ids: string[], simulate: boolean, signal?: AbortSignal) =>
     req<{ places: WatchStatus[] }>('/watch/status?ids=' + encodeURIComponent(ids.join(',')) + (simulate ? '&simulate=storm' : ''), { signal }),
+  declarations: () => req<Declarations>('/declarations?county=Harris&state=TX'),
   shelters: (p: LatLon, petFriendly = false, limit = 10) =>
     req<Shelters>('/shelters?' + q(p) + `&pet_friendly=${petFriendly}&limit=${limit}`),
   parkingCheck: (p: LatLon | { q: string }) => req<ParkingCheck>('/parking/check?' + q(p)),

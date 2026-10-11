@@ -124,6 +124,58 @@ const miBetween = (a: { lat: number; lon: number }, b: { lat: number; lon: numbe
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
+/** FEMA titles come in ALL CAPS ("HURRICANE BERYL"). */
+const titleCase = (s: string) => s.toLowerCase().replace(/\b\p{L}/gu, (c) => c.toUpperCase())
+
+function DeclarationBanner() {
+  const { t, lang } = useApp()
+  const d = useAsync(() => api.declarations(), [])
+  const x = d.data
+  const l = x?.available ? x.latest : null
+  let text: string, href = 'https://www.disasterassistance.gov/'
+  if (x?.available && x.active_ia && l) {
+    text = t('p33.decl.active').replace('{n}', '\u2060' + String(l.disaster_number)).replace('{title}', titleCase(l.title))
+    if (l.url) href = l.url
+  } else if (l) {
+    const latest = t('p33.decl.latest').replace('{n}', '\u2060' + String(l.disaster_number)).replace('{title}', titleCase(l.title)).replace('{date}', l.declaration_date ? new Date(l.declaration_date).toLocaleDateString(lang, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : '')
+    text = t('p33.decl.none').replace('{latest}', latest)
+  } else if (x?.available) text = t('p33.decl.none').replace('{latest}', '')
+  else text = t('p33.decl.unknown')
+  const active = !!(x?.available && x.active_ia && l)
+  return (
+    <div role="status" className={`flex items-start gap-3 rounded-md border p-3 text-body-sm text-ink ${active ? 'border-normal/40 bg-normal-tint' : 'border-line bg-surface-2'}`}>
+      <Info aria-hidden size={20} className="mt-0.5 shrink-0 text-brand" />
+      <div>
+        <p>{text}</p>
+        <div className="flex flex-wrap gap-x-4">
+          <SourceLink href="https://www.disasterassistance.gov/" label={t('p33.decl.apply')} />
+          {active && href !== 'https://www.disasterassistance.gov/' && <SourceLink href={href} label={t('p33.decl.fema')} />}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SbaAndDebris() {
+  const { t } = useApp()
+  return (
+    <>
+      <Card title={t('p33.sba.title')}>
+        <p className="text-body-sm text-ink">{t('p33.sba.body')}</p>
+        <SourceLink href="https://www.sba.gov/funding-programs/disaster-assistance/physical-damage-loans" label={t('p33.sba.src')} />
+      </Card>
+      <Card title={t('p33.trash.title')}>
+        <p className="text-body-sm text-ink">{t('p33.trash.body')}</p>
+        <div className="flex flex-wrap gap-x-4">
+          <SourceLink href="https://www.houstontx.gov/solidwaste/heavytrash.html" label={t('p33.trash.src')} />
+          <SourceLink href="https://www.houstontx.gov/solidwaste/" label={t('p33.trash.src311')} />
+        </div>
+        <p className="mt-2 text-caption text-muted">{t('p33.note')}</p>
+      </Card>
+    </>
+  )
+}
+
 export default function Recover() {
   const { t } = useApp()
   const { place } = usePlace()
@@ -145,8 +197,10 @@ export default function Recover() {
       <PageHeader title={t('rec.title')} subtitle={t('p5.rec.sub')} forPlace />
 
       <Share911 />
+      <DeclarationBanner />
       <RecoveryTracker />
       <Checklists />
+      <SbaAndDebris />
 
       <button type="button" onClick={() => setReportOpen(true)} aria-haspopup="dialog"
         className="flex min-h-14 w-full items-center gap-3 rounded-lg border border-line bg-surface px-4 py-2 text-start shadow-card hover:bg-surface-2/60">

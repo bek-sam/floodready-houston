@@ -70,6 +70,8 @@ api.include_router(_parking_router.router)
 from app.routers import reservoir as _reservoir_router, airports as _airports_router  # noqa: E402
 api.include_router(_reservoir_router.router)
 api.include_router(_airports_router.router)
+from app.routers import declarations as _decl_router  # noqa: E402
+api.include_router(_decl_router.router)
 
 try:
     from app.ai.router import router as ai_router  # type: ignore
