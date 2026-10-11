@@ -21,7 +21,7 @@ const offlineJson = () => new Response(JSON.stringify({ offline: true }), { stat
 // Always resolves to a Response (cache hit, network, or offline JSON).
 async function swr(req, cacheName) {
   const cache = await caches.open(cacheName)
-  const hit = await cache.match(req)
+  const hit = await cache.match(req, { ignoreVary: true })
   const net = fetch(req).then((res) => { if (res.ok) cache.put(req, res.clone()); return res }).catch(() => null)
   if (hit) return hit
   return (await net) || offlineJson()
@@ -35,7 +35,12 @@ async function networkFirst(req, cacheName, fallbackKey) {
     if (res.ok) cache.put(fallbackKey || req, res.clone())
     return res
   } catch {
-    return (await cache.match(fallbackKey || req)) || (await caches.match('/')) || new Response('Offline', { status: 503 })
+    // ignoreVary: a `Vary: Origin` header must not hide a cached asset offline.
+    // Only navigations fall back to the HTML shell; serving HTML for a .js/.css request blanks the app.
+    const hit = await cache.match(fallbackKey || req, { ignoreVary: true })
+    if (hit) return hit
+    if (req.mode === 'navigate') return (await caches.match('/', { ignoreVary: true })) || new Response('Offline', { status: 503 })
+    return new Response('', { status: 504, statusText: 'Offline' })
   }
 }
 
