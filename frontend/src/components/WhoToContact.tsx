@@ -12,7 +12,9 @@ export default function WhoToContact({ civic }: { civic: Civic }) {
   const [copied, setCopied] = useState(false)
   const [err, setErr] = useState(false)
   const off = civic.officials
-  const list = off ? ROLES.map((r) => [r, off[r]] as const).filter((x): x is [typeof ROLES[number], Official] => !!x[1] && typeof x[1] === 'object') : []
+  const hasName = (o: Official) => !!(o.name ?? o.title ?? o.office)
+  const hasContact = (o: Official) => !!(o.phone || o.email || safeUrl(o.url))
+  const list = off ? ROLES.map((r) => [r, off[r]] as const).filter((x): x is [typeof ROLES[number], Official] => !!x[1] && typeof x[1] === 'object' && (hasName(x[1]) || (x[0] === 'council' && !!x[1].district) || hasContact(x[1]))) : []
   const proj = civic.bond?.projects?.[0]?.name
   const msg = proj ? t('c11.who.msgProject').replace('{project}', proj) : t('c11.who.msgGeneric')
   const copy = async () => {
@@ -26,7 +28,7 @@ export default function WhoToContact({ civic }: { civic: Civic }) {
         {list.map(([role, o]) => (
           <li key={role} className="py-3 first:pt-0">
             <p className="text-overline uppercase text-muted">{t('c11.who.' + role)}</p>
-            <p className="text-base font-semibold text-ink">{o.name ?? o.title ?? o.office ?? '—'}{o.district ? ` · ${o.district}` : ''}{o.precinct != null && o.precinct !== '' ? ` · ${t('c11.who.precinct')} ${o.precinct}` : ''}</p>
+            <p className="text-base font-semibold text-ink">{hasName(o) ? (o.name ?? o.title ?? o.office) : role === 'council' && o.district ? t('p29.who.district').replace('{d}', String(o.district)) : t('p29.who.office')}{hasName(o) && o.district ? ` · ${o.district}` : ''}{o.precinct != null && o.precinct !== '' ? ` · ${t('c11.who.precinct')} ${o.precinct}` : ''}</p>
             {o.entity && <p className="text-caption text-muted">{o.entity}</p>}
             <div className="mt-2 flex flex-wrap gap-2">
               {typeof o.phone === 'string' && o.phone && <ButtonLink variant="secondary" size="sm" icon={Phone} href={'tel:' + o.phone.replace(/[^\d+]/g, '')}>{t('c11.who.call')} {o.phone}</ButtonLink>}

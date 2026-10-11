@@ -67,6 +67,7 @@ export default function Judge() {
             <p className="mt-2 break-all text-center text-body-sm"><a className="text-brand underline underline-offset-2" href={url}>{t('judge.open')}: {url}</a></p>
           </Card>
           <Card>
+            {!demo && <Button full className="mb-3" onClick={() => { setDemo(true); location.hash = '#drive' }}>{t('p29.demo.btn')}</Button>}
             <Switch label={t('p5a.j.demoOn')} description={t('p5a.j.demoOnD')} checked={demo} onChange={setDemo} />
             <div className="mt-3 border-t border-line pt-3">
               <Button variant="secondary" icon={RotateCcw} loading={busy === 'reset'} onClick={reset}>{t('p5a.j.reset')}</Button>

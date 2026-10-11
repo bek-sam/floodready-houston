@@ -563,7 +563,9 @@ def test_zip_premiums_null_on_failure(client, monkeypatch):
 
 
 def test_civic_officials(client, monkeypatch):
-    from app.services import officials as of
+    from app.services import officials as of, civic as cv
+    of._cache.clear()
+    cv._cache.clear()
 
     async def fake(url, params=None, ttl=300, headers=None):
         f = lambda a: {"features": [{"attributes": a}]}  # noqa: E731
@@ -582,7 +584,9 @@ def test_civic_officials(client, monkeypatch):
 
 
 def test_civic_officials_never_fail(client, monkeypatch):
-    from app.services import officials as of
+    from app.services import officials as of, civic as cv
+    of._cache.clear()
+    cv._cache.clear()
 
     async def none(*a, **k):
         return None

@@ -10,14 +10,21 @@ OSRM = "https://router.project-osrm.org/route/v1/driving/{a},{b};{c},{d}"
 BUFFER_M = 75
 REPORT_BUFFER_M = 100
 HIGH_DEPTH_IN = 6
+REPORT_MAX_AGE_H = 6
+COUNTING_KINDS = {"flooded_road", "water_over_road", "barricade_missing", "stalled_vehicles"}
+
+
+def report_counts(kind, depth_in) -> bool:
+    """A report only counts toward route hazards if its kind is known and depth is unknown or > 0."""
+    return kind in COUNTING_KINDS and (depth_in is None or depth_in > 0)
 
 
 def recent_reports() -> list[dict]:
-    """Community reports from the last 24h (empty list if the DB is unavailable)."""
+    """Counting community reports from the last REPORT_MAX_AGE_H hours (empty list if the DB is unavailable)."""
     from datetime import datetime, timedelta, timezone
     try:
         from app.db import Report, get_session
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=REPORT_MAX_AGE_H)
         with get_session() as s:
             rows = s.query(Report).order_by(Report.created_at.desc()).limit(500).all()
             out = []
@@ -27,7 +34,7 @@ def recent_reports() -> list[dict]:
                     continue
                 if ts.tzinfo is None:
                     ts = ts.replace(tzinfo=timezone.utc)
-                if ts >= cutoff:
+                if ts >= cutoff and report_counts(r.kind, r.depth_in):
                     out.append({"lat": r.lat, "lon": r.lon, "kind": r.kind, "depth_in": r.depth_in,
                                 "note": r.note, "created_at": ts.isoformat()})
             return out
@@ -38,6 +45,12 @@ def recent_reports() -> list[dict]:
 def load_crossings() -> list[dict]:
     d = load_json("crossings.geojson", {}) or {}
     return d.get("features", [])
+
+
+def _names(hazards: list[dict]) -> str:
+    names = [(h["name"] or "unnamed")[:80] for h in hazards]
+    txt = ", ".join(names[:3])
+    return txt + (f" +{len(names) - 3} more" if len(names) > 3 else "")
 
 
 def _min_dist_m(lat, lon, coords) -> float:
@@ -82,11 +95,11 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
             reasons = p.get("reasons") or []
             rtxt = reasons[0] if reasons else "Known flood-prone crossing"
             rc = reason_code(rtxt)
-            hazards.append({"crossing_id": p.get("id"), "name": p.get("name"), "lat": lat, "lon": lon,
+            hazards.append({"crossing_id": p.get("id"), "name": p.get("short_name") or p.get("name"), "lat": lat, "lon": lon,
                             "reason": rtxt, "reason_code": rc[0] if rc else None, "reason_params": rc[1] if rc else {}})
             high = high or p.get("risk") == "high"
 
-    # community reports from the last 24h within 100 m of the route
+    # counting community reports (<= 6 h old) within 100 m of the route
     for rep in recent_reports():
         if _min_dist_m(rep["lat"], rep["lon"], coords) <= REPORT_BUFFER_M:
             depth = rep.get("depth_in")
@@ -132,12 +145,12 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
     if hazards and high and active:
         verdict, mcode, mparams = "avoid", "route.avoid", {"n": len(hazards)}
         msg = (f"Avoid this route. It passes {len(hazards)} flood-prone crossing(s) "
-               f"({', '.join(h['name'] or 'unnamed' for h in hazards[:3])}) and conditions are active ({'; '.join(conds)}). "
+               f"({_names(hazards)}) and conditions are active ({'; '.join(conds)}). "
                "Turn around, don't drown. Call 911 if you are in danger.")
     elif hazards:
         verdict, mcode, mparams = "caution", "route.caution", {"n": len(hazards)}
         msg = (f"Use caution. This route crosses {len(hazards)} known flood-prone spot(s) "
-               f"({', '.join(h['name'] or 'unnamed' for h in hazards[:3])}). No active flood conditions detected right now, "
+               f"({_names(hazards)}). No active flood conditions detected right now, "
                "but check alerts before you go in rain.")
     elif fallback:
         verdict, mcode, mparams = "caution", "route.fallback", {}
@@ -147,7 +160,7 @@ async def check_route(origin: dict, destination: dict, simulate: bool = False) -
         msg = "No known flood-prone crossings on this route — conditions can change fast; never drive into water."
     n_rep = sum(1 for h in hazards if h.get("kind") == "report")
     if n_rep:
-        msg += f" {n_rep} community report{'s' if n_rep != 1 else ''} on this route in the last 24 hours."
+        msg += f" {n_rep} community report{'s' if n_rep != 1 else ''} on this route in the last 6 hours."
     out = {"route": line, "hazards": hazards, "verdict": verdict, "message": msg, "report_count": n_rep,
            "message_code": mcode, "message_params": mparams, "conditions": cond_codes}
     if warnings:

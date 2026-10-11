@@ -29,7 +29,7 @@ export default function Compare() {
     for (const id of sel) {
       const o = all.find((x) => x.id === id)
       if (!o || cols[id]) continue
-      loadCol(o).then((c) => setCols((p) => ({ ...p, [id]: c })), () => setCols((p) => ({ ...p, [id]: 'err' })))
+      loadCol(o, (c) => setCols((p) => (p[id] && (p[id] as Col).pending === false ? p : { ...p, [id]: c }))).then((c) => setCols((p) => ({ ...p, [id]: c })), () => setCols((p) => ({ ...p, [id]: 'err' })))
     }
   }, [sel]) // eslint-disable-line react-hooks/exhaustive-deps
 

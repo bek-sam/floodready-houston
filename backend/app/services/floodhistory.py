@@ -1,6 +1,8 @@
 """Flood history at a point: Harvey extent + nearest replay-gauge peaks per event + ZIP claims peak year."""
+import asyncio
 import json
 import logging
+import time
 
 from app import config
 from app.services.data import haversine_m
@@ -51,7 +53,24 @@ def _nearest(lat, lon, gauges):
     return best
 
 
+_cache: dict = {}
+CACHE_TTL = 24 * 3600
+
+
 async def flood_history(lat: float, lon: float, zip_code: str | None = None) -> dict:
+    """24 h in-memory cache by (lat,lon 3 dp, zip); full results only (partial/warned results are not cached)."""
+    key = (round(lat, 3), round(lon, 3), zip_code or "")
+    hit = _cache.get(key)
+    if hit and time.time() - hit[0] < CACHE_TTL:
+        return hit[1]
+    out = await _flood_history(lat, lon, zip_code)
+    if not out.get("warnings"):
+        _cache[key] = (time.time(), out)
+    return out
+
+
+async def _flood_history(lat: float, lon: float, zip_code: str | None = None) -> dict:
+    warnings = []
     events = []
     for d in _events():
         ev = d.get("event") or {}
@@ -65,7 +84,7 @@ async def flood_history(lat: float, lon: float, zip_code: str | None = None) -> 
     zip_out = None
     if zip_code and valid_zip(zip_code):
         try:
-            z = await zip_insurance(zip_code)
+            z = await asyncio.wait_for(zip_insurance(zip_code), 8)
             by_year = (z.get("claims") or {}).get("by_year") or []
             if by_year:
                 top = max(by_year, key=lambda r: r["count"])
@@ -73,10 +92,14 @@ async def flood_history(lat: float, lon: float, zip_code: str | None = None) -> 
                     zip_out = {"zip": zip_code, "peak_year": top["year"], "peak_year_claims": top["count"]}
         except Exception as e:
             log.warning("zip lookup failed: %s", e)
+            warnings.append("ZIP claims history timed out or is unavailable; showing the rest")
     h = harvey_at(lat, lon)
     if h.get("flooded") is False:
         try:
             h = harvey_for_jurisdiction(h, jurisdiction_name(await _juris(lat, lon)))
         except Exception as e:
             log.warning("jurisdiction lookup failed: %s", e)
-    return {"harvey": {"flooded": h.get("flooded"), "source": h.get("source")}, "events": events, "zip": zip_out}
+    out = {"harvey": {"flooded": h.get("flooded"), "source": h.get("source")}, "events": events, "zip": zip_out}
+    if warnings:
+        out["warnings"] = warnings
+    return out

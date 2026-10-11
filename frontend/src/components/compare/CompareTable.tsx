@@ -19,7 +19,7 @@ export default function CompareTable({ cols }: { cols: Named[] }) {
   const na = t('p13.cmp.na')
   const rows: { key: string; src: string; cell: (c: Col) => string }[] = [
     { key: 'fema', src: SRC.fema, cell: (c) => c.risk?.fema_zone ? c.risk.fema_zone + (c.risk.sfha ? ' · ' + t('p13.cmp.sfha') : '') : na },
-    { key: 'harvey', src: SRC.harvey, cell: (c) => { const h = c.risk?.harvey?.flooded ?? c.hist?.harvey?.flooded; return h == null ? na : h ? t('p13.cmp.yes') : t('p13.cmp.no') } },
+    { key: 'harvey', src: SRC.harvey, cell: (c) => { const h = c.risk?.harvey?.flooded ?? c.hist?.harvey?.flooded; return h == null ? (c.pending ? '…' : t('p29.cmp.harveyNA')) : h ? t('p13.cmp.yes') : t('p13.cmp.no') } },
     { key: 'evac', src: SRC.evac, cell: (c) => { if (!c.evac) return na; const s = zoneState(c.evac); return s === 'unavailable' ? na : s === 'in' ? t('p13.cmp.zone').replace('{z}', c.evac.zone ?? '?') : t('p13.cmp.noZone') } },
     { key: 'gauge', src: SRC.gauge, cell: (c) => { const g = c.hist?.events.find((e) => /harvey/i.test(e.name))?.nearest_gauge; return g?.peak_ft != null ? `${g.peak_ft} ft · ${g.name}` : na } },
     { key: 'claims', src: SRC.claims, cell: (c) => c.zip ? `${c.zip.claims.total.toLocaleString()} (${c.zip.zip})` : na },
@@ -36,7 +36,7 @@ export default function CompareTable({ cols }: { cols: Named[] }) {
           {rows.map((r) => (
             <tr key={r.key} className="border-t border-line align-top">
               <th scope="row" className="p-2 text-start font-medium text-ink">{t('p13.cmp.r.' + r.key)}<SourceLink href={r.src} /></th>
-              {cols.map((c, i) => <td key={i} className="p-2 text-ink">{c.col ? r.cell(c.col) : c.err ? na : '…'}</td>)}
+              {cols.map((c, i) => <td key={i} className="p-2 text-ink">{c.col ? (() => { const v = r.cell(c.col); return v === na && c.col.pending ? '…' : v })() : c.err ? na : '…'}</td>)}
             </tr>
           ))}
         </tbody>

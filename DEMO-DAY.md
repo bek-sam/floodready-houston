@@ -18,11 +18,13 @@ cd backend
 uv run python ../scripts/prewarm.py  BASE   # warm caches (BASE = https://yourdomain or http://localhost:8000)
 uv run python ../scripts/demo_check.py BASE --front   # must say 21/21 passed
 ```
-Open `/#judge` on the projector — QR code now points at your real domain.
+**Open `BASE/?demo=1` first** (or `BASE/#judge` then click the demo button, which also sets demo mode). Demo mode lives in sessionStorage, so it is per tab: after closing the tab, re-open with `?demo=1`. Without it the Drive sample-route chips and "Simulate storm" switch are hidden on purpose (real users must not see fake Avoid verdicts).
+Then open `/#judge` on the projector — QR code now points at your real domain.
 
 ## 2-minute pitch (details in docs/devpost.md, Q&A in docs/judge-qa.md)
+0. Open `BASE/?demo=1` in a fresh tab (check: `/?demo=1#drive` shows sample route chips + Simulate storm).
 1. **My Risk** → `5300 N Braeswood Blvd, Houston, TX 77096` → "Flooded in Harvey (2017)", Zone AE, flood history (Harvey: major), ZIP 77096: 6,482 NFIP claims, median premium ~$1,501.
-2. **Drive Safe** → demo route "Allen Parkway underpass" + Simulate storm → **Avoid** with named crossings.
+2. **Drive Safe** (`BASE/?demo=1#drive`) → click demo route chip "Allen Parkway underpass" → turn on **Simulate storm** → Check route → **Avoid** with named crossings.
 3. **Replay** → Hurricane Harvey → Play + **Narrate**.
 4. **Seabrook evacuation** → search `Seabrook, TX 77586` (test point 29.564, -95.025 in `backend/tests/test_evac.py`; it is NOT in `prewarm.py`, so run it once before judging) → summary shows **Evacuation Zone A** + storm-surge depth chips, the Galveston tide chip, and "No Harvey extent data" (Harvey layer covers only the City of Houston, so no false all-clear). Expect no out-of-region storm chip.
 5. **Voice mode** → Ask → **Voice** (Gemini Live, default) → say "Did my neighborhood flood before?" → spoken answer in about 1 s (measured 0.64-1.4 s) → interrupt mid-answer (barge-in) → follow-up in Spanish. If it stalls: Retry / "Switch to Standard". Typed Ask median is 228 ms.

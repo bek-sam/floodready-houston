@@ -158,7 +158,7 @@ def test_tool_json_compact_and_untrusted():
 
 def test_prompt_marks_untrusted_and_numbers_sources():
     p = fast.build_prompt("q?", [], [{"source": GOOD, "title": "T", "text": "t"}], {"get_risk": {"fema_zone": "AE", "harvey": {"source": "https://h.org"}}})
-    assert "[1] T: t" in p and f"[1] {GOOD}" in p and "[2] https://h.org" in p
+    assert "[2] T: t" in p and f"[2] {GOOD}" in p and "[1] https://h.org" in p  # tool sources numbered first
     assert "untrusted_user_text" in fast.CHAT_SYSTEM and "untrusted_user_text" in fast.FAST_SYSTEM
 
 

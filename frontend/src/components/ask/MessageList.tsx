@@ -17,8 +17,8 @@ export function Md({ text: raw, sources }: { text: string; sources?: string[] })
       if (!href) return null
       let host = href
       try { host = new URL(href).hostname.replace(/^www\./, '') } catch { /* keep raw */ }
-      return <sup key={i} className="ms-0.5"><a href={href} target="_blank" rel="noreferrer" aria-label={`Source ${n}: ${host}`} title={host}
-        className="inline-flex min-w-4 items-center justify-center rounded bg-surface-2 px-1 text-[0.7rem] font-semibold text-brand no-underline hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1">{n}</a></sup>
+      return <sup key={i} className="mx-0.5"><a href={href} target="_blank" rel="noreferrer" aria-label={`Source ${n}: ${host}`} title={host}
+        className="inline-flex min-w-4 items-center whitespace-nowrap justify-center rounded bg-surface-2 px-1 text-[0.7rem] font-semibold text-brand no-underline hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1">[{n}]</a></sup>
     }
     const m = p.match(/^\[([^\]]+)\]\((https?:[^)]+)\)$/)
     if (m) return <a key={i} href={m[2]} target="_blank" rel="noreferrer" className="underline">{m[1]}</a>

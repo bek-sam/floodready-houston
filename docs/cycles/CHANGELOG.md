@@ -174,3 +174,8 @@
 - Fixes: zip-insurance no longer caches a failed premiums lookup for 24 h (5-min memory retry), flags the 10k-row cap; OpenFEMA policies already on v3 (no v2 retirement risk).
 - Coverage recount (docs/cycles/cycle-28-coverage.md): A9 (parking + rain24), F2, E3 → REDUCES. 36 REDUCES of 52.
 - Verified: 192 tests, build, i18n 0 missing, live smoke (pool, airports), c28-pool.jpg, 0 page errors.
+## Cycle 29 — Sun Oct 11, ~6:45 AM (judge/first-user audit fixes)
+- Live audit of the running app (13 issues, docs/cycles/cycle-29-research.md; 0 page errors / HTTP ≥400 before fixes).
+- Fixed: community reports count only if ≤6 h old, known kind, depth unknown or >0 (stale 0-inch test report no longer forces "caution"; no rows deleted); Civic 6.6 s → 0.2 s (parallel ArcGIS lookups, 1 h cache, in-flight dedupe); Compare/flood-history 13 s → 0.2 s cold (24 h cache, 8 s ZIP timeout with partial result); council "— · C" → "Council District C", raw URLs → labelled source links, phones → tel:; crossing short_name for 128 crossings (lead fix: abbreviations like "N." no longer truncate to "N"); Drive verdict scrolls into view on mobile, lists 3 hazards + "+N more"; simulated verdict no longer shows a "Live" badge (lead fix); Ask cites official tool sources (FEMA/City/NOAA/USGS) first and renders [n] markers spaced.
+- Demo: controls stay behind ?demo=1 (real users never see simulated verdicts); DEMO-DAY.md documents it; About "Try the demo" and Judge "enter demo mode" buttons; prewarm adds Seabrook.
+- Verified: 201 tests (×2), build, i18n 0 missing (1,482), demo_check 21/21, demo route at 390 px shows Avoid verdict in view, Civic text clean, 0 page errors.

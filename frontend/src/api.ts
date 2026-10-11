@@ -50,7 +50,7 @@ export interface CrossingFeature {
 export interface Crossings { type: 'FeatureCollection'; features: CrossingFeature[] }
 
 export interface LatLon { lat: number; lon: number }
-export interface Hazard { kind?: string; crossing_id: string; name: string; lat: number; lon: number; reason: string; reason_code?: string | null; reason_params?: Record<string, unknown>; name_code?: string }
+export interface Hazard { kind?: string; short_name?: string; crossing_id: string; name: string; lat: number; lon: number; reason: string; reason_code?: string | null; reason_params?: Record<string, unknown>; name_code?: string }
 export interface RouteCheck extends Warned {
   route: { type: 'LineString'; coordinates: [number, number][] } | null
   hazards: Hazard[]; verdict: 'safe' | 'caution' | 'avoid'; message: string; meta?: Meta
@@ -150,6 +150,7 @@ export class ApiError extends Error {
   constructor(message: string, status: number) { super(message); this.status = status }
 }
 
+const civicMemo = new Map<string, { t: number; p: Promise<Civic> }>()
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response
   try {
@@ -212,7 +213,15 @@ export const api = {
   empower: (zip: string) => req<Empower>('/empower?zip=' + encodeURIComponent(zip)),
   reservoirPool: (p: LatLon) => req<ReservoirPool>('/reservoir/pool?' + q(p)),
   buyoutArea: (p: LatLon) => req<BuyoutArea>('/buyout-area?' + q(p)),
-  civic: (p?: LatLon | null) => req<Civic>('/civic' + (p ? '?' + q(p) : '')),
+  civic: (p?: LatLon | null) => {
+    const key = p ? q(p) : ''
+    const hit = civicMemo.get(key)
+    if (hit && Date.now() - hit.t < 60_000) return hit.p
+    const pr = req<Civic>('/civic' + (p ? '?' + q(p) : ''))
+    civicMemo.set(key, { t: Date.now(), p: pr })
+    pr.catch(() => civicMemo.delete(key))
+    return pr
+  },
   voice: async (text: string, lang: string): Promise<Blob> => {
     const res = await fetch('/api/voice', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, lang }),

@@ -13,7 +13,7 @@ API = BASE + "/api"
 c = httpx.Client(timeout=60, follow_redirects=True)
 
 ADDRS = ["1200 Main St, Houston, TX", "Meyerland, Houston, TX", "Allen Parkway, Houston, TX"]
-PLACES = [(29.6847, -95.4698), (29.7648, -95.3665), (29.68, -95.46)]
+PLACES = [(29.6847, -95.4698), (29.7648, -95.3665), (29.68, -95.46), (29.564, -95.025)]  # last = Seabrook 77586
 ROUTE = {"origin": {"lat": 29.7648, "lon": -95.3665}, "destination": {"lat": 29.7648, "lon": -95.356}}
 
 
@@ -29,11 +29,14 @@ def build():
         g(f"flood-history {t}", "/flood-history", **pt)
         g(f"alerts {t}", "/alerts", **pt)
         g(f"civic {t}", "/civic", **pt)
+        g(f"evac {t}", "/evac", **pt)
+        g(f"rain24 {t}", "/rain24", **pt)
         g(f"medical {t}", "/medical", **pt)
         g(f"shelters {t}", "/shelters", **pt)
         g(f"outlook {t}", "/outlook", **pt)
     g("zip-insurance 77096", "/zip-insurance", zip="77096")
     g("zip-insurance 77025", "/zip-insurance", zip="77025")
+    g("zip-insurance 77586", "/zip-insurance", zip="77586")
     g("crossings", "/crossings")
     g("buyout-area", "/buyout-area")
     g("insurance/countdown", "/insurance/countdown", purchase_date="2026-10-10")

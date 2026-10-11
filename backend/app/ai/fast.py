@@ -121,7 +121,40 @@ def numbered_sources(ctx, results) -> list[str]:
     tool_src = sorted(graph._tool_sources(results))
     ctx_src = [c["source"] for c in ctx if str(c.get("source", "")).startswith("http")]
     gauges = [GAUGE_SRC] if any(g for g in ((results.get("get_risk") or {}).get("nearest_gauges") or [])) else []
-    return list(dict.fromkeys(ctx_src + tool_src + gauges))
+    # official tool sources first, then official retrieved chunks, then the rest (blogs/news last)
+    allsrc = list(dict.fromkeys(tool_src + gauges + ctx_src))
+    return sorted(allsrc, key=lambda u: not is_official(u))  # stable: keeps tool-first order within groups
+
+
+OFFICIAL_HOSTS = ("fema.gov", "houstontx.gov", "noaa.gov", "weather.gov", "usgs.gov", "hcfcd.org", "harriscountytx.gov")
+
+
+def is_official(u: str) -> bool:
+    m = re.match(r"https?://([^/]+)", u or "")
+    h = (m.group(1) if m else "").lower()
+    return any(h == d or h.endswith("." + d) for d in OFFICIAL_HOSTS)
+
+
+def add_tool_citations(answer: str, sources: list[str], tool_srcs, cap: int = 5) -> tuple[str, list[str]]:
+    """Append official tool sources not yet cited (only while room under `cap`; existing indexes stay valid) and tag the
+    sentence containing Zone/Harvey/ft with [k] when it has no marker."""
+    srcs = list(sources)
+    extra = [u for u in sorted(tool_srcs) if is_official(u) and u not in srcs]
+    for u in extra:
+        if len(srcs) < cap:
+            srcs.append(u)
+    if len(srcs) == len(sources):
+        return answer, srcs
+    k = len(sources) + 1
+    lines = answer.split("\n")
+    for i, ln in enumerate(lines):
+        parts = re.split(r"(?<=[.!?])\s+", ln)
+        for j, sent in enumerate(parts):
+            if re.search(r"\bZone\b|Harvey|\d\s?ft\b", sent) and not re.search(r"\[\d+\]", sent):
+                parts[j] = re.sub(r"([.!?]?)$", rf" [{k}]\1", sent, count=1)
+                lines[i] = " ".join(parts)
+                return "\n".join(lines), srcs
+    return answer, srcs
 
 
 def build_prompt(question, history, ctx, results, lang: str = "en", loc: str = "unknown") -> str:
@@ -286,6 +319,7 @@ def _gemini_final(s: dict, full: str) -> dict:
         out["sources"] = srcs[:4]
     out["answer"] = re.sub(r"\(\s*\)|\[\s*\]", "", out["answer"])
     res = s.get("tool_results", {})
+    out["answer"], out["sources"] = add_tool_citations(out["answer"], out["sources"], graph._tool_sources(res))
     out["answer"], out["sources"] = citations.tag_live(
         out["answer"], out["sources"], "https://api.weather.gov/alerts/active", GAUGE_SRC,
         bool((res.get("get_risk") or {}).get("nearest_gauges")), isinstance(res.get("get_alerts"), dict))

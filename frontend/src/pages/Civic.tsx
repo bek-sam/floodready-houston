@@ -10,6 +10,17 @@ import { Card, ErrorBox, Freshness, PageHeader, RiskBadge, SkeletonCard, SourceL
 
 const money = (n?: number | null) => (typeof n !== 'number' ? '—' : n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${Math.round(n).toLocaleString()}`)
 
+function Contact({ v }: { v?: string | null }) {
+  if (!v) return null
+  if (/^https?:\/\//i.test(v)) {
+    let host = v
+    try { host = new URL(v).hostname.replace(/^www\./, '') } catch { /* keep raw */ }
+    return <p><SourceLink href={v} label={host} /></p>
+  }
+  if (/^[\d\s().+-]{7,}$/.test(v)) return <p><a className="text-brand underline" href={'tel:' + v.replace(/[^\d+]/g, '')}>{v}</a></p>
+  return <p className="text-muted">{v}</p>
+}
+
 function PoolCard({ lat, lon }: { lat: number; lon: number }) {
   const { t } = useApp()
   const pool = useAsync<ReservoirPool>(() => api.reservoirPool({ lat, lon }), [lat, lon])
@@ -63,7 +74,7 @@ export default function Civic() {
             {resp.length === 0 && <p className="text-body-sm text-muted">{t('rec.na')}</p>}
             <ul className="divide-y divide-line text-body-sm">
               {resp.map((r, i) => (
-                <li key={i} className="py-2 first:pt-0"><p className="font-semibold text-ink">{bk(r.code && r.code.replace('civic.resp', 'civic.resp'), {}, r.issue)}</p><p>{bk(r.code ? r.code.replace('civic.resp', 'civic.agency') : null, {}, r.agency)}</p><p className="text-muted">{r.contact}</p></li>
+                <li key={i} className="py-2 first:pt-0"><p className="font-semibold text-ink">{bk(r.code && r.code.replace('civic.resp', 'civic.resp'), {}, r.issue)}</p><p>{bk(r.code ? r.code.replace('civic.resp', 'civic.agency') : null, {}, r.agency)}</p><Contact v={r.contact} /></li>
               ))}
             </ul>
           </Card>

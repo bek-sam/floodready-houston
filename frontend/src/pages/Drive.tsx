@@ -12,7 +12,7 @@ import { useAsync, Warnings } from '../components/ui'
 import { Button, Card, DemoPanel, Disclosure, ErrorBox, Freshness, IconButton, PageHeader, RiskBadge, Skeleton, SourceLink, Switch, inputCls } from '../components/ds'
 import { cssVar, verdictLabelKey, verdictLevel } from '../lib/levels'
 import { parseHash } from '../components/shell/nav'
-import { hazardReason, routeMessage, useBk } from '../lib/bk'
+import { hazardReason, hazName, routeMessage, useBk } from '../lib/bk'
 import { clearDemoGo, peekDemoGo } from '../lib/demoGo'
 import { placeName, store, streetOf, usePlace, useDemoMode } from '../state/place'
 
@@ -81,6 +81,11 @@ export default function Drive() {
     try { const g = await api.geocode(p.text); return { lat: g.lat, lon: g.lon } }
     catch { throw new Error(t('p3.drive.notFound').replace('{text}', p.text)) }
   }
+  useEffect(() => {
+    if (busy || !res) return
+    const id = setTimeout(() => { head.current?.focus({ preventScroll: true }); head.current?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }, 30)
+    return () => clearTimeout(id)
+  }, [res, busy])
   const check = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!from.text.trim() || !to.text.trim()) { setErr(t('p3.drive.needBoth')); return }
@@ -90,7 +95,6 @@ export default function Drive() {
       const r = await api.routeCheck(o, d, simOn)
       setRes(r); setSimulated(simOn)
       if (!simOn) { const s = { res: r, from: from.text, to: to.text }; setCached(s); store.set(LAST, JSON.stringify(s)) }
-      setTimeout(() => { head.current?.focus(); head.current?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }, 50)
     } catch (e2) { setErr(errText(e2, t('p3.drive.offline'))) } finally { setBusy(false) }
   }
   const useMyLocation = () => {
@@ -132,8 +136,6 @@ export default function Drive() {
           <p className="text-body-sm text-ink">{t('p3.drive.banner2')}</p>
         </div>
       </Card>
-
-      <ParkCard />
 
       <DemoPanel title={t('p3.drive.demoSamples')}>
         <div className="flex flex-wrap gap-2">
@@ -178,12 +180,12 @@ export default function Drive() {
           <Card aria-busy><Skeleton w="140px" h={32} radius={999} /><div className="mt-3 space-y-2"><Skeleton w="100%" h={18} /><Skeleton w="70%" h={18} /></div></Card>
         )}
         {!busy && shown && (
-          <Card tone={level}>
+          <Card tone={level} className="scroll-mt-16">
             {showingCache && <p className="mb-2 text-caption font-semibold text-muted">{t('p3.drive.lastRoute')}: {cached?.from} → {cached?.to}</p>}
             <h2 ref={head} tabIndex={-1} className="outline-none">
               <RiskBadge level={level} size="lg" label={t(failed ? 'verdict.unknown' : verdictLabelKey(shown.verdict))} suffix={simulated && !showingCache ? t('demo.simulated') : undefined} />
             </h2>
-            {!failed && <div className="mt-2"><Freshness meta={shown.meta} /></div>}
+            {!failed && !(simulated && !showingCache) && <div className="mt-2"><Freshness meta={shown.meta} /></div>}
             {simulated && !showingCache && <p className="mt-2 text-caption font-semibold text-watch">{t('p3.drive.simNote')}</p>}
             {sampleTag && <p className="mt-2 text-caption font-semibold text-watch">{t('p3.drive.sample')}</p>}
             <p className="mt-3 text-h3 font-normal text-ink">{failed ? t('p3.drive.failed') : routeMessage(bk, t, shown)}</p>
@@ -195,7 +197,7 @@ export default function Drive() {
                   <li key={i} className="flex items-start gap-3 py-3">
                     {h.kind === 'report' ? <Megaphone aria-hidden size={20} className="mt-0.5 shrink-0 text-watch" /> : <TriangleAlert aria-hidden size={20} className="mt-0.5 shrink-0 text-danger" />}
                     <div className="min-w-0">
-                      <p className="text-base font-semibold text-ink">{h.name_code ? bk(h.name_code, {}, h.name) : h.name}
+                      <p className="text-base font-semibold text-ink">{hazName(bk, h)}
                         {h.kind === 'report' && <span className="ms-2 rounded-sm border border-dashed border-ui px-1.5 text-caption font-medium text-muted">{t('p3.drive.reportTag')}</span>}
                       </p>
                       <p className="text-body-sm text-ink">{hazardReason(bk, h)}{h.kind === 'report' && <span className="text-muted"> {t('p3.drive.unverified')}</span>}</p>
@@ -213,6 +215,8 @@ export default function Drive() {
           </Card>
         )}
       </div>
+
+      <ParkCard />
 
       {crossings.error && <ErrorBox error={crossings.error} onRetry={crossings.reload} />}
       <Map label={t('p3.drive.mapLabel')} bounds={bounds} height="h-80 md:h-[440px]" loading={busy || crossings.loading}
@@ -234,7 +238,7 @@ export default function Drive() {
         {line && <Polyline positions={line} pathOptions={{ color: cRoute, weight: 5 }} />}
         {hazards.filter((h) => Number.isFinite(h.lat) && Number.isFinite(h.lon)).map((h, i) => (
           <CircleMarker key={i} center={[h.lat, h.lon]} radius={10} pathOptions={{ color: cRing, weight: 2, fillColor: cHigh, fillOpacity: 1 }}>
-            <Tooltip permanent direction="top">{h.name}</Tooltip>
+            <Tooltip permanent direction="top">{hazName(bk, h)}</Tooltip>
           </CircleMarker>
         ))}
       </Map>

@@ -39,3 +39,18 @@ def test_tag_live_adds_tool_source_to_stamped_sentence():
     a, s = citations.tag_live("Gauge is normal (as of 3:42 PM CDT).\nNot official guidance.", ["https://x.example"],
                               "https://nws", "https://noaa", True, False)
     assert a.startswith("Gauge is normal (as of 3:42 PM CDT) [2].") and s == ["https://x.example", "https://noaa"]
+
+
+def test_numbered_sources_official_first():
+    from app.ai import fast
+    ctx = [{"source": "https://blog.example/flood"}, {"source": "https://www.houstontx.gov/x"}]
+    res = {"get_risk": {"source": "https://hazards.fema.gov/nfhl", "fema_zone": "AE"}}
+    assert fast.numbered_sources(ctx, res) == ["https://hazards.fema.gov/nfhl", "https://www.houstontx.gov/x", "https://blog.example/flood"]
+
+
+def test_add_tool_citations_tags_zone_sentence_and_keeps_indexes():
+    from app.ai import fast
+    a, s = fast.add_tool_citations("Plan ahead [1]. Your address is in Zone AE.", ["https://blog.example"],
+                                   {"https://hazards.fema.gov/nfhl", "https://evil.example"})
+    assert s == ["https://blog.example", "https://hazards.fema.gov/nfhl"]
+    assert "Zone AE [2]." in a and "[1]" in a

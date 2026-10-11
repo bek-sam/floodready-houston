@@ -36,6 +36,12 @@ export const coded = (bk: Bk, o: Record<string, unknown> | null | undefined, fie
 export const warningTexts = (bk: Bk, items?: string[], codes?: string[]): string[] =>
   (Array.isArray(items) ? items : []).map((w, i) => bk(codes?.[i], {}, w))
 
+/** Short, length-capped hazard name (prefers backend short_name). */
+export function hazName(bk: Bk, h: Hazard): string {
+  const n = (h.name_code ? bk(h.name_code, {}, h.name) : h.short_name || h.name) || ''
+  return n.length > 80 ? n.slice(0, 77).trimEnd() + '…' : n
+}
+
 export function hazardReason(bk: Bk, h: Hazard): string {
   return bk(h.reason_code, h.reason_params, h.reason)
 }
@@ -43,7 +49,8 @@ export function hazardReason(bk: Bk, h: Hazard): string {
 /** The route-check verdict sentence, localized, with the community-report suffix. */
 export function routeMessage(bk: Bk, t: (k: string) => string, r: RouteCheck): string {
   if (!r.message_code) return r.message
-  const names = (r.hazards ?? []).slice(0, 3).map((h) => (h.name_code ? bk(h.name_code, {}, h.name) : h.name) || t('route.unnamed')).join(', ')
+  const hz = r.hazards ?? []
+  const names = hz.slice(0, 3).map((h) => hazName(bk, h) || t('route.unnamed')).join(', ') + (hz.length > 3 ? ' ' + t('p29.more').replace('{n}', String(hz.length - 3)) : '')
   const conds = (r.conditions ?? []).map((c) => bk(c.code, c.params)).join('; ')
   let s = bk(r.message_code, { ...(r.message_params ?? {}), names, conds }, r.message)
   const n = r.report_count ?? 0

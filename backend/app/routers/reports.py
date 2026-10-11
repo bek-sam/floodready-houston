@@ -39,6 +39,8 @@ async def list_reports(limit: int = 200):
     try:
         with get_session() as s:
             rows = s.query(Report).order_by(Report.created_at.desc()).limit(min(limit, 1000)).all()
-            return [_row(r) for r in rows]
+            return [_row(r) for r in rows
+                    if r.kind in ("flooded_road", "water_over_road", "barricade_missing", "stalled_vehicles", "other")
+                    and not (r.depth_in == 0 and not r.note)]
     except Exception:
         return []
