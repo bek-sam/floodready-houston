@@ -54,23 +54,26 @@ def test_area_alerts(monkeypatch):
     assert r["features"] == [] and r["meta"]["freshness"] == "cached"
 
 
-def test_votes_and_filter():
+def test_votes_and_filter(monkeypatch):
     ratelimit.reset()
+    from app.routers import reports as rr
+    who = ["a"]
+    monkeypatch.setattr(rr, "voter_id", lambda request: who[0])  # each vote below comes from a distinct client
     r = client.post("/api/reports", json={"lat": 29.7, "lon": -95.4, "kind": "flooded_road", "depth_in": 8}).json()
     rid = r["id"]
     assert r["confirms"] == 0
     assert client.post("/api/reports/nope/vote", json={"still_there": True}).status_code == 404
-    v = client.post(f"/api/reports/{rid}/vote", json={"still_there": False}).json()
-    assert v["clears"] == 1 and not v["cleared"]
-    v = client.post(f"/api/reports/{rid}/vote", json={"still_there": False}).json()
-    assert v["clears"] == 2 and v["cleared"]
+    for n, voter in enumerate(("a", "b", "c"), 1):
+        who[0] = voter
+        v = client.post(f"/api/reports/{rid}/vote", json={"still_there": False}).json()
+        assert v["clears"] == n and v["cleared"] == (n == 3)  # clearing needs 3 distinct clients
     item = next(x for x in client.get("/api/reports").json() if x["id"] == rid)
-    assert item["clears"] == 2 and item["confirms"] == 0
+    assert item["clears"] == 3 and item["confirms"] == 0
     from app.services.route import recent_reports
     assert rid not in [x["id"] for x in recent_reports()]
-    client.post(f"/api/reports/{rid}/vote", json={"still_there": True})
-    client.post(f"/api/reports/{rid}/vote", json={"still_there": True})
-    client.post(f"/api/reports/{rid}/vote", json={"still_there": True})
+    for voter in ("d", "e", "f"):
+        who[0] = voter
+        client.post(f"/api/reports/{rid}/vote", json={"still_there": True})
     assert rid in [x["id"] for x in recent_reports()]
 
 

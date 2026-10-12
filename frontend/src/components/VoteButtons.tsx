@@ -14,7 +14,7 @@ export default function VoteButtons({ id, confirms, clears, lastVoteAt }: { id?:
   const [done, setDone] = useState(() => (id ? !!read()[id] : false))
   const [busy, setBusy] = useState(false)
   if (!id) return null
-  const cleared = c.n >= 2 && c.n > c.y
+  const cleared = c.n >= 3 && c.n > c.y  // same rule as backend is_cleared (3 distinct clients)
   const vote = async (still: boolean) => {
     if (done || busy) return
     setBusy(true)

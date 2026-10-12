@@ -197,3 +197,39 @@ def test_live_per_ip_cap(monkeypatch):
     with TestClient(_live_app()).websocket_connect("/live") as ws:
         assert "this device" in ws.receive_json()["detail"]
     assert live_router._active == 0
+
+
+# ---------- 5. report / vote abuse ----------
+
+def test_votes_deduped_per_client(client):
+    from app import ratelimit
+    from app.services.route import recent_reports
+    ratelimit.reset()
+    rid = client.post("/api/reports", json={"lat": 29.71, "lon": -95.41, "depth_in": 8}).json()["id"]
+    for _ in range(5):  # same client (same IP) hammering "cleared"
+        v = client.post(f"/api/reports/{rid}/vote", json={"still_there": False}).json()
+    assert v["clears"] == 1 and not v["cleared"]
+    assert rid in [x["id"] for x in recent_reports()]
+    v = client.post(f"/api/reports/{rid}/vote", json={"still_there": True}).json()  # changing your mind replaces it
+    assert v["clears"] == 0 and v["confirms"] == 1
+    ratelimit.reset()
+
+
+def test_is_cleared_needs_more_than_two():
+    from app.services.route import is_cleared
+    assert not is_cleared({"clears": 2, "confirms": 0})
+    assert is_cleared({"clears": 3, "confirms": 0}) and not is_cleared({"clears": 3, "confirms": 3})
+
+
+def test_old_sqlite_schema_gets_new_columns(tmp_path):
+    from sqlalchemy import create_engine, inspect, text
+    from app import db
+    eng = create_engine(f"sqlite:///{tmp_path / 'old.db'}")
+    with eng.begin() as c:  # tables as created before this change
+        c.execute(text("CREATE TABLE report_votes (id INTEGER PRIMARY KEY, report_id VARCHAR(32), still_there BOOLEAN, created_at DATETIME)"))
+        c.execute(text("CREATE TABLE reports (id VARCHAR(32), created_at DATETIME, lat FLOAT, lon FLOAT, kind VARCHAR(40), "
+                       "depth_in FLOAT, note VARCHAR(1000), PRIMARY KEY (id, created_at))"))
+    db.Base.metadata.create_all(eng)
+    db._add_missing_columns(eng)
+    assert "voter" in {c["name"] for c in inspect(eng).get_columns("report_votes")}
+    assert "reporter" in {c["name"] for c in inspect(eng).get_columns("reports")}

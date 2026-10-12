@@ -3,7 +3,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, create_engine, text
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, create_engine, inspect, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config import database_url
@@ -23,15 +23,18 @@ class Report(Base):
     kind = Column(String(40), nullable=False, default="flooded_road")
     depth_in = Column(Float, nullable=True)
     note = Column(String(1000), nullable=True)
+    reporter = Column(String(64), nullable=True)  # salted hash of the client IP (see routers/reports.py)
 
 
 class ReportVote(Base):
-    """Separate table (no ALTER on reports): one row per 'still there' / 'cleared' vote."""
+    """Separate table (no ALTER on reports): one row per client per report ('still there' / 'cleared').
+    voter = salted hash of the client IP (null on votes from before dedupe; each of those counts once)."""
     __tablename__ = "report_votes"
     id = Column(Integer, primary_key=True, autoincrement=True)
     report_id = Column(String(32), nullable=False, index=True)
     still_there = Column(Boolean, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    voter = Column(String(64), nullable=True)
 
 
 class Place(Base):
@@ -83,10 +86,22 @@ def get_session():
     return _Session()
 
 
+def _add_missing_columns(eng) -> None:
+    """create_all never alters existing tables: add nullable columns introduced after a DB was created."""
+    for table, col in (("report_votes", "voter"), ("reports", "reporter")):
+        try:
+            if col not in {c["name"] for c in inspect(eng).get_columns(table)}:
+                with eng.begin() as c:
+                    c.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} VARCHAR(64)"))
+        except Exception as e:
+            log.warning("%s.%s migration skipped: %s", table, col, e)
+
+
 def init_db() -> None:
     try:
         eng = get_engine()
         Base.metadata.create_all(eng)
+        _add_missing_columns(eng)
         if eng.dialect.name == "postgresql":
             try:
                 for ext_name in ("timescaledb", "vector"):  # best effort; Tiger has both

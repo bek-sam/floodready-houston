@@ -19,13 +19,20 @@ def report_counts(kind, depth_in) -> bool:
     return kind in COUNTING_KINDS and (depth_in is None or depth_in > 0)
 
 
+CLEAR_MIN_VOTES = 3  # distinct clients saying "cleared" before a report stops counting as a hazard
+
+
 def vote_counts(session, ids: list[str]) -> dict[str, dict]:
-    """{report_id: {confirms, clears, last_vote_at}} from the report_votes table (missing ids -> zeros)."""
+    """{report_id: {confirms, clears, last_vote_at}} from the report_votes table (missing ids -> zeros).
+    Each client (voter hash) counts once per report: its latest vote wins."""
     out: dict[str, dict] = {}
     if not ids:
         return out
     from app.db import ReportVote
-    for v in session.query(ReportVote).filter(ReportVote.report_id.in_(ids)).all():
+    latest: dict[tuple, object] = {}
+    for v in session.query(ReportVote).filter(ReportVote.report_id.in_(ids)).order_by(ReportVote.id).all():
+        latest[(v.report_id, v.voter or f"row-{v.id}")] = v
+    for v in latest.values():
         c = out.setdefault(v.report_id, {"confirms": 0, "clears": 0, "last_vote_at": None})
         c["confirms" if v.still_there else "clears"] += 1
         ts = v.created_at.isoformat() if v.created_at else None
@@ -36,7 +43,7 @@ def vote_counts(session, ids: list[str]) -> dict[str, dict]:
 
 def is_cleared(counts: dict | None) -> bool:
     c = counts or {}
-    return c.get("clears", 0) >= 2 and c.get("clears", 0) > c.get("confirms", 0)
+    return c.get("clears", 0) >= CLEAR_MIN_VOTES and c.get("clears", 0) > c.get("confirms", 0)
 
 
 def recent_reports() -> list[dict]:
@@ -58,7 +65,7 @@ def recent_reports() -> list[dict]:
                 vc = votes.get(r.id) or {"confirms": 0, "clears": 0, "last_vote_at": None}
                 if ts >= cutoff and report_counts(r.kind, r.depth_in) and not is_cleared(vc):
                     out.append({"id": r.id, "confirms": vc["confirms"], "clears": vc["clears"], "lat": r.lat, "lon": r.lon, "kind": r.kind, "depth_in": r.depth_in,
-                                "note": r.note, "created_at": ts.isoformat()})
+                                "note": r.note, "created_at": ts.isoformat(), "reporter": r.reporter})
             return out
     except Exception:
         return []
@@ -160,12 +167,12 @@ async def _evaluate(line: dict, fallback: bool, simulate: bool, warnings: list) 
                             "report_id": rep.get("id"), "confirms": rep.get("confirms", 0), "clears": rep.get("clears", 0),
                             "reason": "Community report" + (f": about {depth:g} in of water" if depth is not None else "")
                             + (f" ({rep['note']})" if rep.get("note") else "")})
-            rep_ids.add(rep.get("id"))
+            rep_ids.add(rep.get("reporter") or rep.get("id"))  # one client filing twice counts once
             if depth is not None and depth >= HIGH_DEPTH_IN:
-                deep_ids.add(rep.get("id"))
+                deep_ids.add(rep.get("reporter") or rep.get("id"))
                 deep_report = depth
     # Anonymous reports are unverified: one report can raise a route to "caution" at most.
-    # It takes >= 2 distinct reports (at least one deep) to count as evidence of active flooding.
+    # It takes reports from >= 2 distinct clients (at least one deep) to count as evidence of active flooding.
     if deep_report is not None and len(rep_ids) >= 2:
         high = True
     else:

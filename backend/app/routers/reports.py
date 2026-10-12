@@ -1,7 +1,10 @@
+import hashlib
+import os
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Literal, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app import freshness
@@ -10,6 +13,13 @@ from app.services.route import REPORT_MAX_AGE_H, is_cleared, vote_counts
 
 router = APIRouter()
 SOURCE = "FloodReady community reports (unverified)"
+# Salt for hashing voter IPs (raw IPs are never stored). Random per process unless VOTE_SALT is set.
+_SALT = os.getenv("VOTE_SALT") or secrets.token_hex(16)
+
+
+def voter_id(request: Request) -> str:
+    ip = request.client.host if request.client else "unknown"
+    return hashlib.sha256(f"{_SALT}|{ip}".encode()).hexdigest()[:32]
 
 
 class ReportIn(BaseModel):
@@ -33,10 +43,10 @@ def _row(r: Report, vc: dict | None = None) -> dict:
 
 
 @router.post("/reports")
-async def create_report(body: ReportIn):
+async def create_report(body: ReportIn, request: Request):
     try:
         with get_session() as s:
-            r = Report(**body.model_dump())
+            r = Report(**body.model_dump(), reporter=voter_id(request))
             s.add(r)
             s.commit()
             s.refresh(r)
@@ -46,12 +56,18 @@ async def create_report(body: ReportIn):
 
 
 @router.post("/reports/{report_id}/vote")
-async def vote_report(report_id: str, body: VoteIn):
+async def vote_report(report_id: str, body: VoteIn, request: Request):
+    """One vote per client per report: voting again replaces that client's earlier vote."""
+    voter = voter_id(request)
     try:
         with get_session() as s:
             if s.query(Report).filter(Report.id == report_id).first() is None:
                 raise HTTPException(404, "Unknown report")
-            s.add(ReportVote(report_id=report_id, still_there=body.still_there))
+            v = s.query(ReportVote).filter(ReportVote.report_id == report_id, ReportVote.voter == voter).first()
+            if v:
+                v.still_there, v.created_at = body.still_there, datetime.now(timezone.utc)
+            else:
+                s.add(ReportVote(report_id=report_id, still_there=body.still_there, voter=voter))
             s.commit()
             vc = vote_counts(s, [report_id]).get(report_id, {})
             return {"id": report_id, "confirms": vc.get("confirms", 0), "clears": vc.get("clears", 0),

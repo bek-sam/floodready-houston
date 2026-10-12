@@ -443,7 +443,7 @@ def test_medical(client, tmp_path):
     assert [f["name"] for f in r["facilities"]] == ["Near", "Far"] and r["facilities"][0]["distance_mi"] < 1
 
 
-def test_route_report_hazard(client):
+def test_route_report_hazard(client, monkeypatch):
     body = {"origin": {"lat": 29.76, "lon": -95.38}, "destination": {"lat": 29.76, "lon": -95.36}}
     client.post("/api/reports", json={"lat": 29.7603, "lon": -95.375, "depth_in": 8, "note": "deep"})
     client.post("/api/reports", json={"lat": 29.80, "lon": -95.375, "depth_in": 20})  # far away
@@ -453,7 +453,12 @@ def test_route_report_hazard(client):
     assert r["verdict"] == "caution"  # one report never means avoid
     client.post("/api/reports", json={"lat": 29.7601, "lon": -95.365, "depth_in": 9})
     r = client.post("/api/route-check", json=body).json()
-    assert r["verdict"] == "avoid"  # two distinct reports, deep
+    assert r["verdict"] == "caution"  # a second report from the same client still counts once
+    from app.routers import reports as rr
+    monkeypatch.setattr(rr, "voter_id", lambda request: "another-client")
+    client.post("/api/reports", json={"lat": 29.7602, "lon": -95.366, "depth_in": 9})
+    r = client.post("/api/route-check", json=body).json()
+    assert r["verdict"] == "avoid"  # deep reports from two distinct clients
 
 
 def test_route_active_warning_never_safe(client, monkeypatch):
