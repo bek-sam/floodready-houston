@@ -10,7 +10,7 @@ TTL = 7 * 24 * 3600
 
 
 def valid_zip(z: str) -> bool:
-    return bool(re.fullmatch(r"\d{5}", z or ""))
+    return isinstance(z, str) and bool(re.fullmatch(r"[0-9]{5}", z))
 
 
 def _int(v):
@@ -21,6 +21,8 @@ def _int(v):
 
 
 async def get_empower(zip_code: str) -> dict:
+    if not valid_zip(zip_code):  # zip_code goes into an ArcGIS where clause: never trust callers
+        raise ValueError("zip must be 5 digits")
     out = {"zip": zip_code, "medicare_benes": None, "power_dependent_devices": None, "oxygen": None,
            "dialysis": None, "available": False, "source": SOURCE,
            "map": "https://empowerprogram.hhs.gov/empowermap",

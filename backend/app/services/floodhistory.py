@@ -93,7 +93,7 @@ async def _flood_history(lat: float, lon: float, zip_code: str | None = None) ->
         except Exception as e:
             log.warning("zip lookup failed: %s", e)
             warnings.append("ZIP claims history timed out or is unavailable; showing the rest")
-    h = harvey_at(lat, lon)
+    h = await asyncio.to_thread(harvey_at, lat, lon)  # sync SQLite query
     if h.get("flooded") is False:
         try:
             h = harvey_for_jurisdiction(h, jurisdiction_name(await _juris(lat, lon)))

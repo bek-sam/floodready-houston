@@ -159,7 +159,7 @@ async def get_risk(lat: float, lon: float, simulate: bool = False) -> dict:
         warnings.append("Jurisdiction lookup failed")
     rs = await reservoir_status(lat, lon)
     reservoir = rs["in_area"]
-    hv = harvey_for_jurisdiction(harvey_at(lat, lon), jur)
+    hv = harvey_for_jurisdiction(await asyncio.to_thread(harvey_at, lat, lon), jur)  # sync SQLite
     out = {"fema_zone": zone, "zone_subtype": subtype, "sfha": sfha, "elevation_ft": elevation, "elevation_source": elev_source,
            "nearest_gauges": gauges,
            "reservoir_area": reservoir, "harvey": hv, "jurisdiction": jur, "jurisdiction_code": jur_code, "jurisdiction_params": jur_params, "facts": build_facts(zone, sfha, reservoir)}

@@ -28,7 +28,7 @@ def _out(d: dict) -> dict:
 
 
 def valid_zip(z: str) -> bool:
-    return bool(re.fullmatch(r"\d{5}", z or ""))
+    return isinstance(z, str) and bool(re.fullmatch(r"[0-9]{5}", z))
 
 
 async def _claims(z: str):
@@ -105,6 +105,8 @@ async def fetch_zip(z: str) -> dict | None:
 
 
 async def zip_insurance(z: str) -> dict:
+    if not valid_zip(z):  # z goes into an OData $filter: never trust callers (AI tools, other services)
+        raise ValueError("zip must be 5 digits")
     hit = _mem.get(z)
     if hit and time.time() - hit["fetched_at"] < TTL:
         return _out(hit)

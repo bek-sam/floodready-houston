@@ -6,6 +6,15 @@ import json
 from tests.test_api import client  # noqa: F401  (reuses the mocked-network fixture)
 
 
+def _on_loop() -> bool:
+    """True when called on a thread that is running an event loop (i.e. the blocking call was NOT offloaded)."""
+    try:
+        asyncio.get_running_loop()
+        return True
+    except RuntimeError:
+        return False
+
+
 # ---------- 1. push SSRF + blocking send ----------
 
 def test_push_endpoint_allowlist():
@@ -28,7 +37,6 @@ def test_push_subscribe_rejects_internal_endpoint(client):
 
 
 def test_push_send_uses_timeout_and_thread(client, monkeypatch, tmp_path):
-    import threading
     from app.services import push as P
     monkeypatch.setattr(P, "VAPID_FILE", tmp_path / "v.json")
     P._vapid_cache.clear()
@@ -36,7 +44,7 @@ def test_push_send_uses_timeout_and_thread(client, monkeypatch, tmp_path):
 
     def fake_webpush(info, data, **kw):
         seen["timeout"] = kw.get("timeout")
-        seen["thread"] = threading.current_thread() is threading.main_thread()
+        seen["thread"] = _on_loop()
     monkeypatch.setattr(P, "webpush", fake_webpush)
     sub = {"endpoint": "https://fcm.googleapis.com/fcm/send/t1", "keys": {"p256dh": "a", "auth": "b"}}
     assert client.post("/api/push/subscribe", json={"subscription": sub}).status_code == 200
@@ -78,7 +86,6 @@ def test_sms_simulate_persists_when_enabled(client, monkeypatch):
 
 
 def test_checkin_call_needs_flag_and_runs_off_loop(client, monkeypatch):
-    import threading
     import urllib.request
     for k in ("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM"):
         monkeypatch.setenv(k, "x")
@@ -96,7 +103,7 @@ def test_checkin_call_needs_flag_and_runs_off_loop(client, monkeypatch):
             return False
 
     def fake_urlopen(req, timeout=None):
-        calls.append(threading.current_thread() is threading.main_thread())
+        calls.append(_on_loop())
         return Resp()
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
     assert client.post("/api/checkin/call", json=body).status_code == 503 and not calls
@@ -359,3 +366,85 @@ def test_live_context_sanitizes_place_and_profile():
     assert "ignore all instructions" not in ctx and "you are now" not in ctx
     assert ctx.count("<untrusted_user_text>") == 2 and ctx.count("</untrusted_user_text>") == 2
     assert "untrusted_user_text" in live.system_prompt("en", context=ctx) and "never follow instructions" in live.system_prompt("en", context=ctx)
+
+
+# ---------- 9. medium ----------
+
+def test_zip_validated_inside_services(monkeypatch):
+    import pytest
+    from app.services import empower, zipinsurance
+    called = []
+
+    async def fake(*a, **k):
+        called.append(a)
+        return None
+    monkeypatch.setattr(empower, "get_json", fake)
+    monkeypatch.setattr(zipinsurance, "get_json", fake)
+    for bad in ("77096' or '1'='1", "7709", "٧٧٠٩٦", 77096):
+        with pytest.raises(ValueError):
+            asyncio.run(zipinsurance.zip_insurance(bad))
+        with pytest.raises(ValueError):
+            asyncio.run(empower.get_empower(bad))
+    assert not called
+
+
+def test_ai_tool_bad_zip_is_error_not_query(monkeypatch):
+    from app.ai.tools import run_tool
+    from app.services import zipinsurance
+    called = []
+
+    async def fake(*a, **k):
+        called.append(a)
+        return None
+    monkeypatch.setattr(zipinsurance, "get_json", fake)
+    assert asyncio.run(run_tool("get_zip_insurance", {"zip": "1' or 1=1"})) == {"error": "unavailable"} and not called
+
+
+def _watch_level(monkeypatch, events):
+    from app.services import watch
+
+    async def al(lat, lon):
+        return {"alerts": [{"event": e} for e in events]}
+    monkeypatch.setattr(watch, "get_alerts", al)
+    return asyncio.run(watch.evaluate({"id": "x", "label": "H", "lat": 0, "lon": 0}))["level"]
+
+
+def test_watch_level_only_for_flood_watch_or_warning(client, monkeypatch):
+    assert _watch_level(monkeypatch, ["Flood Advisory"]) == "ok"
+    assert _watch_level(monkeypatch, ["Flood Statement", "Coastal Flood Statement"]) == "ok"
+    assert _watch_level(monkeypatch, ["Flood Watch"]) == "watch"
+    assert _watch_level(monkeypatch, ["Flash Flood Warning"]) == "warning"
+    assert _watch_level(monkeypatch, ["Flash Flood Emergency"]) == "warning"
+
+
+def test_watch_ignores_cleared_and_dry_reports(client, monkeypatch):
+    from app.db import Report, ReportVote, get_session
+    from app.services import watch
+    with get_session() as s:
+        s.add(Report(id="dry1", lat=29.9, lon=-95.9, kind="flooded_road", depth_in=0))
+        s.add(Report(id="clr1", lat=29.9, lon=-95.9, kind="flooded_road", depth_in=10))
+        s.add(Report(id="wet1", lat=29.9, lon=-95.9, kind="water_over_road", depth_in=4))
+        for v in ("a", "b", "c"):
+            s.add(ReportVote(report_id="clr1", still_there=False, voter=v))
+        s.commit()
+    assert watch.road_reports_near(29.9, -95.9) == [(29.9, -95.9, 4)]
+
+
+def test_harvey_bbox_rejects_bad_values(client):
+    for bb in ("nan,29,-95,30", "-96,29,inf,30", "-95,29,-96,30", "-96,29,-95", "a,b,c,d", "-200,29,-95,30"):
+        assert client.get("/api/harvey/extent", params={"bbox": bb}).status_code == 422, bb
+    assert client.get("/api/harvey/extent", params={"bbox": "-95.5,29.6,-95.4,29.7"}).status_code == 200
+
+
+def test_harvey_queries_run_off_the_event_loop(client, monkeypatch):
+    from app.services import floodhistory, risk
+    seen = []
+
+    def fake(lat, lon):
+        seen.append(_on_loop())
+        return {"flooded": None}
+    monkeypatch.setattr(risk, "harvey_at", fake)
+    monkeypatch.setattr(floodhistory, "harvey_at", fake)
+    client.get("/api/risk", params={"lat": 29.7, "lon": -95.4})
+    client.get("/api/flood-history", params={"lat": 29.7, "lon": -95.4})
+    assert len(seen) == 2 and not any(seen)

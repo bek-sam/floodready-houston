@@ -48,6 +48,6 @@ async def _exposure(f: dict) -> None:
         pass
     try:
         from app.services.harvey import harvey_at
-        f["harvey_flooded"] = harvey_at(f["lat"], f["lon"]).get("flooded")
+        f["harvey_flooded"] = (await asyncio.to_thread(harvey_at, f["lat"], f["lon"])).get("flooded")
     except Exception:
         pass

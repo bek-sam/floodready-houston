@@ -17,7 +17,12 @@ COPY research-brief.md flood-problems.md /app/
 
 # Persistent state lives in the /state volume; symlink where the code expects it:
 # SQLite db, .vapid.json (push keys), .cache (geocode/route/voice/embedding caches).
-RUN mkdir -p /state && chmod 777 /state
+# Runs as an unprivileged user that owns /state and the app dir (it creates the symlinks below at start).
+# A volume created by an older image is root-owned: fix once with
+#   docker compose run --rm -u root backend chown -R app:app /state
+RUN useradd --system --uid 10001 --home-dir /app app \
+    && mkdir -p /state && chown -R app:app /state /app/backend
+USER app
 VOLUME /state
 EXPOSE 8000
 CMD ["sh", "-c", "mkdir -p /state/cache && ln -sfn /state/cache .cache && ln -sf /state/floodready.db floodready.db && ln -sf /state/vapid.json .vapid.json && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*"]

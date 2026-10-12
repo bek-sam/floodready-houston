@@ -6,7 +6,7 @@ from app.services.codes import tag_warnings
 from app.services.alerts import get_alerts, is_flood_alert
 from app.services.data import haversine_m
 from app.services.gauges import nearest_gauges
-from app.services.route import load_crossings
+from app.services.route import is_cleared, load_crossings, vote_counts
 
 RANK = {"ok": 0, "watch": 1, "warning": 2}
 CALL = "Call 911 in an emergency."
@@ -27,13 +27,16 @@ def crossings_near(lat, lon, radius_m=1000):
 
 
 def road_reports_near(lat, lon, radius_m=1000, hours=6):
-    """Recent community reports of water on roads within radius_m of a point."""
+    """Recent community reports of water on roads within radius_m of a point (same rules as route.py:
+    depth 0 and reports voted cleared do not count)."""
     cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
     try:
         with get_session() as s:
             rows = s.query(Report).filter(Report.created_at >= cutoff,
                                           Report.kind.in_(("water_over_road", "flooded_road"))).all()
-            pts = [(r.lat, r.lon, r.depth_in) for r in rows]
+            votes = vote_counts(s, [r.id for r in rows])
+            pts = [(r.lat, r.lon, r.depth_in) for r in rows
+                   if (r.depth_in is None or r.depth_in > 0) and not is_cleared(votes.get(r.id))]
     except Exception:
         return []
     return [p for p in pts if haversine_m(lat, lon, p[0], p[1]) <= radius_m]
@@ -51,8 +54,11 @@ async def evaluate(place: dict, simulate: bool = False) -> dict:
     al = await get_alerts(lat, lon)
     flood = [a for a in al["alerts"] if is_flood_alert(a)]
     for a in flood:
-        warn = "warning" in (a.get("event") or "").lower()
-        up("warning" if warn else "watch")
+        ev = (a.get("event") or "").lower()
+        if "warning" in ev or "emergency" in ev:
+            up("warning")
+        elif "watch" in ev:
+            up("watch")  # Statements and Advisories are listed but do not raise the level
         reasons.append(f"NWS {a['event']} in effect for this location")
         rcodes.append({"code": "watch.r.nws", "params": {"event": a["event"]}})
     gauges = await nearest_gauges(lat, lon, 3, simulate)
