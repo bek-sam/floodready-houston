@@ -164,6 +164,12 @@ def twiml(msg: str) -> str:
 
 # ---------- Twilio signature ----------
 
+def simulate_persists() -> bool:
+    """/sms/simulate only writes opt-ins/opt-outs to the DB in demo mode (DEMO_SNAPSHOT=1) or with SMS_SIMULATE=1.
+    Otherwise anyone could opt a real phone number in or out through the simulator."""
+    return os.getenv("DEMO_SNAPSHOT") == "1" or os.getenv("SMS_SIMULATE") == "1"
+
+
 def twilio_configured() -> bool:
     return bool(os.getenv("TWILIO_ACCOUNT_SID") and os.getenv("TWILIO_AUTH_TOKEN") and os.getenv("TWILIO_FROM"))
 
@@ -292,11 +298,12 @@ async def summarize(lat: float, lon: float, label: str, lang: str, simulate: boo
 
 # ---------- main entry ----------
 
-async def handle(phone: str, body: str, simulate: bool = False) -> str:
-    """Returns the plain-text reply ('' = send nothing)."""
+async def handle(phone: str, body: str, simulate: bool = False, persist: bool = True) -> str:
+    """Returns the plain-text reply ('' = send nothing). persist=False replies the same but never saves changes."""
     phone = (phone or "unknown")[:32]
     cmd, rest = parse_command(body)
     with _store(phone) as s:
+        save = s.commit if persist else s.rollback
         row = _get(s, phone)
         lang = detect_lang(body, row.lang or "en") if cmd not in ("stop", "start") else (row.lang or "en")
         if cmd in ("help", "on", "off", "query", "empty") and lang != row.lang and body.strip():
@@ -305,50 +312,50 @@ async def handle(phone: str, body: str, simulate: bool = False) -> str:
         row.updated_at = datetime.now(timezone.utc)
         if cmd == "stop":
             row.stopped, row.opted_in = True, False
-            s.commit()
+            save()
             return S["stop"]
         if cmd == "start":
             row.stopped = False
-            s.commit()
+            save()
             return S["start"]
         if row.stopped:  # compliance: no replies after STOP until START
-            s.commit()
+            save()
             return ""
         if is_danger(body):
-            s.commit()
+            save()
             return clip(S["danger"])
         if cmd in ("empty",):
-            s.commit()
+            save()
             return S["ask"]
         if cmd == "help":
-            s.commit()
+            save()
             if rest and _ZIP.search(rest):
                 pass  # "AYUDA 77096": help text plus risk summary below
             else:
                 return clip(S["help"])
         if cmd == "off":
             row.opted_in = False
-            s.commit()
+            save()
             return S["off"]
         try:
             if cmd == "on" and not rest.strip():
                 if row.lat is None:
-                    s.commit()
+                    save()
                     return S["on_need"]
                 row.opted_in = True
-                s.commit()
+                save()
                 return clip(S["on" if twilio_configured() else "on_saved"].format(p=row.label or "your area"))
             place = await resolve_place(rest if cmd in ("on", "help") else body)
             if not place:
-                s.commit()
+                save()
                 return S["nf"]
             lat, lon, label = place
             row.lat, row.lon, row.label = lat, lon, label
             if cmd == "on":
                 row.opted_in = True
-                s.commit()
+                save()
                 return clip(S["on" if twilio_configured() else "on_saved"].format(p=label))
-            s.commit()
+            save()
             summary = await summarize(lat, lon, label, lang, simulate)
             if cmd == "help":
                 return clip(summary)

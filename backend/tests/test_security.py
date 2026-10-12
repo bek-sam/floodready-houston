@@ -50,3 +50,56 @@ def test_push_send_skips_disallowed_stored_endpoint(monkeypatch, tmp_path):
     called = []
     monkeypatch.setattr(P, "webpush", lambda *a, **k: called.append(1))
     assert P.send_one(PushSub(endpoint="http://10.0.0.1/x", keys="{}"), {}) == "gone" and not called
+
+
+# ---------- 2. SMS simulator + phone calls ----------
+
+def _optin(phone):
+    from app.db import get_session
+    from app.services.sms import SmsOptIn
+    with get_session() as s:
+        return s.get(SmsOptIn, phone)
+
+
+def test_sms_simulate_does_not_persist_by_default(client, monkeypatch):
+    monkeypatch.delenv("SMS_SIMULATE", raising=False)
+    monkeypatch.delenv("DEMO_SNAPSHOT", raising=False)
+    r = client.post("/api/sms/simulate", json={"from": "+17135550101", "body": "ALERTS ON 77096"}).json()
+    assert "saved" in r["reply"]  # same reply as before
+    assert _optin("+17135550101") is None
+    client.post("/api/sms/simulate", json={"from": "+17135550101", "body": "STOP"})
+    assert _optin("+17135550101") is None
+
+
+def test_sms_simulate_persists_when_enabled(client, monkeypatch):
+    monkeypatch.setenv("SMS_SIMULATE", "1")
+    client.post("/api/sms/simulate", json={"from": "+17135550102", "body": "ALERTS ON 77096"})
+    assert _optin("+17135550102").opted_in is True
+
+
+def test_checkin_call_needs_flag_and_runs_off_loop(client, monkeypatch):
+    import threading
+    import urllib.request
+    for k in ("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM"):
+        monkeypatch.setenv(k, "x")
+    monkeypatch.delenv("CHECKIN_CALLS", raising=False)
+    body = {"phone": "+17135550103", "name": "A", "lang": "en"}
+    calls = []
+
+    class Resp:
+        status = 201
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, timeout=None):
+        calls.append(threading.current_thread() is threading.main_thread())
+        return Resp()
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    assert client.post("/api/checkin/call", json=body).status_code == 503 and not calls
+    monkeypatch.setenv("CHECKIN_CALLS", "1")
+    assert client.post("/api/checkin/call", json=body).json() == {"ok": True, "status": 201}
+    assert calls == [False]

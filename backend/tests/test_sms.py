@@ -21,14 +21,16 @@ def test_ayuda_zip_spanish(client):
     assert "911" in r and "Zona FEMA" in r and "peligro" in r
 
 
-def test_help_and_stop_compliance(client):
+def test_help_and_stop_compliance(client, monkeypatch):
+    monkeypatch.setenv("SMS_SIMULATE", "1")  # simulator only persists opt-in/out state when enabled
     assert "STOP" in sim(client, "HELP", "+15550003")
     assert "unsubscribed" in sim(client, "STOP", "+15550003")
     assert sim(client, "77096", "+15550003") == ""  # silent until START
     assert "welcome back" in sim(client, "START", "+15550003")
 
 
-def test_alerts_on_off_stores_optin(client):
+def test_alerts_on_off_stores_optin(client, monkeypatch):
+    monkeypatch.setenv("SMS_SIMULATE", "1")
     from app.db import get_session
     from app.services.sms import SmsOptIn
     assert "ZIP" in sim(client, "ALERTS ON", "+15550004")
@@ -101,6 +103,7 @@ def test_address_reply_suggests_own_place_not_77096(client):
 
 
 def test_alerts_on_sends_real_sms_only_when_configured(client, monkeypatch):
+    monkeypatch.setenv("SMS_SIMULATE", "1")
     import asyncio
     from app.services import sms
     sent = []

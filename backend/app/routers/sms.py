@@ -1,3 +1,4 @@
+import asyncio
 import os
 from urllib.parse import parse_qsl
 
@@ -44,7 +45,7 @@ async def inbound(request: Request):
 
 @router.post("/sms/simulate")
 async def simulate(body: SimIn):
-    reply = await svc.handle(body.from_, body.body, simulate=body.simulate)
+    reply = await svc.handle(body.from_, body.body, simulate=body.simulate, persist=svc.simulate_persists())
     return {"reply": reply, "simulated": bool(body.simulate and reply.startswith(svc.SIM_PREFIX))}
 
 
@@ -62,6 +63,9 @@ async def digit(request: Request, lang: str = "en"):
 
 @router.post("/checkin/call")
 async def call(body: CallIn):
+    # Real outbound calls cost money and can harass any number: off unless CHECKIN_CALLS=1 (and rate-limited).
+    if os.getenv("CHECKIN_CALLS") != "1":
+        raise HTTPException(503, "Voice check-in calls are disabled (set CHECKIN_CALLS=1 and TWILIO_*)")
     if not svc.twilio_configured():
         raise HTTPException(503, "Voice check-in is not configured (set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM)")
     # Configured: place the call through Twilio's REST API (stdlib only; no extra dependency).
@@ -71,8 +75,10 @@ async def call(body: CallIn):
     data = urllib.parse.urlencode({"To": body.phone, "From": frm, "Twiml": svc.checkin_twiml(lang)}).encode()
     req = urllib.request.Request(f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Calls.json", data=data)
     req.add_header("Authorization", "Basic " + base64.b64encode(f"{sid}:{tok}".encode()).decode())
-    try:
+    def place_call() -> int:
         with urllib.request.urlopen(req, timeout=10) as r:
-            return {"ok": True, "status": r.status}
+            return r.status
+    try:
+        return {"ok": True, "status": await asyncio.to_thread(place_call)}
     except Exception as e:
         raise HTTPException(502, f"Twilio call failed: {type(e).__name__}")
