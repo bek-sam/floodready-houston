@@ -233,3 +233,49 @@ def test_old_sqlite_schema_gets_new_columns(tmp_path):
     db._add_missing_columns(eng)
     assert "voter" in {c["name"] for c in inspect(eng).get_columns("report_votes")}
     assert "reporter" in {c["name"] for c in inspect(eng).get_columns("reports")}
+
+
+# ---------- 6. profile IDOR ----------
+
+def test_profile_token_required(client):
+    from app import ratelimit
+    ratelimit.reset()
+    saved = client.post("/api/profile", json={"language": "en", "renter": True}).json()
+    pid, tok = saved["id"], saved["token"]
+    assert len(tok) >= 24
+    assert client.get(f"/api/profile/{pid}").status_code == 403
+    assert client.get(f"/api/profile/{pid}", headers={"X-Profile-Token": "wrong"}).status_code == 403
+    got = client.get(f"/api/profile/{pid}", headers={"X-Profile-Token": tok}).json()
+    assert got["renter"] is True and "token" not in got
+    # overwrite needs the token
+    assert client.post("/api/profile", json={"id": pid, "renter": False}).status_code == 403
+    upd = client.post("/api/profile", json={"id": pid, "renter": False}, headers={"X-Profile-Token": tok}).json()
+    assert upd["id"] == pid and "token" not in upd
+    assert client.get(f"/api/profile/{pid}", headers={"X-Profile-Token": tok}).json()["renter"] is False
+    # a client-chosen unknown id is not honoured
+    assert client.post("/api/profile", json={"id": "mine123"}).json()["id"] != "mine123"
+    ratelimit.reset()
+
+
+def test_profile_token_stored_hashed_and_legacy_rejected(client):
+    from sqlalchemy import select
+    from app.ai import memory
+    p = memory.save_profile({"language": "es"})
+    with memory._eng().connect() as c:
+        row = c.execute(select(memory._tokens).where(memory._tokens.c.id == p["id"])).first()
+        data = c.execute(select(memory._table).where(memory._table.c.id == p["id"])).first().data
+    assert row.token_hash != p["token"] and len(row.token_hash) == 64 and p["token"] not in data
+    with memory._eng().begin() as c:  # a profile saved before tokens existed
+        c.execute(memory._table.insert().values(id="legacy1", data=json.dumps({"id": "legacy1"}), backboard_assistant_id=None))
+    assert client.get("/api/profile/legacy1").status_code == 403
+    assert client.post("/api/profile", json={"id": "legacy1", "pets": True}).status_code == 403
+
+
+def test_profile_size_bounds(client):
+    from app import ratelimit
+    ratelimit.reset()
+    assert client.post("/api/profile", json={"address": "x" * 301}).status_code == 422
+    assert client.post("/api/profile", json={"medical": ["a"] * 21}).status_code == 422
+    assert client.post("/api/profile", json={f"k{i}": 1 for i in range(31)}).status_code == 422
+    assert client.post("/api/profile", json={"nested": {"a": 1}}).status_code == 422
+    ratelimit.reset()

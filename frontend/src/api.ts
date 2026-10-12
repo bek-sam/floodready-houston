@@ -178,6 +178,26 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 }
 const post = <T,>(path: string, body: unknown, signal?: AbortSignal) =>
   req<T>(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal })
+// Server profile id + secret token (returned once on create). The token is required to read or update it.
+const PROFILE_KEY = 'floodready.profileAuth.v1'
+function profileAuth(): { id: string; token: string } | null {
+  try { const v = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null'); return v?.id && v?.token ? v : null } catch { return null }
+}
+async function saveProfile(p: Profile): Promise<Profile> {
+  const send = (auth: { id: string; token: string } | null) => req<Profile & { token?: string }>('/profile', {
+    method: 'POST', body: JSON.stringify(auth ? { ...p, id: auth.id } : p),
+    headers: { 'Content-Type': 'application/json', ...(auth ? { 'X-Profile-Token': auth.token } : {}) },
+  })
+  const auth = profileAuth()
+  let r: Profile & { token?: string }
+  try { r = await send(auth) } catch (e) {
+    if (!(auth && e instanceof ApiError && e.status === 403)) throw e
+    r = await send(null) // stale/legacy id: start a new profile
+  }
+  const { token, ...saved } = r
+  if (token && saved.id) { try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ id: saved.id, token })) } catch { /* ignore */ } }
+  return saved
+}
 const q = (o: { q: string } | { purchase_date: string } | LatLon) => new URLSearchParams(Object.entries(o).filter(([k]) => k !== 'label').map(([k, v]) => [k, String(v)])).toString()
 
 export const api = {
@@ -211,7 +231,7 @@ export const api = {
   replayEvents: () => req<ReplayEvent[]>('/replay/events'),
   replay: (id: string) => req<Replay>('/replay/' + encodeURIComponent(id)),
   countdown: (d: string) => req<Countdown>('/insurance/countdown?' + q({ purchase_date: d })),
-  saveProfile: (p: Profile) => post<Profile>('/profile', p),
+  saveProfile,
   plan: (profile: Profile, lat: number, lon: number) => post<Plan>('/plan', { profile, lat, lon }),
   ask: (question: string, lang: string, loc?: LatLon | null, extra?: { history?: { role: 'user' | 'assistant'; content: string }[]; mode?: 'voice'; signal?: AbortSignal }) =>
     post<Ask>('/ask', { question, lang, ...(loc ? { lat: loc.lat, lon: loc.lon } : {}), ...(extra?.history?.length ? { history: extra.history } : {}), ...(extra?.mode ? { mode: extra.mode } : {}) }, extra?.signal),

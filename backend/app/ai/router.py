@@ -1,8 +1,9 @@
 """AI endpoints. main.py mounts `router` under /api."""
 import asyncio
+import json
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from typing import Literal
@@ -118,16 +119,37 @@ async def make_voice(body: VoiceBody):
     return Response(audio, media_type="audio/mpeg")
 
 
+MAX_PROFILE_KEYS, MAX_PROFILE_STR, MAX_PROFILE_LIST = 30, 300, 20
+
+
+def _check_profile(p: dict) -> None:
+    """Household profiles are small flat records: bound keys, strings and lists."""
+    if len(p) > MAX_PROFILE_KEYS or len(json.dumps(p, default=str)) > 4000:
+        raise HTTPException(422, "profile too large")
+    for k, v in p.items():
+        items = v if isinstance(v, list) else [v]
+        if len(k) > 40 or len(items) > MAX_PROFILE_LIST or any(
+                isinstance(x, (dict, list)) or (isinstance(x, str) and len(x) > MAX_PROFILE_STR) for x in items):
+            raise HTTPException(422, f"profile field '{k[:40]}' is too long or not a simple value")
+
+
 @router.post("/profile")
-async def save_profile(profile: dict[str, Any]):
-    return await run_in_threadpool(memory.save_profile, profile)
+async def save_profile(profile: dict[str, Any], x_profile_token: str | None = Header(default=None, max_length=128)):
+    """New profile -> response includes `token` (store it; send it as X-Profile-Token to read or update)."""
+    _check_profile(profile)
+    try:
+        return await run_in_threadpool(memory.save_profile, profile, x_profile_token)
+    except PermissionError:
+        raise HTTPException(403, "X-Profile-Token required to update this profile")
 
 
 @router.get("/profile/{profile_id}")
-async def get_profile(profile_id: str):
+async def get_profile(profile_id: str, x_profile_token: str | None = Header(default=None, max_length=128)):
     p = await run_in_threadpool(memory.get_profile, profile_id)
     if p is None:
         raise HTTPException(404, "profile not found")
+    if not await run_in_threadpool(memory.check_token, profile_id, x_profile_token):
+        raise HTTPException(403, "X-Profile-Token required")
     return p
 
 

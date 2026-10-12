@@ -59,7 +59,7 @@ def test_voice_503_without_key():
 
 def test_profile_roundtrip():
     saved = client.post("/api/profile", json={"language": "en", "renter": True}).json()
-    got = client.get(f"/api/profile/{saved['id']}").json()
+    got = client.get(f"/api/profile/{saved['id']}", headers={"X-Profile-Token": saved["token"]}).json()
     assert got["renter"] is True
     assert client.get("/api/profile/nope").status_code == 404
 
