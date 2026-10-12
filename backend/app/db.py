@@ -23,6 +23,7 @@ class Report(Base):
     kind = Column(String(40), nullable=False, default="flooded_road")
     depth_in = Column(Float, nullable=True)
     note = Column(String(1000), nullable=True)
+    plausibility = Column(Float, nullable=True)  # optional Jev check (0-1); null = not checked
 
 
 class ReportVote(Base):
@@ -83,10 +84,20 @@ def get_session():
     return _Session()
 
 
+def add_columns(eng) -> None:
+    """Columns added after a table first shipped (create_all does not alter existing tables)."""
+    try:
+        with eng.begin() as c:
+            c.execute(text("ALTER TABLE reports ADD COLUMN plausibility FLOAT"))
+    except Exception:  # column already exists
+        pass
+
+
 def init_db() -> None:
     try:
         eng = get_engine()
         Base.metadata.create_all(eng)
+        add_columns(eng)
         if eng.dialect.name == "postgresql":
             try:
                 for ext_name in ("timescaledb", "vector"):  # best effort; Tiger has both
