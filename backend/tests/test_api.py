@@ -179,10 +179,10 @@ def test_push_flow(client, monkeypatch, tmp_path):
     assert len(key) > 80 and "=" not in key and (tmp_path / "v.json").exists()
     assert client.get("/api/push/vapid-public-key").json()["key"] == key
     pl = client.post("/api/watch", json={"label": "Home", "lat": 29.76, "lon": -95.37}).json()
-    sub = {"endpoint": "https://push.example/ok", "keys": {"p256dh": "a", "auth": "b"}}
+    sub = {"endpoint": "https://fcm.googleapis.com/fcm/send/ok", "keys": {"p256dh": "a", "auth": "b"}}
     assert client.post("/api/push/subscribe", json={"subscription": {"endpoint": "x"}}).status_code == 422
     assert "id" in client.post("/api/push/subscribe", json={"subscription": sub, "place_ids": [pl["id"]], "lang": "es"}).json()
-    client.post("/api/push/subscribe", json={"subscription": {**sub, "endpoint": "https://push.example/gone"}, "place_ids": [pl["id"]]})
+    client.post("/api/push/subscribe", json={"subscription": {**sub, "endpoint": "https://fcm.googleapis.com/fcm/send/gone"}, "place_ids": [pl["id"]]})
     assert client.post("/api/push/test", json={"endpoint": sub["endpoint"]}).json() == {"sent": 1}
     r = client.post("/api/push/simulate", json={"endpoint": sub["endpoint"]}).json()
     assert r == {"sent": 1}  # the 410 subscription is deleted, not counted
@@ -191,7 +191,7 @@ def test_push_flow(client, monkeypatch, tmp_path):
     assert client.post("/api/push/simulate", json={"endpoint": sub["endpoint"]}).json() == {"sent": 1}
     from app import ratelimit
     ratelimit.reset()  # this flow exceeds 6 push calls/min
-    client.post("/api/push/unsubscribe", json={"endpoint": "https://push.example/gone"})
+    client.post("/api/push/unsubscribe", json={"endpoint": "https://fcm.googleapis.com/fcm/send/gone"})
     assert client.post("/api/push/unsubscribe", json={"endpoint": sub["endpoint"]}).json() == {"ok": True}
     assert client.post("/api/push/simulate", json={"endpoint": sub["endpoint"]}).status_code == 404
 
@@ -210,7 +210,7 @@ def test_push_loop_only_on_rise(client, monkeypatch, tmp_path):
 
     monkeypatch.setattr(P, "evaluate", fake_eval)
     pl = client.post("/api/watch", json={"label": "Home", "lat": 29.76, "lon": -95.37}).json()
-    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://p/1", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
+    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://updates.push.services.mozilla.com/wpush/v2/1", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
     counts = [asyncio.run(P.check_all()) for _ in range(4)]
     assert counts == [0, 1, 0, 1] and [s["level"] for s in sent] == ["watch", "warning"]
 
@@ -504,14 +504,14 @@ def test_push_failed_send_retried_and_gone_removed(client, monkeypatch, tmp_path
         return {"level": "warning"}
     monkeypatch.setattr(P, "evaluate", fake_eval)
     pl = client.post("/api/watch", json={"label": "Home", "lat": 29.76, "lon": -95.37}).json()
-    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://p/retry", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
+    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://updates.push.services.mozilla.com/wpush/v2/retry", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
     assert [asyncio.run(P.check_all()), asyncio.run(P.check_all()), asyncio.run(P.check_all())] == [0, 1, 0]
     monkeypatch.setattr(P, "send_one", lambda sub, payload: "gone")
-    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://p/gone", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
+    client.post("/api/push/subscribe", json={"subscription": {"endpoint": "https://updates.push.services.mozilla.com/wpush/v2/gone", "keys": {"p256dh": "a", "auth": "b"}}, "place_ids": [pl["id"]]})
     asyncio.run(P.check_all())
     from app.db import PushSub, get_session
     with get_session() as s:
-        assert s.query(PushSub).filter(PushSub.endpoint == "https://p/gone").count() == 0
+        assert s.query(PushSub).filter(PushSub.endpoint == "https://updates.push.services.mozilla.com/wpush/v2/gone").count() == 0
 
 
 def test_zip_policies_fallback_and_no_partial_cache(monkeypatch):

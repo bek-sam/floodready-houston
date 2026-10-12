@@ -5,6 +5,7 @@ import json
 import logging
 import os
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from cryptography.hazmat.primitives import serialization
 from py_vapid import Vapid
@@ -35,6 +36,24 @@ TEXT = {
            "watch": ("مراقبة الفيضان", "مراقبة الفيضان في {label}: الأوضاع تتفاقم. تحقق من مسارك قبل القيادة."),
            "test": ("اختبار FloodReady", "الإشعارات تعمل.")},
 }
+
+
+# Browser push services (Chrome/Edge/Firefox/Safari). Endpoints anywhere else are rejected (SSRF).
+PUSH_HOSTS = ("fcm.googleapis.com", "android.googleapis.com", "updates.push.services.mozilla.com",
+              "push.services.mozilla.com", "push.apple.com", "notify.windows.com")
+SEND_TIMEOUT_S = 10
+
+
+def endpoint_allowed(endpoint) -> bool:
+    """https only, standard port, host equal to or a subdomain of a known push service."""
+    try:
+        u = urlsplit(str(endpoint or ""))
+        host, port = (u.hostname or "").lower(), u.port
+    except ValueError:
+        return False
+    if u.scheme != "https" or port not in (None, 443) or u.username or u.password:
+        return False
+    return any(host == h or host.endswith("." + h) for h in PUSH_HOSTS)
 
 
 def _b64(b: bytes) -> str:
@@ -84,10 +103,14 @@ def _sub_info(sub: PushSub) -> dict:
 
 
 def send_one(sub: PushSub, payload: dict) -> str:
-    """'ok' | 'gone' (404/410, delete it) | 'error'."""
+    """'ok' | 'gone' (404/410 or a non-push-service endpoint, delete it) | 'error'. Blocking: callers run it
+    in a worker thread (see _process_status)."""
+    if not endpoint_allowed(sub.endpoint):
+        return "gone"
     v, _, subject = get_vapid()
     try:
-        webpush(_sub_info(sub), json.dumps(payload), vapid_private_key=v, vapid_claims={"sub": subject})
+        webpush(_sub_info(sub), json.dumps(payload), vapid_private_key=v, vapid_claims={"sub": subject},
+                timeout=SEND_TIMEOUT_S)
         return "ok"
     except WebPushException as e:
         code = getattr(getattr(e, "response", None), "status_code", None)
@@ -113,24 +136,24 @@ def _places_for(s, sub: PushSub) -> list[dict]:
             for p in s.query(Place).filter(Place.id.in_(ids)).all()]
 
 
-def _process_status(s, sub: PushSub, payload: dict) -> str:
+async def _process_status(s, sub: PushSub, payload: dict) -> str:
     """Send; delete the subscription if gone (404/410). Returns 'ok' | 'gone' | 'error'."""
-    r = send_one(sub, payload)
+    r = await asyncio.to_thread(send_one, sub, payload)  # pywebpush blocks: keep it off the event loop
     if r == "gone":
         s.delete(sub)
         s.commit()
     return r
 
 
-def _process(s, sub: PushSub, payload: dict) -> bool:
-    return _process_status(s, sub, payload) == "ok"
+async def _process(s, sub: PushSub, payload: dict) -> bool:
+    return await _process_status(s, sub, payload) == "ok"
 
 
 async def push_test(endpoint: str) -> int:
     sent = 0
     with get_session() as s:
         for sub in s.query(PushSub).filter(PushSub.endpoint == endpoint).all():
-            if _process(s, sub, make_payload(sub.lang or "en", "test", "")):
+            if await _process(s, sub, make_payload(sub.lang or "en", "test", "")):
                 sent += 1
     return sent
 
@@ -141,7 +164,7 @@ async def push_simulate(endpoint: str) -> int:
         for sub in s.query(PushSub).filter(PushSub.endpoint == endpoint).all():
             for p in _places_for(s, sub):
                 ev = await evaluate(p, True)
-                if _process(s, sub, make_payload(sub.lang or "en", ev["level"], p["label"], p["id"])):
+                if await _process(s, sub, make_payload(sub.lang or "en", ev["level"], p["label"], p["id"])):
                     sent += 1
     return sent
 
@@ -158,7 +181,7 @@ async def check_all() -> int:
                 ev = await evaluate(p, False)
                 prev = last.get(p["id"], "ok")
                 if RANK[ev["level"]] > RANK[prev]:
-                    r = _process_status(s, sub, make_payload(sub.lang or "en", ev["level"], p["label"], p["id"]))
+                    r = await _process_status(s, sub, make_payload(sub.lang or "en", ev["level"], p["label"], p["id"]))
                     if r == "ok":
                         sent += 1
                         new[p["id"]] = ev["level"]

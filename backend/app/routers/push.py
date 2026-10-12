@@ -30,6 +30,8 @@ async def subscribe(body: SubIn):
     ep, keys = body.subscription.get("endpoint"), body.subscription.get("keys")
     if not ep or not isinstance(keys, dict) or not keys.get("p256dh") or not keys.get("auth"):
         raise HTTPException(422, "Invalid push subscription")
+    if not svc.endpoint_allowed(ep):
+        raise HTTPException(422, "Push endpoint must be an https URL of a browser push service")
     try:
         with get_session() as s:
             sub = s.query(PushSub).filter(PushSub.endpoint == ep).first() or PushSub(endpoint=ep)
