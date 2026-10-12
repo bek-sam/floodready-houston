@@ -50,7 +50,7 @@ Coverage, from a strict problem-by-problem audit with live tests ([`docs/problem
 
 Every feature works without API keys (deterministic fallbacks: template text, BM25 search, browser speechSynthesis).
 
-Safety and limits: per-IP rate limits (`/ask` 60/min, `/plan` 40/min, `/push` 20/min by default, overridable via `RATE_*`; raised in cycle 17 because a venue shares one IP), `/ask` capped at 500 characters, push test/simulate reach only the caller's own subscription, CORS from `ALLOWED_ORIGINS`.
+Safety and limits: per-IP rate limits (`/ask` 60/min, `/plan` 40/min, `/push` 20/min, plus voice, ElevenLabs agent URL, profile, route-check, SMS, check-in calls and geocode by default, overridable via `RATE_*`; raised in cycle 17 because a venue shares one IP), `/ask` and `/ask/stream` capped at 500 characters (history ≤12 turns of ≤2000 chars), push endpoints must be https URLs of a browser push service, push test/simulate reach only the caller's own subscription, CORS from `ALLOWED_ORIGINS` (the `/api/live` WebSocket also accepts only those origins or same-origin, max `LIVE_MAX_PER_IP` sessions per IP). Household profiles return a secret token on create that is required (`X-Profile-Token`) to read or update them. Report votes count once per client, and clearing a report needs 3 clients. `/sms/simulate` only saves opt-ins with `SMS_SIMULATE=1` or `DEMO_SNAPSHOT=1`, and `/checkin/call` needs `CHECKIN_CALLS=1`. The offline snapshot layer is only installed with `DEMO_SNAPSHOT=1`.
 
 ## What's measured
 Dated evidence is on the Judge page (`frontend/public/evidence.json`):
