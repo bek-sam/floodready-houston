@@ -24,4 +24,5 @@ def key_flags() -> dict:
         "elevenlabs": bool(os.getenv("ELEVENLABS_API_KEY")),
         "backboard": bool(os.getenv("BACKBOARD_API_KEY")),
         "db": bool(os.getenv("DATABASE_URL")),
+        "typesafe": bool(os.getenv("TYPESAFE_API_KEY")),
     }

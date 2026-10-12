@@ -11,6 +11,7 @@ BUFFER_M = 75
 REPORT_BUFFER_M = 100
 HIGH_DEPTH_IN = 6
 REPORT_MAX_AGE_H = 6
+LOW_PLAUSIBILITY = 0.3  # optional Jev report check (null = not checked)
 COUNTING_KINDS = {"flooded_road", "water_over_road", "barricade_missing", "stalled_vehicles"}
 
 
@@ -65,7 +66,8 @@ def recent_reports() -> list[dict]:
                 vc = votes.get(r.id) or {"confirms": 0, "clears": 0, "last_vote_at": None}
                 if ts >= cutoff and report_counts(r.kind, r.depth_in) and not is_cleared(vc):
                     out.append({"id": r.id, "confirms": vc["confirms"], "clears": vc["clears"], "lat": r.lat, "lon": r.lon, "kind": r.kind, "depth_in": r.depth_in,
-                                "note": r.note, "created_at": ts.isoformat(), "reporter": r.reporter})
+                                "note": r.note, "plausibility": r.plausibility, "created_at": ts.isoformat(),
+                                "reporter": r.reporter})
             return out
     except Exception:
         return []
@@ -167,6 +169,8 @@ async def _evaluate(line: dict, fallback: bool, simulate: bool, warnings: list) 
                             "report_id": rep.get("id"), "confirms": rep.get("confirms", 0), "clears": rep.get("clears", 0),
                             "reason": "Community report" + (f": about {depth:g} in of water" if depth is not None else "")
                             + (f" ({rep['note']})" if rep.get("note") else "")})
+            if rep.get("plausibility") is not None and rep["plausibility"] < LOW_PLAUSIBILITY:
+                continue  # Jev judged it implausible: still shown, but never counts toward "avoid"
             rep_ids.add(rep.get("reporter") or rep.get("id"))  # one client filing twice counts once
             if depth is not None and depth >= HIGH_DEPTH_IN:
                 deep_ids.add(rep.get("reporter") or rep.get("id"))

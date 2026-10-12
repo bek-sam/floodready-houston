@@ -70,7 +70,7 @@ def client(tmp_path, monkeypatch):
 
 def test_health(client):
     r = client.get("/api/health").json()
-    assert r["status"] == "ok" and set(r["keys"]) == {"gemini", "elevenlabs", "backboard", "db"}
+    assert r["status"] == "ok" and set(r["keys"]) == {"gemini", "elevenlabs", "backboard", "db", "typesafe"}
 
 
 def test_geocode(client):

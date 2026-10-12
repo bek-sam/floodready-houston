@@ -8,7 +8,7 @@ import re
 import time
 from typing import Any, AsyncIterator
 
-from . import cache, citations, graph, rag, routing, telemetry, trace
+from . import cache, citations, decide, graph, rag, routing, telemetry, trace
 from . import config as _cfg
 from .config import (chat_models, complex_models, gemini_key, gemini_keys, is_model_not_found, is_quota_error, live,
                      mark_dead, mark_exhausted, pairs, should_rotate, voice_models)
@@ -38,6 +38,7 @@ CHAT_SYSTEM = COMMON + (
     "marker like [1] (or [1][3]) before the period; never write URLs. End with: 'Not official guidance.' Earlier "
     "conversation turns may be provided; use them to resolve follow-ups."
 )
+DANGER_INTENTS = {"emergency", "street_flood"}
 LOC_TOOL_INTENTS = {"risk", "shelter", "civic", "flood_history", "medical_site", "driving", "emergency"}
 _bg: set = set()  # background tasks (context-cache creation)
 
@@ -340,6 +341,31 @@ def _state(question, lang, lat, lon, hist, voice) -> dict[str, Any]:
     return s
 
 
+async def _apply_jev(s: dict) -> None:
+    """Merge the optional Jev decision into the regex intents before routing (no key or failure: no-op)."""
+    if not decide.enabled():
+        return
+    has_loc = s.get("lat") is not None and s.get("lon") is not None
+    with telemetry.stage("jev"):
+        d = await decide.decide(s["question"], s["lang"], has_loc, (s.get("history") or [])[-2:] or None)
+    if d is None:
+        return
+    s["jev"] = d
+    merged = decide.merge_intents(s["intents"], d, s["lang"])
+    if merged != s["intents"]:
+        telemetry.set(intents=merged, regex_intents=s["intents"])
+        s["intents"], s["intent"] = merged, merged[0]
+
+
+def _background(coro) -> None:
+    try:
+        t = asyncio.get_running_loop().create_task(coro)
+        _bg.add(t)
+        t.add_done_callback(_bg.discard)
+    except Exception:  # noqa: BLE001
+        coro.close()
+
+
 async def _cache_lookup(s: dict, mode) -> tuple[str | None, Any, dict | None]:
     """(key, embedding, payload-or-None) for cacheable questions."""
     if not cache.cacheable(s):
@@ -394,6 +420,7 @@ async def stream_ask(question: str, lang: str = "en", lat=None, lon=None, histor
 
     try:
         s = _state(question, lang, lat, lon, hist, True)
+        await _apply_jev(s)
         s_ref.append(s)
         danger = bool({"emergency", "street_flood"} & set(s["intents"]))
         if "street_flood" in s["intents"]:  # canned multilingual safety answer, same as /ask
@@ -455,6 +482,8 @@ async def stream_ask(question: str, lang: str = "en", lat=None, lon=None, histor
                 out = _gemini_final(s, full)
                 if out.get("grounding_empty") and not spoken:
                     raise RuntimeError("no grounded sentences")  # -> template fallback below
+                if decide.guard_enabled():  # already spoken: log only, never block the stream
+                    _background(decide.guard(out["answer"], results))
                 if k and not danger and not out.get("warnings"):
                     cache.put(k, {"answer": out["answer"], "sources": out["sources"], "tools_used": used,
                                   "generated_by": "gemini", "speak": spoken}, emb)
@@ -519,6 +548,7 @@ async def _ask_once(question: str, lang: str = "en", lat=None, lon=None, history
     lang = lang or "en"
     hist = graph.clean_history(history)
     s = _state(question, lang, lat, lon, hist, mode == "voice")
+    await _apply_jev(s)
     if "street_flood" in s["intents"]:  # instant canned multilingual answer
         telemetry.set(route="canned")
         out = graph.answer_with_citations({**s, "generated_by": "template", "context": [], "tool_results": {}})
@@ -541,13 +571,17 @@ async def _ask_once(question: str, lang: str = "en", lat=None, lon=None, history
         return res
     if not gemini_key():
         telemetry.set(route="template")
-        return await graph.ask(question, lang, lat, lon, history, mode)
+        return await graph.ask(question, lang, lat, lon, history, mode, intents=s["intents"] if "jev" in s else None)
     k, emb, hit = await _cache_lookup(s, mode)
     if hit:
         telemetry.set(route="cache")
         hit = dict(hit)
         ev = hit.pop("_evidence", [])
         return {**hit, **({"evidence": ev} if debug else {})}
+    if decide.agent_route(s.get("jev")):
+        res = await _agent_ask(s, mode)
+        if res:
+            return res
     budget = ask_timeout()
     results, used, ctx = await prefetch(s)
     s["context"], s["tool_results"] = ctx, results
@@ -567,6 +601,9 @@ async def _ask_once(question: str, lang: str = "en", lat=None, lon=None, history
         out = _gemini_final(s, full)
     if out.get("grounding_empty"):
         return await _template_ask(s, results, used, out["warnings"][0] + "; used template answer.", mode)
+    flags = await decide.guard(out["answer"], results)
+    if flags:
+        return await _template_ask(s, results, used, f"Answer failed a safety check ({', '.join(flags)}); used template answer.", mode)
     res = {"answer": out["answer"], "sources": out["sources"], "generated_by": "gemini", "tools_used": used}
     if out.get("warnings"):
         res["warnings"] = out["warnings"]
@@ -578,4 +615,33 @@ async def _ask_once(question: str, lang: str = "en", lat=None, lon=None, history
         mdl = _cfg.last_model.get()
         res["model"] = mdl
         res["evidence"] = [f"model: {mdl}", *_debug_evidence(s)]
+    return res
+
+
+async def _agent_ask(s: dict, mode) -> dict | None:
+    """Multi-step LangGraph tool loop (graph.agent) for questions Jev scores as complex (JEV_AGENT_ROUTE=1).
+    None -> the caller uses the normal single-call path."""
+    telemetry.set(route="graph")
+    try:
+        with telemetry.stage("rag"):
+            ctx = await _guard(asyncio.to_thread(rag.search_adaptive, graph.rag_text(s)), RAG_TIMEOUT) or []
+        with telemetry.stage("llm"):
+            out = await asyncio.wait_for(graph.agent({**s, "context": ctx}), ask_timeout())
+    except Exception:  # noqa: BLE001
+        return None
+    if out.get("generated_by") != "gemini" or not (out.get("answer") or "").strip():
+        return None
+    results = out.get("tool_results") or {}
+    full = out["answer"]
+    danger = bool(DANGER_INTENTS & set(s["intents"]))
+    if danger and "911" not in full:
+        full = full.strip() + " " + graph.SAY_911.get(s["lang"], graph.SAY_911["en"])
+    fin = _gemini_final({**s, "context": ctx, "tool_results": results}, full)
+    if fin.get("grounding_empty") or await decide.guard(fin["answer"], results):
+        return None
+    res = {"answer": fin["answer"], "sources": fin["sources"], "generated_by": "gemini", "tools_used": out.get("tools_used", [])}
+    if fin.get("warnings"):
+        res["warnings"] = fin["warnings"]
+    if mode == "voice":
+        res["speak"] = graph.derive_speak(fin["answer"], s["lang"], danger)
     return res

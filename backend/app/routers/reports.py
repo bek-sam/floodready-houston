@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from app import freshness
 from app.db import Report, ReportVote, get_session
+from app.services import report_check
 from app.services.route import REPORT_MAX_AGE_H, is_cleared, vote_counts
 
 router = APIRouter()
@@ -44,9 +45,10 @@ def _row(r: Report, vc: dict | None = None) -> dict:
 
 @router.post("/reports")
 async def create_report(body: ReportIn, request: Request):
+    p = await report_check.plausibility(body.kind, body.depth_in, body.note)  # None without a Jev key
     try:
         with get_session() as s:
-            r = Report(**body.model_dump(), reporter=voter_id(request))
+            r = Report(**body.model_dump(), reporter=voter_id(request), plausibility=p)
             s.add(r)
             s.commit()
             s.refresh(r)

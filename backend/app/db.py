@@ -24,6 +24,7 @@ class Report(Base):
     depth_in = Column(Float, nullable=True)
     note = Column(String(1000), nullable=True)
     reporter = Column(String(64), nullable=True)  # salted hash of the client IP (see routers/reports.py)
+    plausibility = Column(Float, nullable=True)  # optional Jev check (0-1); null = not checked
 
 
 class ReportVote(Base):
@@ -88,11 +89,12 @@ def get_session():
 
 def _add_missing_columns(eng) -> None:
     """create_all never alters existing tables: add nullable columns introduced after a DB was created."""
-    for table, col in (("report_votes", "voter"), ("reports", "reporter")):
+    for table, col, typ in (("report_votes", "voter", "VARCHAR(64)"), ("reports", "reporter", "VARCHAR(64)"),
+                            ("reports", "plausibility", "FLOAT")):
         try:
             if col not in {c["name"] for c in inspect(eng).get_columns(table)}:
                 with eng.begin() as c:
-                    c.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} VARCHAR(64)"))
+                    c.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {typ}"))
         except Exception as e:
             log.warning("%s.%s migration skipped: %s", table, col, e)
 

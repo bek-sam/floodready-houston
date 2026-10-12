@@ -241,6 +241,8 @@ def street_flood_answer(lang: str) -> dict:
 
 
 def classify_intent(s: State) -> State:
+    if s.get("intents"):  # already decided upstream (fast path: regex merged with the Jev decision layer)
+        return {"intent": s["intents"][0], "intents": s["intents"]}
     q = _qtext(s).lower()
     found = [name for name, pat in INTENT_RULES
              if (_is_street_flood(q) if name == "street_flood" else re.search(pat, q))] or ["general"]
@@ -698,11 +700,12 @@ _graph = None
 
 
 async def ask(question: str, lang: str = "en", lat: float | None = None, lon: float | None = None,
-              history: list | None = None, mode: str | None = None) -> dict[str, Any]:
+              history: list | None = None, mode: str | None = None, intents: list | None = None) -> dict[str, Any]:
     global _graph
     _graph = _graph or build_graph()
     out = await _graph.ainvoke({"question": question, "lang": lang or "en", "lat": lat, "lon": lon,
-                                "history": clean_history(history), "voice": mode == "voice"})
+                                "history": clean_history(history), "voice": mode == "voice",
+                                **({"intents": intents} if intents else {})})
     res = citations.attach({
         "answer": out["answer"],
         "sources": out.get("sources", []),
