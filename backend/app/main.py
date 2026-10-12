@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -11,7 +10,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 from fastapi import APIRouter, FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
-from app.config import key_flags  # noqa: E402
+from app.config import allowed_origins, key_flags  # noqa: E402
 from app.db import init_db  # noqa: E402
 from app.ratelimit import RateLimitMiddleware  # noqa: E402
 from app.routers import alerts, civic, crossings, geocode, insurance, replay, reports, risk, route, watch, push, shelters, outlook, gauges, zipinsurance, medical, floodhistory, buyouts, el_agent, sms, status, evac, nri, empower  # noqa: E402
@@ -39,8 +38,7 @@ async def lifespan(_):
 
 
 app = FastAPI(title="FloodReady Houston API", lifespan=lifespan)
-_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()] or [
-    "http://localhost:5173", "http://127.0.0.1:5173"]
+_origins = allowed_origins()
 app.add_middleware(RateLimitMiddleware)
 from app.demo_snapshot import install as _install_snapshot; _install_snapshot(app)  # noqa: E402  DEMO_SNAPSHOT=1 / offline fallback
 app.add_middleware(  # added last = outermost, so 429/422 responses still carry CORS headers

@@ -8,6 +8,12 @@ USER_AGENT = "FloodReadyHouston/0.1 (hackathon)"
 HTTP_TIMEOUT = 8.0
 
 
+def allowed_origins() -> list[str]:
+    """Browser origins allowed by CORS and by the /api/live WebSocket origin check (ALLOWED_ORIGINS, comma-separated)."""
+    return [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()] or [
+        "http://localhost:5173", "http://127.0.0.1:5173"]
+
+
 def database_url() -> str:
     return os.getenv("DATABASE_URL") or f"sqlite:///{ROOT / 'backend' / 'floodready.db'}"
 

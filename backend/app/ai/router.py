@@ -7,23 +7,38 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from . import fast, graph, memory, plan, telemetry, voice
 from .tools import run_tool, warm
 
 router = APIRouter()
 _bg: set = set()
+LANGS = ("en", "es", "vi", "zh", "ar")
+MAX_QUESTION = 500  # same cap as the ratelimit middleware guard
+MAX_HISTORY_TURNS, MAX_TURN_CHARS = 12, 2000  # graph.clean_history then keeps the last 6, each cut to 600
 
 
 class AskBody(BaseModel):
-    question: str
-    lang: str = "en"
+    question: str = Field(max_length=MAX_QUESTION)
+    lang: str = Field(default="en", max_length=16)
     lat: float | None = None
     lon: float | None = None
-    history: list[dict[str, Any]] = []
+    history: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_HISTORY_TURNS)
     mode: str | None = None
     debug: bool = False  # eval only: include the evidence (chunks + compact tool data) the answer was built from
+
+    @field_validator("lang")
+    @classmethod
+    def _lang(cls, v: str) -> str:
+        return v if v in LANGS else "en"
+
+    @field_validator("history")
+    @classmethod
+    def _turns(cls, v: list) -> list:
+        if any(len(str(h.get("content", ""))) > MAX_TURN_CHARS for h in v):
+            raise ValueError(f"history turns must be at most {MAX_TURN_CHARS} characters")
+        return v
 
 
 class PrefetchBody(BaseModel):
@@ -45,8 +60,8 @@ class PlanBody(BaseModel):
 
 
 class VoiceBody(BaseModel):
-    text: str
-    lang: str = "en"
+    text: str = Field(max_length=5000)
+    lang: str = Field(default="en", max_length=16)
 
 
 @router.post("/ask")

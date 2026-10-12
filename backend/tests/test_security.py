@@ -103,3 +103,97 @@ def test_checkin_call_needs_flag_and_runs_off_loop(client, monkeypatch):
     monkeypatch.setenv("CHECKIN_CALLS", "1")
     assert client.post("/api/checkin/call", json=body).json() == {"ok": True, "status": 201}
     assert calls == [False]
+
+
+def test_checkin_call_rate_limited(client, monkeypatch):
+    from app import ratelimit
+    ratelimit.reset()
+    monkeypatch.delenv("CHECKIN_CALLS", raising=False)
+    codes = [client.post("/api/checkin/call", json={"phone": "+17135550104"}).status_code for _ in range(5)]
+    assert codes[0] == 503 and codes[-1] == 429
+    ratelimit.reset()
+
+
+# ---------- 3. question / history caps ----------
+
+def test_ask_caps_question_lang_history(client):
+    from app import ratelimit
+    ratelimit.reset()
+    long_q = {"question": "x" * 501, "lang": "en"}
+    assert client.post("/api/ask", json=long_q).status_code == 422
+    assert client.post("/api/ask/stream", json=long_q).status_code == 422  # middleware guard covers the stream too
+    many = [{"role": "user", "content": "hi"}] * 13
+    assert client.post("/api/ask", json={"question": "hi", "history": many}).status_code == 422
+    huge = [{"role": "user", "content": "x" * 2001}]
+    assert client.post("/api/ask", json={"question": "hi", "history": huge}).status_code == 422
+    assert client.post("/api/ask", json={"question": "hi", "lang": "x" * 17}).status_code == 422
+
+
+def test_ask_unknown_lang_falls_back_to_en():
+    from app.ai.router import AskBody
+    assert AskBody(question="hi", lang="klingon").lang == "en"
+    assert AskBody(question="hi", lang="es").lang == "es"
+
+
+# ---------- 4. rate limits on paid endpoints + live WebSocket ----------
+
+def test_paid_endpoints_rate_limited(client, monkeypatch):
+    from app import ratelimit
+    ratelimit.reset()
+    monkeypatch.setattr(ratelimit, "LIMITS", [(p, 2, w) for p, _, w in ratelimit.LIMITS])
+    for method, path in (("GET", "/api/geocode?q=77096"), ("GET", "/api/el-agent/signed-url"),
+                         ("POST", "/api/voice"), ("GET", "/api/voice/filler?lang=en"), ("GET", "/api/profile/abc"),
+                         ("POST", "/api/route-check"), ("POST", "/api/sms/simulate"), ("POST", "/api/profile")):
+        codes = [client.request(method, path, json={}).status_code for _ in range(3)]
+        assert codes[-1] == 429, (path, codes)
+    assert client.get("/api/reports").status_code == 200  # plain reads stay unlimited
+    ratelimit.reset()
+
+
+def test_ratelimit_evicts_stale_ips(monkeypatch):
+    from app import ratelimit
+    ratelimit.reset()
+    t = [1000.0]
+    monkeypatch.setattr(ratelimit.time, "monotonic", lambda: t[0])
+    ratelimit._last_sweep = t[0]
+    for i in range(50):
+        ratelimit._allowed(f"10.0.0.{i}", "/api/ask", 60, 60)
+    assert len(ratelimit._hits) == 50
+    t[0] += ratelimit.MAX_WINDOW + ratelimit.SWEEP_EVERY_S + 1
+    ratelimit._allowed("10.0.1.1", "/api/ask", 60, 60)
+    assert list(ratelimit._hits) == [("10.0.1.1", "/api/ask")]
+    ratelimit.reset()
+
+
+def _live_app():
+    from fastapi import FastAPI
+    from app.ai import live_router
+    a = FastAPI()
+    a.include_router(live_router.router)
+    return a
+
+
+def test_live_rejects_foreign_origin(monkeypatch):
+    import pytest
+    from fastapi.testclient import TestClient
+    from starlette.websockets import WebSocketDisconnect
+    from app.ai import live
+    monkeypatch.setattr(live, "make_client", lambda: None)
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
+    c = TestClient(_live_app())
+    with pytest.raises(WebSocketDisconnect):
+        with c.websocket_connect("/live", headers={"origin": "https://evil.example"}) as ws:
+            ws.receive_json()
+    for origin in ("http://localhost:5173", "http://testserver"):  # CORS origin, same-origin
+        with c.websocket_connect("/live", headers={"origin": origin}) as ws:
+            assert ws.receive_json()["detail"].startswith("Gemini Live is not configured")
+
+
+def test_live_per_ip_cap(monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.ai import live, live_router
+    monkeypatch.setattr(live, "make_client", lambda: object())
+    monkeypatch.setattr(live_router, "_per_ip", {"testclient": live_router.MAX_PER_IP})
+    with TestClient(_live_app()).websocket_connect("/live") as ws:
+        assert "this device" in ws.receive_json()["detail"]
+    assert live_router._active == 0

@@ -8,18 +8,23 @@ import asyncio
 import contextlib
 import json
 import logging
+import os
 import time
 from array import array
 from typing import Optional
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, WebSocket
 from google.genai import types
 
 from app.ai import live
+from app.config import allowed_origins
 
 log = logging.getLogger("floodready.live")
 router = APIRouter()
 _active = 0
+_per_ip: dict[str, int] = {}
+MAX_PER_IP = int(os.getenv("LIVE_MAX_PER_IP", "2"))  # so one client cannot take every live slot
 VOICE_RMS = 490  # PCM16 RMS (~0.015 full scale) that counts as user speech for turn timing
 PTT_BUFFER_MAX = 16000 * 2 * 5  # 5 s of 16 kHz PCM16 kept while switching to push-to-talk
 
@@ -352,11 +357,23 @@ async def _connect_first(br: Bridge, resume: Optional[str]) -> bool:
     return False
 
 
+def origin_ok(ws: WebSocket) -> bool:
+    """Browsers always send Origin on WebSockets: allow the CORS origins and same-origin pages only."""
+    origin = ws.headers.get("origin")
+    if not origin:
+        return True  # not a browser (no cross-site risk)
+    return origin in allowed_origins() or urlsplit(origin).netloc == ws.headers.get("host", "")
+
+
 @router.websocket("/live")
 async def live_ws(ws: WebSocket, lang: str = "en", lat: Optional[float] = None, lon: Optional[float] = None,
                   place: Optional[str] = None, profile: Optional[str] = None, resume: Optional[str] = None,
                   ptt: bool = False):
     global _active
+    if not origin_ok(ws):
+        await ws.close(code=1008)  # before accept: the handshake is rejected with 403
+        return
+    ip = ws.client.host if ws.client else "unknown"
     await ws.accept()
     client = live.make_client()
     if client is None:
@@ -369,7 +386,13 @@ async def live_ws(ws: WebSocket, lang: str = "en", lat: Optional[float] = None, 
         with contextlib.suppress(Exception):
             await ws.close(code=1013)
         return
+    if _per_ip.get(ip, 0) >= MAX_PER_IP:
+        await _send_json(ws, {"type": "error", "detail": "Too many live sessions from this device, close one and retry."})
+        with contextlib.suppress(Exception):
+            await ws.close(code=1013)
+        return
     _active += 1
+    _per_ip[ip] = _per_ip.get(ip, 0) + 1
     br: Optional[Bridge] = None
     try:
         t0 = time.monotonic()
@@ -400,6 +423,9 @@ async def live_ws(ws: WebSocket, lang: str = "en", lat: Optional[float] = None, 
         log.warning("live session error: %s", e)
     finally:
         _active -= 1
+        _per_ip[ip] -= 1
+        if _per_ip[ip] <= 0:
+            _per_ip.pop(ip, None)
         if br is not None:
             with contextlib.suppress(BaseException):
                 await br.close_session()
