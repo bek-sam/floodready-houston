@@ -67,6 +67,20 @@ Dated evidence is on the Judge page (`frontend/public/evidence.json`):
 - **Safety eval** (`scripts/eval_ai.py`, `docs/eval/latest.md`): 99-case suite across en/es/vi/zh/ar incl. adversarial, 67% to 87% after fixes; AI eval 38/40 (en 26/26, es 12/14; known failures: rent-es-1); citation eval 15/15 with live Gemini. Remaining failures are missing expected terms, not dangerous advice or missing 911.
 - **Quota resilience:** key x model rotation on 429/404, multi-key `GEMINI_API_KEYS`, BM25-only fallback when embeddings are rate-limited, template answers if all models are exhausted; `/#status` shows the active model.
 
+## AI: Jev + Gemini (optional)
+Jev (TypeSafe AI's "System One" model) **decides** and Gemini **writes**. With `TYPESAFE_API_KEY` set, one fast Jev call
+(1.2 s timeout) per question returns calibrated probabilities for the intent, "is this person in danger now", which
+location tools to fetch and how complex the question is. Gemini still writes every answer.
+- **Safety rules:** Jev may add danger handling (Call 911 first) and tools, but never remove a regex-detected danger
+  intent or tool. Non-English questions stay regex-first (only Jev's danger signal is used). Low-confidence answers
+  (< `JEV_MIN_CONF`) are ignored. The user's text is sent as a JSON field, and Jev's outputs are advisory only.
+- **Guardrail:** on `/ask`, a second Jev call checks Gemini's answer for floodwater-driving advice, "official guidance"
+  claims or "safe" during an active flood warning, and replaces a flagged answer with the template (streaming only logs).
+- **Community reports:** POST `/reports` stores a Jev `plausibility`; reports below 0.3 never count toward "avoid".
+- **Optional:** without the key (or with `JEV_ENABLED=0`, a timeout or any error), everything behaves exactly as before.
+  Jev is paid and hosted only, about 68% accurate on the vendor benchmark, weaker outside English, at dates and math,
+  and biased toward the first choice option, so it is never trusted alone.
+
 ## Architecture
 ```
  Phone / browser (React PWA, Leaflet, service worker + Web Push)
@@ -112,6 +126,7 @@ cd backend && uv run python ../scripts/demo_check.py --front  # 21 automated dem
 | `BACKBOARD_API_KEY` | Household profile memory (otherwise local DB) |
 | `DATABASE_URL` | Tiger Data Postgres, e.g. `postgresql+psycopg://...?sslmode=require`; empty = SQLite |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | Web Push; auto-generated and persisted if unset |
+| `TYPESAFE_API_KEY`, `TYPESAFE_MODEL`, `JEV_*` | Optional Jev decision layer (see "Jev + Gemini" above and `.env.example`); empty = rule-based |
 | `MAPBOX_TOKEN` | Optional, only for 3D replay |
 | `DOMAIN` | Deploy only: your domain, passed to Caddy (not read from `.env`; set on the deploy command) |
 
