@@ -1,7 +1,8 @@
 """Demo snapshot mode: serve pre-recorded API responses when the venue network fails.
 
-Active when DEMO_SNAPSHOT=1 (snapshot wins for any recorded request), or automatically when a request
-errors (exception / 5xx) and a snapshot exists for that exact request. Snapshots live in data/demo_snapshot/*.json
+Only installed when DEMO_SNAPSHOT=1 (see install()): the snapshot then wins for any recorded request; other
+requests go to the live handlers. Without the flag the middleware is not installed at all, so production never
+answers from recorded data. Snapshots live in data/demo_snapshot/*.json
 (written by scripts/record_demo.py). Writes (/reports, /watch, /push, /feedback) and voice/live are never served
 from a snapshot. Never raises: any problem falls through to the normal response."""
 import hashlib
@@ -96,21 +97,15 @@ class SnapshotMiddleware(BaseHTTPMiddleware):
             entry = load().get(make_key(request.method, path, request.url.query, raw))
         except Exception as e:  # noqa: BLE001
             log.warning("snapshot lookup failed: %s", e)
-        if entry and os.getenv("DEMO_SNAPSHOT") == "1":
+        if entry:
             return _serve(entry)
-        try:
-            resp = await call_next(request)
-        except Exception:  # noqa: BLE001
-            if entry:
-                return _serve(entry)
-            raise
-        if entry and resp.status_code >= 500:
-            return _serve(entry)
-        return resp
+        return await call_next(request)
 
 
 def find_voice(lang: str = "es") -> Path | None:
     """Existing cached mp3 for the canned pitch answer in `lang` (never generates audio)."""
+    if lang not in ("en", "es", "vi", "zh", "ar"):
+        return None
     pre = Path(__file__).resolve().parents[2] / "data" / "demo_snapshot" / f"voice-{lang}.mp3"
     if pre.exists():
         return pre
@@ -130,8 +125,13 @@ def find_voice(lang: str = "es") -> Path | None:
     return None
 
 
+def enabled() -> bool:
+    return os.getenv("DEMO_SNAPSHOT") == "1"
+
+
 def install(app) -> None:
-    app.add_middleware(SnapshotMiddleware)
+    if enabled():
+        app.add_middleware(SnapshotMiddleware)
 
     @app.get("/api/demo/voice")
     async def demo_voice(lang: str = "es"):

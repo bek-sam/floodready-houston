@@ -279,3 +279,21 @@ def test_profile_size_bounds(client):
     assert client.post("/api/profile", json={f"k{i}": 1 for i in range(31)}).status_code == 422
     assert client.post("/api/profile", json={"nested": {"a": 1}}).status_code == 422
     ratelimit.reset()
+
+
+# ---------- 7. demo snapshot middleware only in demo mode ----------
+
+def test_snapshot_middleware_only_with_flag(monkeypatch):
+    from fastapi import FastAPI
+    from app import demo_snapshot
+    from app.main import app
+    assert not any(m.cls is demo_snapshot.SnapshotMiddleware for m in app.user_middleware)  # tests run without the flag
+    monkeypatch.delenv("DEMO_SNAPSHOT", raising=False)
+    a = FastAPI()
+    demo_snapshot.install(a)
+    assert not any(m.cls is demo_snapshot.SnapshotMiddleware for m in a.user_middleware)
+    monkeypatch.setenv("DEMO_SNAPSHOT", "1")
+    b = FastAPI()
+    demo_snapshot.install(b)
+    assert any(m.cls is demo_snapshot.SnapshotMiddleware for m in b.user_middleware)
+    assert demo_snapshot.find_voice("../../etc/passwd") is None
