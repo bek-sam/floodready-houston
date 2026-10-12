@@ -12,7 +12,7 @@ from . import cache, citations, graph, rag, routing, telemetry, trace
 from . import config as _cfg
 from .config import (chat_models, complex_models, gemini_key, gemini_keys, is_model_not_found, is_quota_error, live,
                      mark_dead, mark_exhausted, pairs, should_rotate, voice_models)
-from .grounding import HEDGE, UNTRUSTED_RULE, evidence_numbers, ground, grounded_sentence
+from .grounding import HEDGE, UNTRUSTED_RULE, evidence_numbers, ground, grounded_sentence, history_block
 from .tools import run_tool
 
 GAUGE_SRC = "https://api.water.noaa.gov/nwps/v1/"  # live gauge stages (NOAA NWPS), cited for gauge sentences
@@ -163,7 +163,7 @@ def build_prompt(question, history, ctx, results, lang: str = "en", loc: str = "
     c = "\n\n".join(f"[{num.get(x['source'], '?')}] {x.get('title', '')}: {x['text'][:MAX_CHUNK_CHARS]}" for x in ctx)
     d = "\n".join(f"{k}: {routing.tool_json(k, v)}" for k, v in results.items())
     s = "\n".join(f"[{i}] {u}" for i, u in enumerate(srcs, 1))
-    h = "".join(f"{x['role']}: {x['content']}\n" for x in history)
+    h = history_block(history)
     return (f"Reply language code: '{lang}'. User location: {loc}.\n\nRetrieved context:\n{c or 'none'}\n\n"
             f"Live data:\n{d or 'none'}\n\nSources:\n{s or 'none'}\n\n{h}Question: {question}")
 
@@ -269,11 +269,12 @@ def _is_disclaimer(t: str) -> bool:
 
 
 def _evidence(s: dict) -> set[str]:
-    hist = " ".join(h["content"] for h in s.get("history") or [])
+    """Numbers the answer may use: retrieved chunks and tool data only. The question and the client-supplied
+    history are not evidence, or a user could 'ground' any number just by typing it."""
     texts = [c.get("text", "") for c in s.get("context", [])]
     if any(cache.ctx_name(m, k) for m in (chat_model(), voice_model(), complex_models()[0]) for k in ("chat", "voice")):
         texts.append(cache.digest())
-    return evidence_numbers(s.get("question", ""), hist, *texts, s.get("tool_results", {}), *citations.asof_texts(s.get("tool_results", {})))
+    return evidence_numbers(*texts, s.get("tool_results", {}), *citations.asof_texts(s.get("tool_results", {})))
 
 
 def _renumber(text: str, srcs: list[str]) -> tuple[str, list[str]]:

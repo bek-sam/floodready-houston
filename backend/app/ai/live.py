@@ -24,6 +24,7 @@ from google.genai import types
 
 from app.ai import tools as ai_tools
 from app.ai.config import gemini_key
+from app.ai.grounding import UNTRUSTED_RULE, sanitize_untrusted, wrap_untrusted
 
 DEFAULT_MODEL = "gemini-3.8-live"
 FALLBACK_MODELS = ("gemini-3.1-flash-live-preview", "gemini-2.5-flash-native-audio-latest")
@@ -225,8 +226,10 @@ def _fmt_profile(p: dict) -> list[str]:
     for k, v in p.items():
         if v in (None, "", [], {}, False) or k in {"lat", "lon", "name", "phone", "email"}:
             continue
-        keep.append(f"{k}={json.dumps(v, ensure_ascii=False)[:80]}")
-    return ["Household (from the user's saved profile): " + "; ".join(keep[:12])] if keep else []
+        keep.append(f"{sanitize_untrusted(k, 30)}={sanitize_untrusted(json.dumps(v, ensure_ascii=False), 80)}")
+    # user-entered values from the URL: data, never instructions
+    return ["Household (from the user's saved profile): <untrusted_user_text>"
+            + sanitize_untrusted("; ".join(keep[:12]), 1200) + "</untrusted_user_text>"] if keep else []
 
 
 _CACHE: dict[tuple, tuple[float, dict]] = {}
@@ -275,7 +278,7 @@ async def build_context(lat: Optional[float], lon: Optional[float], place: Optio
     fmt = {"risk": _fmt_risk, "history": _fmt_history, "claims": _fmt_claims, "alerts": _fmt_alerts}
     lines: list[str] = []
     if place:
-        lines.append(f"Place: {place[:120]}")
+        lines.append(f"Place: {wrap_untrusted(place[:120])}")
     for n in ("alerts", "risk", "history", "claims"):
         if n in got:
             try:
@@ -322,7 +325,7 @@ def system_prompt(lang: str = "en", lat: Optional[float] = None, lon: Optional[f
         s += (" The SESSION CONTEXT already covers the user's own place: do not call get_risk, get_flood_history, "
               "get_alerts or get_zip_insurance for it unless that item is listed as not preloaded or the user asks "
               "for a refresh or a different place.")
-        s += "\n\nSESSION CONTEXT (sources in brackets):\n" + context
+        s += " " + UNTRUSTED_RULE + "\n\nSESSION CONTEXT (sources in brackets):\n" + context
     return s
 
 

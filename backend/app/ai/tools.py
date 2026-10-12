@@ -37,10 +37,10 @@ async def _call(module: str, func: str, *args):
 
 
 @tool
-async def get_risk(lat: float, lon: float, simulate: bool = False) -> dict:
-    """Flood risk at a point: FEMA zone, elevation, nearby river gauges, jurisdiction, sourced facts.
-    simulate=True uses simulated high-water gauge data for demos."""
-    return await _call("risk", "get_risk", lat, lon, *([True] if simulate else []))
+async def get_risk(lat: float, lon: float) -> dict:
+    """Flood risk at a point: FEMA zone, elevation, nearby river gauges, jurisdiction, sourced facts."""
+    # No `simulate` argument: only explicit UI demo paths (?simulate=storm) may fake storm data, never the model.
+    return await _call("risk", "get_risk", lat, lon)
 
 
 @tool
@@ -50,13 +50,9 @@ async def get_alerts(lat: float, lon: float) -> dict:
 
 
 @tool
-async def check_route(origin_lat: float, origin_lon: float, dest_lat: float, dest_lon: float,
-                      simulate: bool = False) -> dict:
+async def check_route(origin_lat: float, origin_lon: float, dest_lat: float, dest_lon: float) -> dict:
     """Check a driving route for flood-prone crossings. Returns verdict safe|caution|avoid."""
-    return await _call(
-        "route", "check_route", {"lat": origin_lat, "lon": origin_lon}, {"lat": dest_lat, "lon": dest_lon},
-        *([True] if simulate else []),
-    )
+    return await _call("route", "check_route", {"lat": origin_lat, "lon": origin_lon}, {"lat": dest_lat, "lon": dest_lon})
 
 
 @tool
@@ -73,7 +69,8 @@ async def get_civic(lat: float, lon: float) -> dict:
 
 @tool
 async def get_shelters(lat: float, lon: float, pet_friendly: bool = False, limit: int = 5) -> dict:
-    """Nearest evacuation shelters with status (Open/Pending/Full/Closed). Only 'Open' shelters are open."""
+    """HISTORICAL 2017 Hurricane Harvey shelter directory near a point (status_2017 is from 2017). This is NOT a
+    list of shelters open now: never say a shelter is open; for current openings point to 311/211 or houstonoem.org."""
     try:
         from app.services.shelters import get_shelters as svc
     except Exception:

@@ -298,9 +298,10 @@ def _llm_agent(s: State, model: str, key: str | None = None) -> State:
     """Tool-calling loop with Gemini via langchain-google-genai (async tools run via asyncio)."""
     import asyncio
 
-    from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+    from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
     from langchain_google_genai import ChatGoogleGenerativeAI
 
+    from .grounding import history_block
     from .routing import tool_json  # compact, untrusted-text-safe tool JSON (lazy: routing imports graph)
 
     llm = ChatGoogleGenerativeAI(model=model, google_api_key=key or gemini_key(), temperature=0.2)
@@ -308,10 +309,8 @@ def _llm_agent(s: State, model: str, key: str | None = None) -> State:
     loc = f"lat={s['lat']}, lon={s['lon']}" if s.get("lat") is not None and s.get("lon") is not None else "unknown"
     ctx = "\n\n".join(f"[{c['source']}]\n{c['title']}: {c['text']}" for c in s.get("context", []))
     system = SYSTEM.format(lang=s.get("lang", "en"), loc=loc) + (VOICE_SUFFIX.format(lang=s.get("lang", "en")) if s.get("voice") else "")
-    msgs = [SystemMessage(system)]
-    for h in s.get("history") or []:
-        msgs.append(HumanMessage(h["content"]) if h["role"] == "user" else AIMessage(h["content"]))
-    msgs.append(HumanMessage(f"Retrieved context:\n{ctx}\n\nQuestion: {s['question']}"))
+    msgs = [SystemMessage(system)]  # client history is data, never replayed as AIMessage (see history_block)
+    msgs.append(HumanMessage(f"{history_block(s.get('history'))}Retrieved context:\n{ctx}\n\nQuestion: {s['question']}"))
     results, used, n = {}, [], 0
     while True:
         ai = llm.invoke(msgs)
