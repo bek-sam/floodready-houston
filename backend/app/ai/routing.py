@@ -3,7 +3,7 @@ compact tool JSON for prompts, and lite-vs-strong model choice."""
 import json
 import re
 
-from . import citations, graph
+from . import citations, decide, graph
 from .grounding import sanitize_untrusted, wrap_untrusted
 
 NWS_SRC = "https://www.weather.gov/documentation/services-web-api"
@@ -185,11 +185,29 @@ def select_tools(s: dict) -> list[tuple[str, dict]]:
         calls.append(("get_alerts", {"lat": s["lat"], "lon": s["lon"]}))
     if knowledge_only(s):
         calls = [c for c in calls if c[0] not in LOC_TOOLS]
+    elif s.get("lat") is not None and s.get("lon") is not None:  # Jev may ADD location tools, never remove any
+        calls += [(n, _loc_args(n, s)) for n in decide.extra_tools(s.get("jev"), [n for n, _ in calls])]
     return calls
+
+
+def _loc_args(name: str, s: dict) -> dict:
+    """Arguments for a location tool, same as graph._fallback_tools builds them."""
+    here, q = {"lat": s["lat"], "lon": s["lon"]}, graph._qtext(s).lower()
+    if name == "get_shelters":
+        return {**here, "pet_friendly": bool(re.search(r"\bpets?\b|dog|cat", q))}
+    if name == "get_flood_history":
+        return {**here, "zip": graph.zip_in_text(q)}
+    if name == "get_medical":
+        return {**here, "kind": "dialysis", "limit": 3}
+    return here
 
 
 # ---------- model choice ----------
 def complex_question(s: dict) -> bool:
+    """Jev complexity score when confident, else: two or more intents or a long question."""
+    jev = decide.is_complex(s.get("jev"))
+    if jev is not None:
+        return jev
     it = set(s.get("intents") or []) - {"general"}
     return len(it) >= 2 or len(s.get("question", "")) > 160
 
